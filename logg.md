@@ -246,6 +246,31 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
+## 2026-10-23 (del 10) — Rapport om verbtyper, sekundære rangeringer (`1. > 2. > 3.`) og aksjonsart (`rapport_verbtyper.md`)
+
+**Agent:** Antigravity (Gemini 4 Argon)
+
+### Hva ble gjort
+- Sjekket innkommende endringer fra medforfatter (`notebooks/00_dataoppslag.ipynb` merget via PR #1).
+- Analyserte alle 6 mulige rangeringer (permutasjoner av `inf`, `pres`, `pret`) på tvers av $N = 606$ helt lemma-entydige verb med 4 distinkte kjerneformer (`pret != perf-part`, $\ge 100\,000$ treff i `nb_totals`) samt for våre 30 kjerneverb over 71 enkeltår (1950–2020).
+- Skrev delrapporten **`rapport_verbtyper.md`** i prosjektroten.
+
+### Viktige funn
+1. **Gir 1. plassen automatisk rangen av de andre formene, eller finnes det sekundær variasjon?**
+   - **Begge deler:** 1. plassen låser *ikke* 2. og 3. plass automatisk (alle 6 permutasjoner av `inf`, `pres`, `pret` brukes), **men** det er en sterk asymmetri der **`inf` inntar 2. plass for ~65–70 % av verbene** når `pret` eller `pres` er på topp:
+     - **1A `inf > pres > pret` (30,0 % av verbene):** Prosessuelle/diskursive aktivitetsverb (*stille, forklare, lese, forstå, spise, gjøre, finne*).
+     - **1B `inf > pret > pres` (21,3 %):** Teliske/resultative handlingsverb (*ta, sette, kjøpe, snakke, fiske, skaffe, oppnå*).
+     - **2A `pret > inf > pres` (17,5 % — utgjør 70,7 % av verb med `pret` på topp):** Intensjonale hendelsesverb som også styres av modalverb (*vinne, legge, si, tape, bygge, forsøke, vedta, forlate*).
+     - **2B `pret > pres > inf` (7,3 % — utgjør 29,3 % av verb med `pret` på topp):** Ikke-intensjonale overgangsverb og narrative regiverb som sjelden planlegges i infinitiv (*dø, svare, komme, gå, smile, rope, forsvinne, ankomme*).
+     - **3A `pres > inf > pret` (14,9 % — utgjør 62,1 % av verb med `pres` på topp):** Relasjonelle og ekspositoriske verb (*bety, fungere, innebære, oppleve, leve, fortelle*).
+     - **3B `pres > pret > inf` (9,1 % — utgjør 37,9 % av verb med `pres` på topp):** Stative tilstandsverb som beskriver nåtidig eller fortidig tilstand og sjelden står i infinitiv (*ha, vite, ligge, trenge, bestå, foreligge*).
+2. **Stabilitet av hele rangeringen (`1. > 2. > 3.`) gjennom 71 år (1950–2020):**
+   - For verb som *vinne*, *legge*, *dø*, *svare*, *komme*, *ha* og *vite* er **hele rekkefølgen (`1. > 2. > 3.`) identisk i 100,0 % av årene (71 av 71 år)** fra 1950 til 2020!
+3. **Litteraturforankring lagt til i `rapport_verbtyper.md`:**
+   - Knyttet funnene til den internasjonale litteraturen om *inflectional profiles / focal forms* (Karlsson 1986, 2000; Arppe 2006), *grammatical profiles* (Janda & Lyashevskaya 2011; Newman 2008) og paradigme-entropi i mentalt leksikon (Milin, Filipović Đurđević & Baayen 2009), og presiserte hva som er genuint nytt i vår metode (70-årig diakron rang-stabilitet, de 6 permutasjonene av `inf/pres/pret`, «baklengs» bruk av profiler til å dekomponere rå n-grammer/OCR-støy/leksikalisering uten POS-tagget korpus, samt den globale paradigme-grafen over Norsk Ordbank).
+
+---
+
 ## 2026-10-23 (del 10) — Startnotebook for dataoppslag (`notebooks/00_dataoppslag.ipynb`)
 
 **Agent:** Claude Code (Claude Opus 5.5)
