@@ -243,3 +243,25 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Oppdaterte `sqlite/build_db.py` slik at det også laster ned og bygger tabellen `nb_totals` automatisk ved nybygging av `sqlite/ordbank.db`.
 - Staget prosjektfilene (`git add`) klare for første commit/push.
 - Satt opp **Git LFS** (`git lfs track "sqlite/ordbank.db"`) og un-ignorert `!sqlite/ordbank.db` i `.gitignore`, slik at den ferdigbygde SQLite-databasen (`sqlite/ordbank.db`, inkl. `nb_totals`) også er direkte tilgjengelig i GitHub-repoet.
+
+---
+
+## 2026-10-23 (del 10) — Startnotebook for dataoppslag (`notebooks/00_dataoppslag.ipynb`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Opprettet `notebooks/00_dataoppslag.ipynb`: én samlet inngang som importerer de viktigste datafunksjonene fra `sqlite/` og viser ett eksempel på hver:
+  - `lookup_wordform`, `get_paradigm`, `get_verb_profile_forms`, `get_noun_profile_forms`, `find_anchor_forms` (`sqlite/queries.py`)
+  - korpusfrekvenser fra `nb_totals` (liten hjelper `frekvens()` i notebooken) og fri SQL til DataFrame (`sql()`)
+  - `estimate_wordform_shares` (`sqlite/decomposer.py`)
+  - `build_paradigm_graph` / `inspect_component` (`sqlite/paradigm_graph.py`)
+  - `fetch_ngram_dhlab`, `fetch_ngram_sp`, `compute_paradigm_profile` (`sqlite/ngram.py`, krever nett første gang)
+- Alle kodeceller er kjørt gjennom uten feil (grafbygging ~4 s, n-gram-kall ~1–4 s uten cache).
+
+### Tekniske observasjoner
+- Nøkkelen `"target_ labels"` i `sqlite/decomposer.py` (linje 71, 75, 207) har et mellomrom i navnet. Den er konsistent brukt og virker, men bør trolig renames til `target_labels`.
+- Rå n-gram for `gå`/`går` inkluderer hhv. imperativ og *«i går»*, så andelsplottet i seksjon 8 er en råfordeling av formene, ikke en leksemprofil.
+
+### Neste steg
+- Bruke notebooken som mal for nye analysenotebooks (02, 03, …).
