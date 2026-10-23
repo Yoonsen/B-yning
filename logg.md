@@ -242,3 +242,4 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Opprettet `.gitignore` som ekskluderer store rådata (`20220201_norsk_ordbank_nob_2005/`, >100 MB), genererte SQLite-databaser (`*.db`, `*.db-wal`, `*.db-shm`), Python/Jupyter-artefakter og fremtidige PWA-/frontend-byggefiler (`node_modules/`, `dist/`, `build/`, `.vite/`, `.svelte-kit/`, `.next/`, genererte Workbox/Service Worker-bundles, `.env`-filer og `.DS_Store`).
 - Oppdaterte `sqlite/build_db.py` slik at det også laster ned og bygger tabellen `nb_totals` automatisk ved nybygging av `sqlite/ordbank.db`.
 - Staget prosjektfilene (`git add`) klare for første commit/push.
+- Satt opp **Git LFS** (`git lfs track "sqlite/ordbank.db"`) og un-ignorert `!sqlite/ordbank.db` i `.gitignore`, slik at den ferdigbygde SQLite-databasen (`sqlite/ordbank.db`, inkl. `nb_totals`) også er direkte tilgjengelig i GitHub-repoet.

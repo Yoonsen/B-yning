@@ -1,8 +1,9 @@
 # =============================================================================
-# 1. Rådata og genererte SQLite-databaser (>100 MB / genereres av build_db.py)
+# 1. Rådata og genererte SQLite-databaser (ordbank.db spores med Git LFS)
 # =============================================================================
 20220201_norsk_ordbank_nob_2005/
 *.db
+!sqlite/ordbank.db
 *.sqlite
 *.sqlite3
 *.db-wal
