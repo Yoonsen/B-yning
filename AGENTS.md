@@ -23,6 +23,8 @@ Fordi token-budsjettet og kontekstvinduet tømmes over tid og ulike AI-modeller/
    - Prosjektet kombinerer ren kode (`sqlite/`, Python-moduler) med interaktiv utforskning i **Jupyter Notebooks** (`notebooks/`) og tekstproduksjon (`tekst/` eller artikkel/presentasjonsutkast).
    - Hold tung logikk, SQL-spørringer og hjelpefunksjoner i importerbare Python-filer (f.eks. `sqlite/queries.py`), slik at notebooks blir ryddige, lesbare og lette for både mennesker og AI å redigere videre.
    - Ikke overskriv menneskeskrevne celler eller tekst uten at det er etterspurt.
+4. **Git-arbeidsflyt (Branch + Pull Request):**
+   - Siden flere samarbeider i repoet, skal nye endringer legges på en egen feature-branch (f.eks. `git checkout -b <branch-navn>`), committes og pushes til `origin`, slik at de kan merges via Pull Request på GitHub.
 
 ---
 
