@@ -290,3 +290,32 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - Bruke notebooken som mal for nye analysenotebooks (02, 03, …).
+
+---
+
+## 2026-10-23 (del 11) — Paradigmedekning og overlevelse i enkeltbøker (`sqlite/book_dispersion.py`)
+
+**Agent:** Antigravity (Gemini 4 Argon)
+
+### Hva ble gjort
+- Opprettet `sqlite/book_dispersion.py` som henter enkeltbok-korpus via `https://api.nb.no/dhlab/build_corpus` og eksakte dokumentfrekvenser per bok via `https://api.nb.no/dhlab/frequencies` (merk teknisk detalj: `/dhlab/frequencies` krever `"cutoff": 1` i JSON-payloaden for å unngå HTTP 500).
+- Kjørte en systematisk analyse av 400 digitaliserte bokmålsbøker (1980–2020: 200 *Skjønnlitteratur* + 200 *Faglitteratur*) for 20 representative verb (fordelt på alle de 6 undertypene i `rapport_verbtyper.md`) og 12 substantiv (fordelt på `ent_ub`-, `ent_be`- og `fl_ub`-profiler).
+
+### Viktige funn
+1. **Enkeltbøker har sjelden med hele paradigmet — selv når ordet brukes flere ganger i boka:**
+   - **Verb (3 former: `inf, pres, pret`, $N=6\,480$ bok–verb-par):**
+     - Ved **2 forekomster** av verbet i en bok har **57,4 %** av bøkene kun **1 form** (samme form gjentas!), og 42,6 % har 2 former.
+     - Ved **3–5 forekomster** i boka mangler fortsatt minst én form i **86,2 % av bøkene** (kun 1 form: 27,6 %, 2 former: 58,6 %, alle 3 former: **kun 13,8 %**).
+     - Ved **6–15 forekomster** i boka mangler fortsatt minst én form i **53,6 % av bøkene** (alle 3 former: 46,4 %).
+   - **Substantiv (4 former: `ent_ub, ent_be, fl_ub, fl_be`, $N=2\,548$ bok–substantiv-par):**
+     - Ved **3–5 forekomster** i en bok har **kun 0,9 %** av bøkene alle 4 former (31,2 % har 1 form, 53,6 % har 2 former, 14,3 % har 3 former).
+     - Selv på tvers av hele bøker har vanlige substantiv som *eple* (58 % kun 1 form, **7 %** alle 4), *buss* (41 % kun 1 form, **7 %** alle 4), *kirke* (46 % kun 1 form, **13 %** alle 4), *sol* (37 % 1 form, 55 % 2 former, **1 %** alle 4) og *forelder* (39 % 1 form, 50 % 2 former, **1 %** alle 4) nesten aldri hele paradigmet realisert i én bok.
+2. **Hvilken del av paradigmet blir med? («Overlevelsesskala» styrt av den globale profilen):**
+   - Når en bok **kun har 1 form** av et leksem, følger valget av form leksemets globale rangering (`1. > 2. > 3. (> 4.)`):
+     - For **verb ($N=1\,145$ enkeltbok-forekomster med kun 1 form)** er den enslige formen verbets globale **#1-form i 57,2 %** av bøkene, **#2-formen i 26,1 %**, og **#3-formen i kun 16,7 %**.
+     - Når en bok har **nøyaktig 2 former** av et verb ($N=1\,727$), er global **#1-form med i 81,4 %** av bøkene (52,3 % er paret `{#1, #2}`, 29,1 % er `{#1, #3}`, og bare 18,6 % er `{#2, #3}`).
+     - For **substantiv ($N=813$ enkeltbok-forekomster med kun 1 form)** er den enslige formen substantivets globale **#1-form i 56,0 %**, **#2-form i 32,5 %** (til sammen **88,5 %** for topp-2!), **#3-form i 9,7 %**, og **#4-form i kun 1,8 %**.
+   - Tydelige eksempler ved kun 1 form i boka: *bety* -> 91 % *betyr*; *gjelde* -> 79 % *gjelder*; *legge* -> 78 % *la*; *vinne* -> 74 % *vant*; *forklare* -> 68 % *forklare*; *dag* -> 83 % *dag*; *politi* -> 80 % *politiet*; *sol* -> 76 % *sola/solen*; *politiker* -> 61 % *politikere*.
+3. **Dispersjon vs. «burstiness» (klumping) og sjangereffekter (Skjønnlitteratur vs. Faglitteratur):**
+   - Preteritum har høyere lokal tetthet («burstiness») i narrative bøker, mens infinitiv og presens har høyere dokumentdispersjon på tvers av sjangre (f.eks. har *si* flest tokens i `pret` *sa* totalt pga. skjønnlitteratur (70 %), men høyere dokumentfrekvens i `inf` *si* (93 % av bøkene mot 84 % for *sa*) fordi *å si / det vil si* brukes i både sakprosa og skjønnlitteratur).
+   - For verb med `inf` på topp (som *spise* og *lese*) holder `inf` 1.-plassen i både skjønnlitteratur og faglitteratur, men **2.- og 3.-plassen bytter plass etter sjanger**: skjønnlitteratur gir `inf > pret > pres` (*spise 49 % > spiste 33 % > spiser 18 %*), mens faglitteratur gir `inf > pres > pret` (*spise 53 % > spiser 33 % > spiste 14 %*).
