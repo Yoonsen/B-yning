@@ -290,3 +290,52 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - Bruke notebooken som mal for nye analysenotebooks (02, 03, …).
+
+---
+
+## 2026-10-23 (del 11) — Paradigmedekning og overlevelse i enkeltbøker (`sqlite/book_dispersion.py`)
+
+**Agent:** Antigravity (Gemini 4 Argon)
+
+### Hva ble gjort
+- Opprettet `sqlite/book_dispersion.py` som henter enkeltbok-korpus via `https://api.nb.no/dhlab/build_corpus` og eksakte dokumentfrekvenser per bok via `https://api.nb.no/dhlab/frequencies` (merk teknisk detalj: `/dhlab/frequencies` krever `"cutoff": 1` i JSON-payloaden for å unngå HTTP 500).
+- Kjørte en systematisk analyse av 400 digitaliserte bokmålsbøker (1980–2020: 200 *Skjønnlitteratur* + 200 *Faglitteratur*) for 20 representative verb (fordelt på alle de 6 undertypene i `rapport_verbtyper.md`) og 12 substantiv (fordelt på `ent_ub`-, `ent_be`- og `fl_ub`-profiler).
+
+### Viktige funn
+1. **Enkeltbøker har sjelden med hele paradigmet — selv når ordet brukes flere ganger i boka:**
+   - **Verb (3 former: `inf, pres, pret`, $N=6\,480$ bok–verb-par):**
+     - Ved **2 forekomster** av verbet i en bok har **57,4 %** av bøkene kun **1 form** (samme form gjentas!), og 42,6 % har 2 former.
+     - Ved **3–5 forekomster** i boka mangler fortsatt minst én form i **86,2 % av bøkene** (kun 1 form: 27,6 %, 2 former: 58,6 %, alle 3 former: **kun 13,8 %**).
+     - Ved **6–15 forekomster** i boka mangler fortsatt minst én form i **53,6 % av bøkene** (alle 3 former: 46,4 %).
+   - **Substantiv (4 former: `ent_ub, ent_be, fl_ub, fl_be`, $N=2\,548$ bok–substantiv-par):**
+     - Ved **3–5 forekomster** i en bok har **kun 0,9 %** av bøkene alle 4 former (31,2 % har 1 form, 53,6 % har 2 former, 14,3 % har 3 former).
+     - Selv på tvers av hele bøker har vanlige substantiv som *eple* (58 % kun 1 form, **7 %** alle 4), *buss* (41 % kun 1 form, **7 %** alle 4), *kirke* (46 % kun 1 form, **13 %** alle 4), *sol* (37 % 1 form, 55 % 2 former, **1 %** alle 4) og *forelder* (39 % 1 form, 50 % 2 former, **1 %** alle 4) nesten aldri hele paradigmet realisert i én bok.
+2. **Hvilken del av paradigmet blir med? («Overlevelsesskala» styrt av den globale profilen):**
+   - Når en bok **kun har 1 form** av et leksem, følger valget av form leksemets globale rangering (`1. > 2. > 3. (> 4.)`):
+     - For **verb ($N=1\,145$ enkeltbok-forekomster med kun 1 form)** er den enslige formen verbets globale **#1-form i 57,2 %** av bøkene, **#2-formen i 26,1 %**, og **#3-formen i kun 16,7 %**.
+     - Når en bok har **nøyaktig 2 former** av et verb ($N=1\,727$), er global **#1-form med i 81,4 %** av bøkene (52,3 % er paret `{#1, #2}`, 29,1 % er `{#1, #3}`, og bare 18,6 % er `{#2, #3}`).
+     - For **substantiv ($N=813$ enkeltbok-forekomster med kun 1 form)** er den enslige formen substantivets globale **#1-form i 56,0 %**, **#2-form i 32,5 %** (til sammen **88,5 %** for topp-2!), **#3-form i 9,7 %**, og **#4-form i kun 1,8 %**.
+   - Tydelige eksempler ved kun 1 form i boka: *bety* -> 91 % *betyr*; *gjelde* -> 79 % *gjelder*; *legge* -> 78 % *la*; *vinne* -> 74 % *vant*; *forklare* -> 68 % *forklare*; *dag* -> 83 % *dag*; *politi* -> 80 % *politiet*; *sol* -> 76 % *sola/solen*; *politiker* -> 61 % *politikere*.
+3. **Dispersjon vs. «burstiness» (klumping) og sjangereffekter (Skjønnlitteratur vs. Faglitteratur):**
+   - Preteritum har høyere lokal tetthet («burstiness») i narrative bøker, mens infinitiv og presens har høyere dokumentdispersjon på tvers av sjangre (f.eks. har *si* flest tokens i `pret` *sa* totalt pga. skjønnlitteratur (70 %), men høyere dokumentfrekvens i `inf` *si* (93 % av bøkene mot 84 % for *sa*) fordi *å si / det vil si* brukes i både sakprosa og skjønnlitteratur).
+   - For verb med `inf` på topp (som *spise* og *lese*) holder `inf` 1.-plassen i både skjønnlitteratur og faglitteratur, men **2.- og 3.-plassen bytter plass etter sjanger**: skjønnlitteratur gir `inf > pret > pres` (*spise 49 % > spiste 33 % > spiser 18 %*), mens faglitteratur gir `inf > pres > pret` (*spise 53 % > spiser 33 % > spiste 14 %*).
+
+---
+
+## 2026-10-25 (del 12) — Kryss-POS-filtrering av gullstandard (Sett A / Sett B) og dekomponering av *«dø / dør»* i `rapport_verbtyper.md`
+
+**Agent:** Antigravity (Gemini 4 Argon) — etter handoff/fagfellevurdering fra Gemini-chat
+
+### Hva ble gjort
+- Gjennomførte full kryss-POS-revisjon av både makroutvalget ($N=606$) og kjerneverbtabellen i `rapport_verbtyper.md` (seksjon 2, 3, 4 og 7.2):
+  1. **Sett A — Streng gullstandard (100 % globalt POS-isolerte i hele Norsk Ordbank):**
+     - Verifiserte at de opprinnelige $N=606$ verbene allerede krevde `ordform_flertydighet.antall_lemma_id = 1` på tvers av *alle* ordklasser for `(inf, pres, pret)`.
+     - Utvidet kravet til også å gjelde 4. form (`perf-part`, `boy_nummer = 5`), slik at også leksikaliserte partisipp-adjektiver (*forlatt, opptatt, forbudt, betjent*) ekskluderes. Dette gir **$N = 580$ verb** (og **$N = 533$ verb** når alle 4 kjerneformer i tillegg kreves belagt $>0$ i `nb_totals`, som fjerner arkaiske riksmålsformer som *tilstede*).
+     - Fordelingen på de 6 undertypene (`1A–3B`) i det 100 % POS-isolerte Sett A ($N=580$) er praktisk talt identisk med $N=606$ (maks $0{,}4$ prosentpoeng forskjell: `1A` 29,8 %, `1B` 21,2 %, `2A` 17,9 %, `2B` 7,2 %, `3A` 14,8 %, `3B` 9,0 %).
+  2. **To-trinns vask i seksjon 4 (Sett A vs. Sett B):**
+     - Luket ut alle støy-kandidater med reell kryss-POS-homografi fra gullstandard-tabellen (*dø, stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape*) og erstattet dem med 100 % globalt kollisjonsfrie **Sett A**-verb (*vurdere, forstå, oppnå, utføre, foreta, bidra, diskutere, forklare, undersøke, innføre, ta, overta, vedta, forlate, gjenta, skjule, forsøke, forsvinne, ankomme, rope, smile, omkomme, bety, fungere, oppleve, innebære, anbefale, trenge, bestå, foregå, foreligge*), hvorav bl.a. *vurdere, undersøke, overta, forsvinne, ankomme, rope, trenge, bestå* har **100,0 % full-rang-stabilitet (71 av 71 år)** i 1950–2020.
+     - Flagget de resterende praktisk rene høyfrekvente kjerneverbene eksplisitt som **Sett B** med angivelse av hvilken ordform som har en teknisk ordbokskollisjon.
+  3. **Glansnummer i seksjon 7.2 — Dekomponering av `dø` (verb) vs. `dør` (substantiv):**
+     - Brukte de entydige substantiv-ankerformene (`døren + døra` = $1{,}65\text{M}$ i bøker / $7{,}02\text{M}$ i `nb_totals`, `dører`, `dørene`) og `estimate_wordform_shares("dør")` i `sqlite/decomposer.py` til å dekomponere strengen `«dør»` i **71,4 % substantiv (`en/ei dør`)** og **28,6 % verb (`han/hun dør`)**.
+     - **Hovedfunn:** Når substantivet *en/ei dør* trekkes fra, faller presensandelen til verbet *dø* i bokkorpuset (1950–2020) fra **20,6 %** ned til **6,9 %** ($\approx 192\,900$ mot $492\,694$ for infinitiv *dø*), slik at **`dø` bytter verbtype fra 2B (`pret > pres > inf`) til 2A (`pret > inf > pres`: `75,4 % > 17,7 % > 6,9 %`)**!
+- Fikset også skrivefeilen `"target_ labels"` $\rightarrow$ `"target_labels"` i `sqlite/decomposer.py` (påpekt i del 10).

@@ -68,11 +68,11 @@ def estimate_wordform_shares(
                     "pos": c["pos"],
                     "boy_gruppe": c["boy_gruppe"],
                     "target_slots": [],
-                    "target_ labels": [],
+                    "target_labels": [],
                 }
             if c["boy_nummer"] not in by_lemma[lid]["target_slots"]:
                 by_lemma[lid]["target_slots"].append(c["boy_nummer"])
-                by_lemma[lid]["target_ labels"].append(c["boy_tekst"] or c["pos"])
+                by_lemma[lid]["target_labels"].append(c["boy_tekst"] or c["pos"])
 
         results = []
         for lid, meta in by_lemma.items():
@@ -204,7 +204,7 @@ def estimate_wordform_shares(
                     "lemma_id": lid,
                     "grunnform": meta["grunnform"],
                     "pos": meta["pos"],
-                    "boy_tekst": "/".join(meta["target_ labels"]),
+                    "boy_tekst": "/".join(meta["target_labels"]),
                     "raw_est": capped_est,
                     "uncapped_est": est_freq,
                     "anchor_explanation": anchor_explanation,
