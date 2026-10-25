@@ -319,3 +319,23 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 3. **Dispersjon vs. «burstiness» (klumping) og sjangereffekter (Skjønnlitteratur vs. Faglitteratur):**
    - Preteritum har høyere lokal tetthet («burstiness») i narrative bøker, mens infinitiv og presens har høyere dokumentdispersjon på tvers av sjangre (f.eks. har *si* flest tokens i `pret` *sa* totalt pga. skjønnlitteratur (70 %), men høyere dokumentfrekvens i `inf` *si* (93 % av bøkene mot 84 % for *sa*) fordi *å si / det vil si* brukes i både sakprosa og skjønnlitteratur).
    - For verb med `inf` på topp (som *spise* og *lese*) holder `inf` 1.-plassen i både skjønnlitteratur og faglitteratur, men **2.- og 3.-plassen bytter plass etter sjanger**: skjønnlitteratur gir `inf > pret > pres` (*spise 49 % > spiste 33 % > spiser 18 %*), mens faglitteratur gir `inf > pres > pret` (*spise 53 % > spiser 33 % > spiste 14 %*).
+
+---
+
+## 2026-10-25 (del 12) — Kryss-POS-filtrering av gullstandard (Sett A / Sett B) og dekomponering av *«dø / dør»* i `rapport_verbtyper.md`
+
+**Agent:** Antigravity (Gemini 4 Argon) — etter handoff/fagfellevurdering fra Gemini-chat
+
+### Hva ble gjort
+- Gjennomførte full kryss-POS-revisjon av både makroutvalget ($N=606$) og kjerneverbtabellen i `rapport_verbtyper.md` (seksjon 2, 3, 4 og 7.2):
+  1. **Sett A — Streng gullstandard (100 % globalt POS-isolerte i hele Norsk Ordbank):**
+     - Verifiserte at de opprinnelige $N=606$ verbene allerede krevde `ordform_flertydighet.antall_lemma_id = 1` på tvers av *alle* ordklasser for `(inf, pres, pret)`.
+     - Utvidet kravet til også å gjelde 4. form (`perf-part`, `boy_nummer = 5`), slik at også leksikaliserte partisipp-adjektiver (*forlatt, opptatt, forbudt, betjent*) ekskluderes. Dette gir **$N = 580$ verb** (og **$N = 533$ verb** når alle 4 kjerneformer i tillegg kreves belagt $>0$ i `nb_totals`, som fjerner arkaiske riksmålsformer som *tilstede*).
+     - Fordelingen på de 6 undertypene (`1A–3B`) i det 100 % POS-isolerte Sett A ($N=580$) er praktisk talt identisk med $N=606$ (maks $0{,}4$ prosentpoeng forskjell: `1A` 29,8 %, `1B` 21,2 %, `2A` 17,9 %, `2B` 7,2 %, `3A` 14,8 %, `3B` 9,0 %).
+  2. **To-trinns vask i seksjon 4 (Sett A vs. Sett B):**
+     - Luket ut alle støy-kandidater med reell kryss-POS-homografi fra gullstandard-tabellen (*dø, stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape*) og erstattet dem med 100 % globalt kollisjonsfrie **Sett A**-verb (*vurdere, forstå, oppnå, utføre, foreta, bidra, diskutere, forklare, undersøke, innføre, ta, overta, vedta, forlate, gjenta, skjule, forsøke, forsvinne, ankomme, rope, smile, omkomme, bety, fungere, oppleve, innebære, anbefale, trenge, bestå, foregå, foreligge*), hvorav bl.a. *vurdere, undersøke, overta, forsvinne, ankomme, rope, trenge, bestå* har **100,0 % full-rang-stabilitet (71 av 71 år)** i 1950–2020.
+     - Flagget de resterende praktisk rene høyfrekvente kjerneverbene eksplisitt som **Sett B** med angivelse av hvilken ordform som har en teknisk ordbokskollisjon.
+  3. **Glansnummer i seksjon 7.2 — Dekomponering av `dø` (verb) vs. `dør` (substantiv):**
+     - Brukte de entydige substantiv-ankerformene (`døren + døra` = $1{,}65\text{M}$ i bøker / $7{,}02\text{M}$ i `nb_totals`, `dører`, `dørene`) og `estimate_wordform_shares("dør")` i `sqlite/decomposer.py` til å dekomponere strengen `«dør»` i **71,4 % substantiv (`en/ei dør`)** og **28,6 % verb (`han/hun dør`)**.
+     - **Hovedfunn:** Når substantivet *en/ei dør* trekkes fra, faller presensandelen til verbet *dø* i bokkorpuset (1950–2020) fra **20,6 %** ned til **6,9 %** ($\approx 192\,900$ mot $492\,694$ for infinitiv *dø*), slik at **`dø` bytter verbtype fra 2B (`pret > pres > inf`) til 2A (`pret > inf > pres`: `75,4 % > 17,7 % > 6,9 %`)**!
+- Fikset også skrivefeilen `"target_ labels"` $\rightarrow$ `"target_labels"` i `sqlite/decomposer.py` (påpekt i del 10).
