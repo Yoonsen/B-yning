@@ -361,3 +361,34 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Kartlegge verktøy på Linux-maskinen (Docker, Ruby, `vislcg3`, gcc/cmake) og velge Docker-bildet eller lokal installasjon av OBT.
 - Lage et lite Python-skript som kjører en tekstfil gjennom OBT og leser resultatet inn i en tabell (ordform, lemma, ordklasse, morfologiske trekk), og teste det på testteksten.
+
+---
+
+## 2026-11-14 (del 14) — OBT installert på Linux-maskin og Python-modul `sqlite/obt_tagger.py`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- **OBT installert uten root på Linux-maskinen** (brukeren har ikke Docker-tilgang og ikke `sudo`):
+  - VISL CG-3 1.4.6 (GPLv3+) hentet som Ubuntu-pakker uten installasjon: `apt download cg3 libcg3-1` + `dpkg -x` til `~/opt/cg3/root`; `PATH` og `LD_LIBRARY_PATH` satt i `~/.bashrc`.
+  - OBT klonet til `~/opt/obt` (https://github.com/noklesta/The-Oslo-Bergen-Tagger), med `mtag` (https://github.com/textlab/mtag) og `OBT-Stat` (https://github.com/textlab/OBT-Stat) klonet *inn i* OBT-mappen (skriptene finner dem via `$(dirname $0)/mtag` og `$(dirname $0)/OBT-Stat`).
+  - Systemets Python 3.12, Ruby 3.2 og Perl brukes direkte av skriptene (ikke `paradigmevenv`).
+  - Testet `./tag-nostat-bm.sh` (mtag + CG) og `./tag-bm.sh` (mtag + CG + OBT-Stat) på `tekster/test-tekst-bokselskap.txt` – begge virker.
+- **Ny modul `sqlite/obt_tagger.py`** (kun standardbiblioteket):
+  - `run_obt(fil, obt_dir, stat)` kjører OBT-skriptet (finner installasjonen via `$OBT_DIR`, ellers `~/opt/obt`).
+  - `parse_obt_output(tekst)` leser OBT-formatet (`<word>…</word>`, `"<form>"`, innrykkede analyser `"lemma" pos trekk…`) til tokens med liste av analyser (lemma, ordklasse, morfologiske trekk, ekstra OBT-markører som `<*>`, `<+ledd>`, `samset-analyse`).
+  - `to_rows`, `summarize`, `write_tsv` og kommandolinje: `python -m sqlite.obt_tagger FIL --out ut.tsv` (`--nostat`, `--parse-only` for å lese en eksisterende OBT-fil).
+  - Parseren er testet på utdrag av OBT-utdata (med og uten OBT-Stat); hele kjøringen via `run_obt` er ennå ikke testet på Linux-maskinen.
+
+### Tekniske observasjoner
+- OBT-formatet: én blokk per token – originalordet i `<word>`, ordformen med små bokstaver i `"<…>"`, og én innrykket linje per gjenværende analyse.
+- **Uten OBT-Stat** står det igjen flertydighet etter CG, f.eks. *betydning* (fem/mask – reell valgfrihet i bokmål) og *for* (konj/prep). **Med OBT-Stat** står det én analyse igjen for begge (*betydning* → fem, *for* → prep).
+- `mtag` gir `SyntaxWarning: invalid escape sequence` under Python 3.12 (gamle strengliteraler). Ufarlig: strengene har samme verdi, og advarslene går til stderr.
+- OBT-Stat skriver `model loaded` / `tagger compiled` til stderr.
+- Ordklasse- og trekknavn følger OBT/Norsk Ordbank-notasjon (`subst appell mask be ent`, `adj ub m/f ent pos`), som ligner, men ikke er identisk med, `boy_tekst` i `ordbank.db`.
+
+### Neste steg
+- Kjøre `python -m sqlite.obt_tagger tekster/test-tekst-bokselskap.txt --out …` på Linux-maskinen for å teste hele kjeden fra Python.
+- Lage en testtekst med de aktuelle flertydighetene (*fisker*, *møter*, *dør*, *hoppet/hoppa* …) og sjekke hvordan OBT skiller dem.
+- Koble OBT-analysene til `lemma_id`/`boy_nummer` i `ordbank.db` (mapping fra OBT-trekk til bøyningskategorier).
+- Bestemme hvor taggede filer skal ligge, og om de skal i Git.
