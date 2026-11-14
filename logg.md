@@ -413,3 +413,31 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - Som i del 14: testtekst med de aktuelle flertydighetene, og kobling av OBT-analyser til `lemma_id`/`boy_nummer` i `ordbank.db`.
+
+---
+
+## 2026-11-14 (del 16) — Forslag til analysekode for OBT-tagget korpus: `sqlite/korpus_profiler.py`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny modul `sqlite/korpus_profiler.py` for paradigmeanalyse av et OBT-tagget korpus (f.eks. rettighetsbelagte bøker fra samlingen). **Lagrer kun telletall, aldri tekst**, i en egen database `sqlite/korpus.db` (ignoreres av Git via `*.db`).
+  1. **Telling:** `add_obt_files` (rå OBT-utdata) eller `tag_and_add` (tagger tekstfiler direkte via `obt_tagger.run_obt` uten å skrive OBT-utdata til disk). Tabell `obt_typer(doc_id, form, lemma, pos, trekk, partisipp, n)`. Tokens med flere gjenværende analyser deles likt (1/k). Tegnsetting, `clb` og `symb` telles ikke.
+  2. **Kobling til Ordbanken** (`map_types`): hver analysetype kobles til `(lemma_id, boy_nummer)` ved å sammenligne OBT-trekkene med `fullformsliste.tag` for samme ordform og grunnform. `fullformsliste.tag` bruker samme notasjon som OBT (f.eks. `subst mask appell ent ub`), så trekkene sammenlignes som mengder (rekkefølge og `<…>`-markører ignoreres, unntatt `<perf-part>`/`<pres-part>`). Status: `eksakt`, `flertydig` (passer like godt på flere celler/lemmaer → vekt deles), `delvis` (beste overlapp i trekk), `ingen` (ikke i Ordbanken: egennavn, sammensetninger, ukjente ord). Tabell `type_kobling`, view `v_celle_frekvens`.
+  3. **Profiler:** `paradigm_profile(grunnform=…, pos=…, per_doc=…, slots=…)` gir frekvens og andel for alle cellene i paradigmet (også de med 0), for hele korpuset eller per dokument.
+  4. **Flertydige former:** `form_split(form)` gir den OBT-baserte fordelingen av en form på lemma/celle. `compare_with_decomposer(form)` kjører `decomposer.estimate_wordform_shares` på de *samme* korpustallene (en midlertidig `nb_totals`-view i en egen tilkobling skygger for Ordbankens tabell, så `decomposer.py` er uendret) og stiller estimatet ved siden av OBT-fordelingen.
+  - Kommandolinje: `python -m sqlite.korpus_profiler [--db …] legg-til | tagg | koble | profil | form | sammenlign | ukoblet`.
+- Testet på et lite konstruert OBT-utdrag (to «dokumenter» med *fisker* som subst. *fisker*, subst. *fisk* og verb *fiske*, *hoppet/hoppa*, *år* ent/fl, egennavn, tegnsetting). Ikke testet på ekte tagget tekst.
+
+### Tekniske observasjoner
+- OBT skiller synkretiske celler som Ordbanken ikke kan skille på form, f.eks. *år* `ent ub` vs. `fl ub` → riktige profiler for slike ord.
+- Variantformer i samme celle (*hoppet/hoppa* i `pret`) slås sammen i profilen. Fordelingen mellom variantene finnes per form i `obt_typer`.
+- Verbparadigmene i Ordbanken inneholder også partisipp-adjektivcellene (`boy_nummer` 6–10). Bruk `slots=` for å avgrense, f.eks. `(1, 2, 4)` for inf/pres/pret.
+- Usikkert: nøyaktig OBT-notasjon for s-passiv (testdataene brukte `verb inf pass`; Ordbanken har `inf pres pass`) – ga status `delvis`, men riktig celle. Må sjekkes mot ekte OBT-utdata.
+- `compare_with_decomposer` krever `numpy` (importeres av `decomposer.py`), som må installeres i `paradigmevenv` på Linux-maskinen. Resten bruker bare standardbiblioteket.
+- **Rettigheter:** rå OBT-utdata inneholder hele teksten og må ikke legges i repoet. `tag_and_add` unngår å skrive dem til disk. Hvor OBT-utdata eventuelt lagres, og om noe annet enn `*.db` bør legges i `.gitignore`, er ikke avklart.
+
+### Neste steg
+- Teste på ekte OBT-utdata (testteksten og en testtekst med *fisker/møter/dør/hoppet*) og se på `ukoblet` for å forbedre koblingen.
+- Avklare lagring av rettighetsbelagte tekster og OBT-utdata (utenfor repoet).
+- Kontrollere OBT for hånd på et utvalg flertydige former før OBT-fordelingen brukes som fasit mot `decomposer.py`.
