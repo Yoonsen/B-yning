@@ -22,6 +22,9 @@ __pycache__/
 venv/
 env/
 paradigmevenv/
+# Loggfiler, bl.a. mtag.py.log som OBT-multitaggeren skriver i arbeidsmappen
+# (kan inneholde ord fra taggede, ev. rettighetsbelagte tekster)
+*.log
 .ipynb_checkpoints/
 .pytest_cache/
 .ruff_cache/

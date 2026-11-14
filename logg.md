@@ -441,3 +441,18 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Teste på ekte OBT-utdata (testteksten og en testtekst med *fisker/møter/dør/hoppet*) og se på `ukoblet` for å forbedre koblingen.
 - Avklare lagring av rettighetsbelagte tekster og OBT-utdata (utenfor repoet).
 - Kontrollere OBT for hånd på et utvalg flertydige former før OBT-fordelingen brukes som fasit mot `decomposer.py`.
+
+---
+
+## 2026-11-14 (del 17) — `*.log` i `.gitignore` (mtag.py.log)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- La til `*.log` i `.gitignore`.
+
+### Tekniske observasjoner
+- OBT-multitaggeren (`mtag.py`) skriver en loggfil `mtag.py.log` i *arbeidsmappen* ved hver kjøring, så den dukker opp i repo-roten når OBT kjøres derfra (f.eks. via `sqlite/obt_tagger.py`). Fila kan inneholde ord fra den taggede teksten og skal ikke deles, særlig ikke ved tagging av rettighetsbelagte bøker. Den lages på nytt ved hver kjøring og kan slettes.
+
+### Neste steg
+- Uendret fra del 16.
