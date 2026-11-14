@@ -339,3 +339,25 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
      - Brukte de entydige substantiv-ankerformene (`døren + døra` = $1{,}65\text{M}$ i bøker / $7{,}02\text{M}$ i `nb_totals`, `dører`, `dørene`) og `estimate_wordform_shares("dør")` i `sqlite/decomposer.py` til å dekomponere strengen `«dør»` i **71,4 % substantiv (`en/ei dør`)** og **28,6 % verb (`han/hun dør`)**.
      - **Hovedfunn:** Når substantivet *en/ei dør* trekkes fra, faller presensandelen til verbet *dø* i bokkorpuset (1950–2020) fra **20,6 %** ned til **6,9 %** ($\approx 192\,900$ mot $492\,694$ for infinitiv *dø*), slik at **`dø` bytter verbtype fra 2B (`pret > pres > inf`) til 2A (`pret > inf > pres`: `75,4 % > 17,7 % > 6,9 %`)**!
 - Fikset også skrivefeilen `"target_ labels"` $\rightarrow$ `"target_labels"` i `sqlite/decomposer.py` (påpekt i del 10).
+
+---
+
+## 2026-11-14 (del 13) — Oppstart av OBT-tagging: ny gren, testtekst og miljø på Linux-maskin
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Opprettet feature-branch `multitagger-oppsett` fra `main` for arbeidet med å tagge tekst med Oslo-Bergen-taggeren (OBT).
+- Lagt til testtekst `tekster/test-tekst-bokselskap.txt` (åpent publisert NB-tekst om Sigrid Undset fra bokselskap.no, ca. 5 000 tegn, UTF-8). Brukes kun til å sjekke at taggeroppsettet virker.
+- Lagt til `paradigmevenv/` i `.gitignore` (prosjektets Python-miljø på Linux-maskinen ligger i repo-roten).
+
+### Tekniske observasjoner
+- **OBT består av tre trinn:** (1) multitaggeren `mtag` (tokenisering + oppslag i Norsk Ordbank, gir *alle* mulige analyser), (2) Constraint Grammar-disambiguering (VISL CG-3 + regelfiler i OBT-repoet), (3) statistisk disambiguering OBT-Stat (kun bokmål). For å skille f.eks. *en fisker* / *flere fisker* / *han fisker* trengs hele kjeden, ikke bare `mtag`.
+- **Kilder:** https://github.com/noklesta/The-Oslo-Bergen-Tagger (hovedrepo, kjørbare skript `tag-bm.sh`, `tag-nostat-bm.sh`), https://github.com/textlab/mtag, https://github.com/textlab/OBT-Stat. Docker-bilde `textlab/obt:1.0` anbefales i README.
+- **Avhengigheter:** shell-skript, VISL CG-3, Ruby (OBT-Stat), Python (`mtag`, testet med Python ≤ 3.6; README advarer om mulige problemer med spesialtegn i ≥ 3.7). Kjøres derfor på Linux; Windows-maskinen mangler WSL/Docker/Ruby og administratorrettigheter.
+- **Lisenser:** OBT/OBT-Stat: GPL v3 eller senere (modelldata kun til bruk med OBT+Stat). `mtag`: MIT; Norsk Ordbank-data: CC BY. VISL CG-3 og hunpos: ikke sjekket ennå.
+- Linux-maskinen har Python 3.12.3 og Git LFS 3.7.0; repoet er klonet der og `sqlite/ordbank.db` er hentet via LFS.
+
+### Neste steg
+- Kartlegge verktøy på Linux-maskinen (Docker, Ruby, `vislcg3`, gcc/cmake) og velge Docker-bildet eller lokal installasjon av OBT.
+- Lage et lite Python-skript som kjører en tekstfil gjennom OBT og leser resultatet inn i en tabell (ordform, lemma, ordklasse, morfologiske trekk), og teste det på testteksten.
