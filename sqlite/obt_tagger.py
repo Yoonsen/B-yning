@@ -40,6 +40,11 @@ _FORM_RE = re.compile(r'^"<(.*)>"$')
 _READING_RE = re.compile(r'^\s+"(.*)"(?:\s+(.*))?$')
 
 
+def _is_marker(tag: str) -> bool:
+    """OBT-markører som ikke er ordklasse eller bøyningstrekk."""
+    return tag.startswith("<") or tag.startswith("samset") or tag.startswith("flerord")
+
+
 def run_obt(
     text_path: str | Path,
     obt_dir: str | Path = DEFAULT_OBT_DIR,
@@ -85,7 +90,9 @@ def parse_obt_output(obt_text: str) -> list[dict[str, Any]]:
                        "ekstra": []} , ... ]
       }
     `trekk` er morfologiske trekk; `ekstra` er OBT-markører i vinkelparentes (f.eks. <*> for stor
-    forbokstav, <+debattanten> for sammensetningsledd) og analysemerknader som samset-analyse.
+    forbokstav, <+debattanten> for sammensetningsledd, <komma>) og merknader som samset-analyse og
+    flerord-ledd1. Tegnsetting (lemma som starter med $, f.eks. "$,") får pos = "tegn".
+    Ord som ikke finnes i Norsk Ordbank (f.eks. gammel rettskrivning som «aar») får pos = "ukjent".
     Linjer som ikke passer formatet hoppes over.
     """
     tokens: list[dict[str, Any]] = []
@@ -114,13 +121,16 @@ def parse_obt_output(obt_text: str) -> list[dict[str, Any]]:
         if m and current is not None:
             lemma = m.group(1)
             tags = (m.group(2) or "").split()
-            pos = tags[0] if tags else ""
-            trekk, ekstra = [], []
-            for t in tags[1:]:
-                if t.startswith("<") or t.startswith("samset"):
-                    ekstra.append(t)
-                else:
-                    trekk.append(t)
+            # Markører (<*>, <komma>, <+ledd>, samset-..., flerord-...) skilles fra ordklasse og trekk.
+            plain = [t for t in tags if not _is_marker(t)]
+            ekstra = [t for t in tags if _is_marker(t)]
+            if plain:
+                pos, trekk = plain[0], plain[1:]
+            elif lemma.startswith("$"):
+                # Tegnsetting har ingen ordklasse i OBT, kun en markør: "$," <komma>
+                pos, trekk = "tegn", []
+            else:
+                pos, trekk = "", []
             current["analyser"].append(
                 {"lemma": lemma, "pos": pos, "trekk": trekk, "ekstra": ekstra}
             )

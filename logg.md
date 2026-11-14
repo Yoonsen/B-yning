@@ -392,3 +392,24 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Lage en testtekst med de aktuelle flertydighetene (*fisker*, *møter*, *dør*, *hoppet/hoppa* …) og sjekke hvordan OBT skiller dem.
 - Koble OBT-analysene til `lemma_id`/`boy_nummer` i `ordbank.db` (mapping fra OBT-trekk til bøyningskategorier).
 - Bestemme hvor taggede filer skal ligge, og om de skal i Git.
+
+---
+
+## 2026-11-14 (del 15) — Hele OBT-kjeden testet fra Python; rettelse av taggsortering i `sqlite/obt_tagger.py`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Kjørte `python -m sqlite.obt_tagger tekster/test-tekst-bokselskap.txt --out /tmp/test.tsv` på Linux-maskinen: 872 tokens, 0 flertydige etter OBT-Stat, 0 uten analyse. Hele kjeden virker fra Python.
+- Rettet hvordan `parse_obt_output` sorterer taggene:
+  - Ordklasse er nå første tagg som *ikke* er en markør. Tidligere ble første tagg brukt uansett, så tegnsetting fikk f.eks. `<komma>` som ordklasse.
+  - Tegnsetting (OBT-lemma som starter med `$`, f.eks. `"$," <komma>`) får `pos = "tegn"`, med markøren i `ekstra`.
+  - `flerord-ledd1/2/3` (flerordsuttrykk som *litteratur- og samfunnshistorie*) flyttes fra `trekk` til `ekstra`, sammen med `samset-…` og `<…>`-markører.
+- Testet rettelsen mot faktiske OBT-linjer (komma, parentes, flerord, `ukjent`, egennavn).
+
+### Tekniske observasjoner
+- OBT skriver tegnsetting uten ordklasse: `"$," <komma>`, `"$(" <parentes-beg>`. Setningsgrenser står som `clb`.
+- Ord som ikke finnes i Norsk Ordbank får ordklassen `ukjent`, f.eks. eldre rettskrivning *aar* (= *år*) i testteksten. Det er relevant for eldre tekster: de vil få flere `ukjent`.
+
+### Neste steg
+- Som i del 14: testtekst med de aktuelle flertydighetene, og kobling av OBT-analyser til `lemma_id`/`boy_nummer` i `ordbank.db`.
