@@ -13,7 +13,7 @@ Arbeidsdokument for presentasjonen. Status per punkt: ✅ finnes i repoet, 🟡 
 | 5 | Gullstandard | Sett A (N = 580 globalt POS-isolerte verb) / Sett B | rapport §2 | 🟡 ikke reproduserbar fra kode (se hull 3) |
 | 6 | Seks verbtyper | Fordeling 1A–3B, «infinitiv på 2. plass»-asymmetrien | rapport §3 | 🟡 trenger ternærplott |
 | 7 | Stabilitet | Full rangering uendret 71/71 år for *vurdere, undersøke, overta, forsvinne, ankomme, rope, trenge, bestå* | rapport §4 | 🟡 trenger tidsseriefigur |
-| 8 | Substantiv | Profiltyper ent ub / ent be / fl ub, med stabilitet | — | ❌ (se hull 1) |
+| 8 | Substantiv | Fire hovedtyper, «tall før bestemthet», stabilitet | `rapport_substantivtyper.md`, `sqlite/substantivtyper.py` | ✅ (diagram i decket) |
 | 9 | Enkeltbøker | Bøker realiserer sjelden hele paradigmet; den globale profilen styrer hvilken form som blir med | `sqlite/book_dispersion.py`, logg del 11 | ✅ (trenger figur) |
 | 10 | Dekomponering: *dør* | 71 % subst. / 29 % verb; *dø* flytter fra 2B til 2A | rapport §7.2 | 🟡 se hull 4–5 |
 | 11 | Dekomponering over tid: *fisker* | Leksemandeler per år | `sqlite/decompose_fisker.py` | 🟡 trenger figur |
@@ -23,7 +23,7 @@ Arbeidsdokument for presentasjonen. Status per punkt: ✅ finnes i repoet, 🟡 
 
 ## Hull som må tettes (prioritert)
 
-1. **Substantivresultatene mangler.** Abstractet lover substantivprofiler (*eple*, *buss*), men det finnes ingen rapport tilsvarende `rapport_verbtyper.md` for substantiv: typefordeling, gullstandard og stabilitet 1950–2020. Dette er den største faglige mangelen.
+1. ~~**Substantivresultatene mangler.**~~ Løst 2026-11-17: `rapport_substantivtyper.md` (N = 5 799). **Nytt:** abstractets eksempler stemmer ikke med dataene for *eple* (epler 45 % > eple 30 %) og *vite* (vet > visste > vite). Abstract/foredrag må samkjøres.
 2. **Ingen ferdige figurer.** Foredraget trenger minst: (a) ternærplott inf/pres/pret for Sett A, (b) tidsserier for 4–6 stabile verb, (c) søyler før/etter dekomponering for *dø*, (d) leksemandeler for *fisker* over tid, (e) paradigmedekning i enkeltbøker.
 3. **Sett A-tallene kan ikke reproduseres fra kode.** N = 606 / 580 / 533 og fordelingen 1A–3B ble regnet ad hoc; det finnes ikke noe skript i `sqlite/` som lager dem. Bør legges i et skript (f.eks. `sqlite/verbtyper.py`) før tallene står på et lysbilde.
 4. **Dekomponereren er ikke validert.** For *dør* summerer de ukappede estimatene til 4,7 M mot 3,4 M observert (ca. 40 % for mye) før normalisering. Forslag: velg entydige lemmaer, lat som en form er flertydig, og mål feilen i estimatet. Det gir lysbilde 12.

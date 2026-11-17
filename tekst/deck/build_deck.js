@@ -162,11 +162,11 @@ chipRow(s, ["gikk 38 %", "går 34 %", "gå 28 %"], MX, 2.05);
 chipRow(s, ["vet 55 %", "visste 26 %", "vite 19 %"], MX, 2.75);
 body(s, [{ text: "Bokkorpuset 1950–2020. «går» inkluderer «i går».", options: {} }], MX, 3.4, 6, 0.4, 12);
 s.addText("Substantiv: ent ub / ent be / fl ub", { x: MX, y: 3.95, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-chipRow(s, ["eple", "eplet", "epler"], MX, 4.5);
-chipRow(s, ["bussen", "buss", "busser"], MX, 5.2);
-missing(s, "Andeler for substantivene", 7.2, 4.5, 5.5, 1.25);
+chipRow(s, ["epler 45 %", "eple 30 %", "eplet 11 %"], MX, 4.5);
+chipRow(s, ["bussen 42 %", "buss 37 %", "busser 15 %"], MX, 5.2);
+body(s, [{ text: "Andeler av alle fire former; bestemt flertall er ikke vist.", options: {} }], MX, 5.85, 6, 0.4, 12);
 body(s, [{ text: "Spørsmål: Hvor mye av fordelingen skyldes leksemet selv — og er den stabil over tid?", options: { bold: true, color: C.text1 } }], 7.2, 2.05, 5.5, 1.3, 20);
-s.addNotes("Verbtall fra rapport_verbtyper.md §4 (Sett B). OBS: abstractet sier at infinitiv «vite» dominerer, men dataene viser vet 55 % > visste 26 % > vite 19 %. Abstract og lysbilde må samkjøres. Substantivtallene finnes ikke ennå.");
+s.addNotes("Verbtall fra rapport_verbtyper.md §4 (Sett B), substantivtall fra rapport_substantivtyper.md §5. OBS: abstractet sier at infinitiv «vite» dominerer (dataene: vet 55 % > visste 26 % > vite 19 %) og at «eple» dominerer (dataene: epler 45 % > eple 30 %; epla/eplene 14 % > eplet 11 %). Abstract og lysbilde må samkjøres. Alle formene til «buss» kolliderer med subst./verb «busse» i Ordbanken.");
 
 // 3 Data
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Innledning" });
@@ -240,13 +240,23 @@ s.addNotes("Alle åtte er Sett A-verb (rapport_verbtyper.md §4). Figur: andel p
 // 8 Substantiv
 pres.addSection({ title: "Substantiv" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Substantiv" });
-s.addText("Substantiv: bestemthet og tall", { placeholder: "title" });
-status(s, "MANGLER");
-chipRow(s, ["eple", "eplet", "epler"], MX, 1.7);
-chipRow(s, ["bussen", "buss", "busser"], MX, 2.5);
-chipRow(s, ["politiet", "politi", "…"], MX, 3.3);
-missing(s, "Typefordeling (ent ub / ent be / fl ub på topp), gullstandard og stabilitet 1950–2020 — tilsvarende verbanalysen", 6.6, 1.7, 6.1, 4.6);
-s.addNotes("Største faglige hull (hull 1 i planen). «politiet» er hentet fra enkeltbokanalysen (80 % ved bare én form); ikke en global profil ennå.");
+s.addText("Substantiv velger tall før bestemthet", { placeholder: "title" });
+s.addChart(pres.charts.BAR, [{ name: "Andel", labels: ["ent ub", "ent be", "fl ub", "fl be"], values: [67.1, 16.5, 14.5, 1.9] }],
+  chartOpts({ x: MX, y: 1.5, w: 5.4, h: 4.6, chartColors: [HEX.accent2], showLegend: false, showTitle: true, title: "Formen på 1. plass, Sett A (N = 5 799)", valAxisMaxVal: 80, valAxisHidden: true, valGridLine: { style: "none" } }));
+const ntypes = [
+  ["ent ub", "tid, utvikling, kvalitet, kirke"],
+  ["ent be", "regjeringen, sommeren, hodet, senga"],
+  ["fl ub", "medlemmer, millioner, personer, uker"],
+  ["fl be", "amerikanerne, britene, bøndene"],
+];
+ntypes.forEach(([t, ex], i) => {
+  const y = 1.6 + i * 0.68;
+  chip(s, t, 6.5, y, { w: 1.3, h: 0.5, fontSize: 14, italic: false, bold: true, fill: C.accent2, color: C.background1 });
+  s.addText(ex, { x: 8.0, y, w: 4.7, h: 0.5, fontSize: 15, italic: true, color: C.text2, valign: "middle", margin: 0, isTextBox: true });
+});
+stat(s, "91 %", "av substantivene med ent be på topp har ent ub på 2. plass (fl be → fl ub: 82 %)", 6.5, 4.4, 3.0);
+stat(s, "53 %", "har samme form på topp i alle 71 år (1950–2020)", 9.8, 4.4, 2.9, C.accent2);
+s.addNotes("Fra rapport_substantivtyper.md (python3 -m sqlite.substantivtyper). Gullstandard: alle fire former entydige i Ordbanken, internt distinkte, ≥ 100 000 treff, alle former belagt i bokkorpuset. Unntak fra «tall først»: fl ub på topp har ent ub på 2. plass i 71,5 % (en person / tre personer). Full rangering av alle fire former er stabil i 71 av 71 år for 7,9 % (343 lemmaer), median 78,9 % av årene.");
 
 // 9 Enkeltbøker
 pres.addSection({ title: "Enkeltbøker" });

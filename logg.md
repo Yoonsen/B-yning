@@ -386,3 +386,26 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Åpne decket i PowerPoint og sjekke diagrammene.
 - Fylle «MANGLER»-feltene i prioritert rekkefølge (se `tekst/mons_presentasjon_plan.md`). Endringer gjøres i `build_deck.js`, ikke direkte i .pptx, så lenge decket genereres.
+
+---
+
+## 2026-11-17 (del 15) — Substantivprofiler: gullstandard, typer og stabilitet (`rapport_substantivtyper.md`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Nytt skript `sqlite/substantivtyper.py` (`python3 -m sqlite.substantivtyper`, `--offline` for bare `nb_totals`). Det bygger gullstandarden, henter n-gram for bokkorpuset 1950–2020 (ca. 26 000 ordformer; lokal cache i `ngram_cache.db`, som ikke er i git — første kjøring på en ny maskin tar noen minutter), og regner hovedtyper, full rangering og årlig rang-stabilitet. Per-lemma-resultater: `resultater/substantivtyper.tsv`.
+- Gullstandard (Sett A, substantiv): alle fire kjerneformer entydige i hele Ordbanken, internt distinkte kategorier, ≥ 100 000 treff i `nb_totals`, alle fire belagt i bokkorpuset → **N = 5 799**. Bokstavnavn, forkortelser og 25 håndplukkede falske venner (*nogen, vor, jan, used, forst* …) er filtrert bort (`FALSKE_VENNER`).
+- Skrev `rapport_substantivtyper.md`. Oppdaterte lysbilde 2 og 8 i `tekst/mons_presentasjon.pptx` (via `tekst/deck/build_deck.js`) og planen.
+
+### Viktige funn
+- Hovedtyper: `ent_ub` 67,1 %, `ent_be` 16,5 %, `fl_ub` 14,5 %, `fl_be` 1,9 %. Alle 24 rekkefølger er belagt; tre dekker 74 %.
+- **Tall før bestemthet:** 2. plass er nesten alltid samme tall (`ent_be` på topp → `ent_ub` 91 %; `ent_ub` → `ent_be` 72 %; `fl_be` → `fl_ub` 82 %). Unntak: `fl_ub` på topp → `ent_ub` 71,5 % (*en person / tre personer*).
+- Stabilitet (N = 4 355 med nok data): samme topp i alle 71 år for 53,1 %; hele firerangeringen uendret i 71/71 år for 7,9 % (*tid, utvikling, sommer, seng, medlem, utgift*), median 78,9 %.
+- **Abstractet stemmer ikke for *eple*:** epler 45 % > eple 30 % > eplet 11 % i bokkorpuset; `nb_totals` samme vei. *buss* stemmer (bussen på topp), men alle formene er formelt flertydige.
+- `nb_totals` mangler sjeldne ordformer; krav om alle former der halverer utvalget. Kravet ble derfor lagt på bokkorpuset.
+
+### Neste steg
+- Samkjøre abstract og foredrag for *eple* og *vite*.
+- Teste semantiske forklaringer (genus, tellbarhet, animathet) og skille simplex fra sammensetninger (`leddanalyse`).
+- Figurer: tidsserier for noen stabile substantiv, ev. sammen med verbene på lysbilde 7.
