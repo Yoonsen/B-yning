@@ -9,7 +9,7 @@ OBT er en kjede av tre trinn:
 
 OBT må være installert separat (Linux). Modulen finner installasjonen via miljøvariabelen
 OBT_DIR, ellers ~/opt/obt. Mappen skal inneholde tag-bm.sh, tag-nostat-bm.sh, cg/, mtag/ og
-OBT-Stat/, og `vislcg3`, `python3`, `ruby` og `perl` må ligge på PATH. Se logg.md (del 13–14).
+OBT-Stat/, og `vislcg3`, `python3`, `ruby` og `perl` må ligge på PATH. Se logg.md (del 15–16).
 
 Selve parsingen (`parse_obt_output`) bruker bare standardbiblioteket og kan kjøres hvor som helst,
 f.eks. på en OBT-fil som er kopiert fra Linux-maskinen.

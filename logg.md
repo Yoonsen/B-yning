@@ -340,9 +340,56 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
      - **Hovedfunn:** Når substantivet *en/ei dør* trekkes fra, faller presensandelen til verbet *dø* i bokkorpuset (1950–2020) fra **20,6 %** ned til **6,9 %** ($\approx 192\,900$ mot $492\,694$ for infinitiv *dø*), slik at **`dø` bytter verbtype fra 2B (`pret > pres > inf`) til 2A (`pret > inf > pres`: `75,4 % > 17,7 % > 6,9 %`)**!
 - Fikset også skrivefeilen `"target_ labels"` $\rightarrow$ `"target_labels"` i `sqlite/decomposer.py` (påpekt i del 10).
 
+### Neste steg (lagt til i del 13, manglet i del 12)
+- Se del 13.
+
 ---
 
-## 2026-11-14 (del 13) — Oppstart av OBT-tagging: ny gren, testtekst og miljø på Linux-maskin
+## 2026-11-17 (del 13) — Statussjekk, forbehold om «døde» og plan for MONS-presentasjonen
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Sjekket arbeidstreet på `rapport-verbtyper`: alt fra del 12 var allerede committet og pushet (ingen uferdige endringer). Det som manglet var «Neste steg» i loggoppføringen for del 12.
+- Kontrollerte tallene for *dø/dør* i `rapport_verbtyper.md` §7.2 mot `estimate_wordform_shares("dør")`: andelene 71,4 % / 28,6 % og `nb_totals`-tallene stemmer.
+- **Fant en feil i resonnementet:** `«døde»` har `antall_lemma_id = 3` (pret. av *dø*, adj. *død* be/fl, verbet *døde*). Preteritumstallet for *dø* inneholder altså adjektivbruk (*de døde*). `estimate_wordform_shares("døde")` gir verbet 100 % fordi `sqlite/decomposer.py` ikke har ankerregler for adjektiv (adj.-kandidaten får 0 selv om `dødt` er entydig, 343 621).
+- Sensitivitetsoverslag med `-e`/`-t`-forholdet fra entydige adjektiv (*blinde/blindt* 4,7; *syke/sykt* ≈ 10; *gamle/gammelt* 14): adjektivet utgjør 13–38 % av *døde*; *dø* får `pret` 69–76 % > `inf` 18–23 % > `pres` 7–9 %. **2A-konklusjonen holder, men prosenttallene i §7.2 punkt 4 er et øvre anslag for `pret`.** Lagt inn som punkt 5 i §7.2.
+- Opprettet `tekst/mons_presentasjon_plan.md`: forslag til lysbilderekke (14 lysbilder) med kilde/status per lysbilde, og prioritert liste over hull.
+
+### Viktige observasjoner
+- Sett A-tallene (N = 606 / 580 / 533, fordeling 1A–3B) finnes ikke som kjørbart skript; de ble regnet ad hoc.
+- Dekomponereren overestimerer før normalisering: for *dør* summerer de ukappede estimatene til 4,7 M mot 3,4 M observert.
+- Referansen Milin, Filipović Đurđević & Baayen (2009), «Paradigms bit by bit», er trolig et bokkapittel i *Analogy in Grammar* (OUP), ikke *Cognitive Linguistics* 20(1). Må verifiseres.
+
+### Neste steg (frem mot MONS, se `tekst/mons_presentasjon_plan.md`)
+1. Substantivprofiler: typefordeling og stabilitet tilsvarende verbrapporten (største faglige hull).
+2. Figurer: ternærplott for Sett A, tidsserier for stabile verb, *dø* før/etter dekomponering, *fisker* over tid, paradigmedekning i enkeltbøker.
+3. Skript som reproduserer Sett A og typefordelingen (`sqlite/verbtyper.py`).
+4. Validering av dekomponereren mot kjent fasit, og adjektivankre (løser *døde*).
+5. Verifisere referansene i §7.1.
+
+---
+
+## 2026-11-17 (del 14) — Skjelett for MONS-presentasjonen (`tekst/mons_presentasjon.pptx`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Bygget et skjelett med 14 lysbilder etter planen i `tekst/mons_presentasjon_plan.md`. Generator: `tekst/deck/build_deck.js` (pptxgenjs 3.12.0, MIT-lisens). Kjøres med `NODE_PATH=<node_modules> node tekst/deck/build_deck.js`.
+- Ferdige data er lagt inn som native PowerPoint-diagrammer: de seks verbtypene (lysbilde 6), enkeltbøker med bare én form (9), og *dø* før/etter dekomponering (10). Tallene kommer fra `rapport_verbtyper.md` og logg del 11.
+- Innhold som mangler er markert med sandfargede «MANGLER»-felt og statusmerke («UTKAST»/«MANGLER») øverst til høyre. Kilder og forbehold står i talenotatene for hvert lysbilde.
+- Filen består `validate.py`. Den er sjekket visuelt via Keynote-eksport, men Keynote viser ikke pptxgenjs-diagrammer, så diagrammene er bare kontrollert på data (python-pptx), ikke visuelt.
+
+### Viktige observasjoner
+- **Abstractet stemmer ikke med dataene for *vite*:** abstractet sier at infinitiv *vite* dominerer, men bokkorpuset gir *vet* 55 % > *visste* 26 % > *vite* 19 %. Lysbilde 2 bruker dataene; abstract og foredrag må samkjøres.
+
+### Neste steg
+- Åpne decket i PowerPoint og sjekke diagrammene.
+- Fylle «MANGLER»-feltene i prioritert rekkefølge (se `tekst/mons_presentasjon_plan.md`). Endringer gjøres i `build_deck.js`, ikke direkte i .pptx, så lenge decket genereres.
+
+---
+
+## 2026-11-14 (del 15) — Oppstart av OBT-tagging: ny gren, testtekst og miljø på Linux-maskin
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -364,7 +411,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-14 (del 14) — OBT installert på Linux-maskin og Python-modul `sqlite/obt_tagger.py`
+## 2026-11-14 (del 16) — OBT installert på Linux-maskin og Python-modul `sqlite/obt_tagger.py`
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -395,7 +442,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-14 (del 15) — Hele OBT-kjeden testet fra Python; rettelse av taggsortering i `sqlite/obt_tagger.py`
+## 2026-11-14 (del 17) — Hele OBT-kjeden testet fra Python; rettelse av taggsortering i `sqlite/obt_tagger.py`
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -412,11 +459,11 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Ord som ikke finnes i Norsk Ordbank får ordklassen `ukjent`, f.eks. eldre rettskrivning *aar* (= *år*) i testteksten. Det er relevant for eldre tekster: de vil få flere `ukjent`.
 
 ### Neste steg
-- Som i del 14: testtekst med de aktuelle flertydighetene, og kobling av OBT-analyser til `lemma_id`/`boy_nummer` i `ordbank.db`.
+- Som i del 16: testtekst med de aktuelle flertydighetene, og kobling av OBT-analyser til `lemma_id`/`boy_nummer` i `ordbank.db`.
 
 ---
 
-## 2026-11-14 (del 16) — Forslag til analysekode for OBT-tagget korpus: `sqlite/korpus_profiler.py`
+## 2026-11-14 (del 18) — Forslag til analysekode for OBT-tagget korpus: `sqlite/korpus_profiler.py`
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -444,7 +491,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-14 (del 17) — `*.log` i `.gitignore` (mtag.py.log)
+## 2026-11-14 (del 19) — `*.log` i `.gitignore` (mtag.py.log)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -455,4 +502,22 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - OBT-multitaggeren (`mtag.py`) skriver en loggfil `mtag.py.log` i *arbeidsmappen* ved hver kjøring, så den dukker opp i repo-roten når OBT kjøres derfra (f.eks. via `sqlite/obt_tagger.py`). Fila kan inneholde ord fra den taggede teksten og skal ikke deles, særlig ikke ved tagging av rettighetsbelagte bøker. Den lages på nytt ved hver kjøring og kan slettes.
 
 ### Neste steg
-- Uendret fra del 16.
+- Uendret fra del 18.
+
+---
+
+## 2026-11-17 (del 20) — `main` flettet inn i `multitagger-oppsett`; OBT-oppføringene omnummerert
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Flettet `main` (PR #4: MONS-plan, presentasjonsskjelett, forbehold om *døde*) inn i `multitagger-oppsett`. Eneste konflikt var `logg.md`, fordi begge grenene hadde lagt til oppføringer på slutten.
+- **Omnummerering:** OBT-oppføringene som ble skrevet på `multitagger-oppsett` 2026-11-14 som del 13–17, heter nå **del 15–19** og står etter del 13–14 fra `main` (2026-11-17). Oppføringene fra `main` er ikke endret, siden de allerede er delt. Datoene er beholdt, så rekkefølgen i loggen er her ikke kronologisk.
+- Oppdaterte henvisninger til delnumre i de omnummererte oppføringene og i `sqlite/obt_tagger.py` (docstring: «del 15–16»).
+- Normaliserte linjeskift i `logg.md` til LF (slik fila er lagret i Git).
+
+### Tekniske observasjoner
+- Når flere jobber på hver sin gren, kolliderer nummereringen i `logg.md` lett. Et alternativ er å bruke dato + kort tittel som nøkkel i stedet for løpenummer, eller å avtale at nummereringen fastsettes ved fletting til `main`.
+
+### Neste steg
+- OBT-arbeidet: se del 18. Grenen kan flettes til `main` via pull request når dere har testet `korpus_profiler.py` på ekte OBT-utdata, eller tidligere hvis dere vil dele oppsettet.
