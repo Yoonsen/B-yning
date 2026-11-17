@@ -367,3 +367,22 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 3. Skript som reproduserer Sett A og typefordelingen (`sqlite/verbtyper.py`).
 4. Validering av dekomponereren mot kjent fasit, og adjektivankre (løser *døde*).
 5. Verifisere referansene i §7.1.
+
+---
+
+## 2026-11-17 (del 14) — Skjelett for MONS-presentasjonen (`tekst/mons_presentasjon.pptx`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Bygget et skjelett med 14 lysbilder etter planen i `tekst/mons_presentasjon_plan.md`. Generator: `tekst/deck/build_deck.js` (pptxgenjs 3.12.0, MIT-lisens). Kjøres med `NODE_PATH=<node_modules> node tekst/deck/build_deck.js`.
+- Ferdige data er lagt inn som native PowerPoint-diagrammer: de seks verbtypene (lysbilde 6), enkeltbøker med bare én form (9), og *dø* før/etter dekomponering (10). Tallene kommer fra `rapport_verbtyper.md` og logg del 11.
+- Innhold som mangler er markert med sandfargede «MANGLER»-felt og statusmerke («UTKAST»/«MANGLER») øverst til høyre. Kilder og forbehold står i talenotatene for hvert lysbilde.
+- Filen består `validate.py`. Den er sjekket visuelt via Keynote-eksport, men Keynote viser ikke pptxgenjs-diagrammer, så diagrammene er bare kontrollert på data (python-pptx), ikke visuelt.
+
+### Viktige observasjoner
+- **Abstractet stemmer ikke med dataene for *vite*:** abstractet sier at infinitiv *vite* dominerer, men bokkorpuset gir *vet* 55 % > *visste* 26 % > *vite* 19 %. Lysbilde 2 bruker dataene; abstract og foredrag må samkjøres.
+
+### Neste steg
+- Åpne decket i PowerPoint og sjekke diagrammene.
+- Fylle «MANGLER»-feltene i prioritert rekkefølge (se `tekst/mons_presentasjon_plan.md`). Endringer gjøres i `build_deck.js`, ikke direkte i .pptx, så lenge decket genereres.
