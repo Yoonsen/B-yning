@@ -521,3 +521,23 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - OBT-arbeidet: se del 18. Grenen kan flettes til `main` via pull request når dere har testet `korpus_profiler.py` på ekte OBT-utdata, eller tidligere hvis dere vil dele oppsettet.
+
+---
+
+## 2026-11-17 (del 21) — Renskrevne notater fra samarbeidsøkt
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Renskrev håndskrevne notater fra samarbeidsøkta 2026-11-17 til `notater/2026-11-17_samarbeidsokt.md` (ny mappe `notater/` for møtenotater). Merknader lagt til ved renskrivingen står i [hakeparentes].
+- Lagt på `multitagger-oppsett` (ikke egen gren) for å unngå enda en kollisjon i nummereringen i `logg.md`.
+
+### Hovedpunkter fra økta
+- **MONS-presentasjonen:** tydeliggjøre datakildene (Norsk Ordbank + NB n-gram), graf over *fisk* tidlig, referanse til Tromsø-miljøet (profiler i taggede korpus) og vårt bidrag om stabilitet over tid, slide med entydige verb, «substantiv velger tall før bestemthet», enkeltbok-poenget som spørsmål til publikum, fylle inn grafene.
+- **Ideer som krever tagging:** forholdet mellom ordfrekvens og antall brukte former; prediksjon av flertydige former ut fra tre entydige former i paradigmet, sjekket mot tagget tekst.
+- **Infinitiv + *å*/hjelpeverb:** *å gå* er langt hyppigere enn hjelpeverb + infinitiv; *kan/skal* > *vil/må* > *burde* (både *gå* og *spise*). Kan disambiguere infinitivsformer som er flertydige med andre ordklasser (*å tro* / *en tro*).
+- **Enkeltord:** *gulne* (skifte fra *gulner* til *gulnet* som hyppigste form; hypotese om bilder/avispapir; konkordanser viser to bruksgrupper), *jakter* (antatt mest verb; testes med tagging).
+- **Varianter:** OR-søk (*hoppet OR hoppa*) i appen; *a*-formene ser ut til å være så infrekvente i moderne bokmål at de kan ses bort fra.
+
+### Neste steg
+- Følge opp punktene i notatet og `tekst/mons_presentasjon_plan.md`.
