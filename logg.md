@@ -636,3 +636,19 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Tagge hele korpuset (224 dokumenter, ca. 1½–2 timer) i bakgrunnen til `sqlite/korpus.db`.
 - Undersøke de flertydige verbkoblingene.
+
+---
+
+## 2026-11-18 (del 26) — Tagging av hele korpuset startet
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Marie startet taggingen av alle 224 korpusdokumentene på Linux-maskinen i bakgrunnen: `nohup python -m sqlite.korpus_profiler tagg /home/rosok/dhlab_fulltekster/*.txt > ~/tagging.log 2>&1 &`. Telletallene skrives til `sqlite/korpus.db` (ignoreres av Git).
+
+### Tekniske observasjoner
+- Tempo for de første dokumentene: ca. 1 000 tokens/s (tregere enn anslaget fra piloten). Hele korpuset anslås til ca. 3 timer.
+- Taggingen bruker omtrent 1–2 prosessorkjerner og fortsetter selv om SSH-forbindelsen brytes (`nohup`). Stopper den, kan samme kommando kjøres på nytt, og ferdige dokumenter hoppes over.
+
+### Neste steg
+- Når taggingen er ferdig: `koble`, `ukoblet --status flertydig --pos verb`, og deretter de første paradigmeprofilene og sammenligningen med `decomposer.py`.
