@@ -608,3 +608,31 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Marie: `git pull`, kjøre `koble --på-nytt` på pilotdatabasen og se på koblingen for subst/verb/adj, og kjøre linjeskifttesten (sammenligning av tagging med og uten linjeskift).
 - Deretter tagge hele korpuset (i bakgrunnen, f.eks. med `nohup`).
+
+---
+
+## 2026-11-18 (del 25) — Pilotresultater etter rettelsen; klargjøring for tagging av hele korpuset
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Marie kjørte `koble --på-nytt` på pilotdatabasen (10 dokumenter) og linjeskifttesten.
+- `korpus_profiler.tag_and_add` / `tagg` hopper nå over dokumenter som allerede finnes i databasen, så en avbrutt kjøring kan startes på nytt med samme kommando. Skriver framdrift med tid per dokument.
+- `ukoblet` har fått valgene `--status` (f.eks. `flertydig`), `--pos` og `--antall`, og viser hvilke celler (`lemma_id:boy_nummer`) en analysetype er koblet til. Antall regnes nå med vekt, så flertydige typer ikke telles dobbelt.
+
+### Viktige funn
+- **Kobling per ordklasse etter rettelsen** (pilot, 432 000 ord):
+
+  | Ordklasse | eksakt | flertydig | delvis | ingen | tokens |
+  |---|---:|---:|---:|---:|---:|
+  | verb | 92,5 % | 5,0 % | 1,1 % | 1,4 % | 66 191 |
+  | adj | 92,7 % | 0,4 % | 0,3 % | 6,6 % | 30 517 |
+  | subst (uten egennavn) | 84,2 % | 1,8 % | 1,6 % | 12,4 % | 65 794 |
+
+  Alle ordklasser samlet: eksakt 78,0 %, `ingen` 18,5 % (tall, egennavn, ubøyelige ord med ulik ordklasse hos OBT og Ordbanken). `ingen` for substantiv er trolig mest sammensetninger som ikke er egne oppslag i Ordbanken, pluss OCR-feil.
+- **5 % `flertydig` for verb** må undersøkes (`ukoblet --status flertydig --pos verb`). Det betyr at analysen passer like godt på flere lemmaer med samme grunnform, og vekten deles likt mellom dem, noe som kan svekke profilen til vanlige verb.
+- **Linjeskifttest** (Smaalenenes Avis 2012, ca. 30 000 tokens): bare 38 av 29 964 tokens (0,13 %) får ulik analyse når linjene slås sammen. Forskjellene er nesten alle ord i starten av en linje (typisk overskrifter: *Undervisning*, *Fjerner*, *Planlegger*), som blir feiltagget som egennavn når linjene slås sammen. **Linjeskiftene hjelper altså, og tekstene tagges som de er.**
+
+### Neste steg
+- Tagge hele korpuset (224 dokumenter, ca. 1½–2 timer) i bakgrunnen til `sqlite/korpus.db`.
+- Undersøke de flertydige verbkoblingene.

@@ -175,12 +175,25 @@ def tag_and_add(
     obt_dir: str | Path = DEFAULT_OBT_DIR,
     stat: bool = True,
     doc_id_from_path=lambda p: Path(p).stem,
+    skip_existing: bool = True,
 ) -> None:
-    """Tagger tekstfiler med OBT og lagrer KUN telletall (OBT-utdataene skrives ikke til disk)."""
-    for p in text_paths:
+    """Tagger tekstfiler med OBT og lagrer KUN telletall (OBT-utdataene skrives ikke til disk).
+    Dokumenter som allerede finnes i databasen hoppes over (med mindre skip_existing=False), så en
+    avbrutt kjøring kan startes på nytt med samme kommando."""
+    import time
+
+    text_paths = list(text_paths)
+    done = {r[0] for r in conn.execute("SELECT doc_id FROM dokumenter")} if skip_existing else set()
+    todo = [p for p in text_paths if doc_id_from_path(p) not in done]
+    if len(todo) < len(text_paths):
+        print(f"Hopper over {len(text_paths) - len(todo)} dokumenter som allerede er tagget.", flush=True)
+    t0 = time.time()
+    for i, p in enumerate(todo, start=1):
+        t = time.time()
         tokens = parse_obt_output(run_obt(p, obt_dir=obt_dir, stat=stat))
         n = add_document(conn, doc_id_from_path(p), tokens, kilde=str(p))
-        print(f"{doc_id_from_path(p)}: {n} tokens")
+        print(f"[{i}/{len(todo)}] {doc_id_from_path(p)}: {n} tokens, {time.time() - t:.0f} s "
+              f"(totalt {(time.time() - t0) / 60:.1f} min)", flush=True)
 
 
 # ---------------------------------------------------------------------------
@@ -299,18 +312,29 @@ def mapping_report_by_pos(
     return out
 
 
-def unmatched(conn: sqlite3.Connection, limit: int = 30) -> list[dict[str, Any]]:
-    """De hyppigste analysetypene som ikke ble koblet (eller bare delvis) – nyttig for å forbedre koblingen."""
-    rows = conn.execute(
-        """
-        SELECT t.form, t.lemma, t.pos, t.trekk, t.partisipp, k.status, SUM(t.n) AS n
+def unmatched(
+    conn: sqlite3.Connection,
+    limit: int = 30,
+    statuses: Iterable[str] = ("ingen", "delvis"),
+    pos: str | None = None,
+) -> list[dict[str, Any]]:
+    """De hyppigste analysetypene med gitt koblingsstatus (standard: ikke eller bare delvis koblet),
+    ev. avgrenset til én ordklasse. `celler` viser hvilke (lemma_id:boy_nummer) typen er koblet til –
+    nyttig for å se hva 'flertydig' deler forekomstene mellom."""
+    statuses = list(statuses)
+    q = f"""
+        SELECT t.form, t.lemma, t.pos, t.trekk, t.partisipp, k.status,
+               SUM(t.n * k.vekt) AS n,
+               GROUP_CONCAT(DISTINCT k.lemma_id || ':' || k.boy_nummer) AS celler
         FROM obt_typer t JOIN type_kobling k USING (form, lemma, pos, trekk, partisipp)
-        WHERE k.status IN ('ingen', 'delvis')
-        GROUP BY t.form, t.lemma, t.pos, t.trekk, t.partisipp, k.status
-        ORDER BY n DESC LIMIT ?
-        """,
-        (limit,),
-    ).fetchall()
+        WHERE k.status IN ({",".join("?" for _ in statuses)})
+    """
+    params: list[Any] = statuses
+    if pos:
+        q += " AND t.pos = ?"
+        params = params + [pos]
+    q += " GROUP BY t.form, t.lemma, t.pos, t.trekk, t.partisipp, k.status ORDER BY n DESC LIMIT ?"
+    rows = conn.execute(q, params + [limit]).fetchall()
     return [dict(r) for r in rows]
 
 
@@ -518,7 +542,11 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("form")
     s = sub.add_parser("sammenlign", help="OBT-fordeling vs. decomposer.py for en ordform")
     s.add_argument("form")
-    sub.add_parser("ukoblet", help="Hyppigste analyser som ikke ble koblet")
+    s = sub.add_parser("ukoblet", help="Hyppigste analyser som ikke ble koblet (eller med annen status)")
+    s.add_argument("--status", nargs="+", default=["ingen", "delvis"],
+                   help="Koblingsstatus å vise: ingen, delvis, flertydig, eksakt (standard: ingen delvis)")
+    s.add_argument("--pos", help="Avgrens til én ordklasse, f.eks. verb")
+    s.add_argument("--antall", type=int, default=30)
     args = p.parse_args(argv)
 
     conn = open_korpus(args.db)
@@ -541,7 +569,8 @@ def main(argv: list[str] | None = None) -> int:
         _print_rows(compare_with_decomposer(conn, args.form),
                     ["lemma_id", "grunnform", "pos", "boy_tekst", "decomposer_andel", "obt_andel", "obt_n"])
     elif args.cmd == "ukoblet":
-        _print_rows(unmatched(conn), ["form", "lemma", "pos", "trekk", "partisipp", "status", "n"])
+        _print_rows(unmatched(conn, limit=args.antall, statuses=args.status, pos=args.pos),
+                    ["form", "lemma", "pos", "trekk", "partisipp", "status", "n", "celler"])
     conn.close()
     return 0
 
