@@ -565,3 +565,23 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Gå gjennom `korpus/korpusoversikt.tsv` for hånd og merke dokumenter som bør ut (feil sjanger, oversettelser, nyutgivelser). Eventuelt legge inn en ekskluderingsliste som skriptet bruker til å fylle cellene opp igjen.
 - Hente fulltekstene fra URN-ene til Linux-maskinen (utenfor repoet), og starte med en pilot på ca. 10 bøker for å måle hvor lang tid OBT bruker.
+
+---
+
+## 2026-11-18 (del 23) — Fulltekster hentet for korpusoversikten (utenfor repoet)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Hentet fulltekstene for alle 224 dokumentene i `korpus/korpusoversikt.tsv` fra Språkbankens interne teksttjeneste (kun tilgjengelig på NBs nettverk) med et lite skript som ligger **utenfor repoet**. Tekstene er lagret lokalt utenfor repoet og OneDrive, én fil per dokument med navn `<dhlabid>.txt`. De skal overføres til Linux-maskinen for tagging og slettes lokalt etterpå.
+- Tekstene er rettighetsbelagte og skal ikke inn i repoet. Adressen til tjenesten står heller ikke i repoet.
+
+### Tekniske observasjoner
+- 224/224 hentet uten feil, til sammen ca. 55 MB (UTF-8 ren tekst).
+- Antall ord i tekstene (mellomromsdelt) er **identisk** med `n_ord` i korpusoversikten for alle dokumenter (10 724 916 ord). Tjenesten leverer altså samme tekst som dhlab teller på.
+- Tekstene er allerede tokenisert (tegnsetting er skilt fra ord med mellomrom, f.eks. `Co . Pty . Ltd .`), og linjeskift følger OCR-linjene. OBT tokeniserer selv. Forkortelser og orddeling ved linjeskift kan gi noen ekstra feil eller `ukjent`; sjekkes i piloten.
+- Filnavnet (`dhlabid`) blir `doc_id` i `sqlite/korpus_profiler.py`, så telletallene kan kobles direkte til korpusoversikten.
+
+### Neste steg
+- Overføre tekstene til Linux-maskinen (utenfor repoet).
+- Pilot: tagge ca. 10 dokumenter (blandet teksttype og tiår), måle tidsbruk, og sjekke `koble` / `ukoblet` i `korpus_profiler.py`.
