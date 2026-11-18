@@ -542,3 +542,26 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - Følge opp punktene i notatet og `tekst/mons_presentasjon_plan.md`.
+
+---
+
+## 2026-11-18 (del 22) — Korpusutvalg: balansert bokmålskorpus 1950–2026 (`sqlite/korpusutvalg.py`, `korpus/korpusoversikt.tsv`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny modul `sqlite/korpusutvalg.py` som trekker et korpus fra NBs samling med `dhlab` (Python-pakke, MIT-lisens, v2.41.0) og lagrer **kun en korpusoversikt** (metadata, URN, antall ord), ikke fulltekster. Fulltekstene hentes separat fra URN-ene og skal ikke i repoet.
+- **Design (avtalt med Marie):** 3 teksttyper (skjønnlitteratur og faglitteratur fra `digibok`, aviser fra `digavis`) × 8 tiår (1950–59 … 2020–26), omtrent like mange ord i hver av de 24 cellene, ca. 10 mill. ord totalt. Oversettelser utelates.
+- **Filtre:** bøker må ha `langs == "nob"` (utelater oversettelser og bøker med blandet språk) og minst 20 000 ord (utelater hefter og barnebøker). Aviser må ha minst 3 000 ord. Alle dokumenter må ha bokmålsandel ≥ 0,95, målt med markørpar (*ikke/ikkje, jeg/eg, hva/kva, hvordan/korleis, noen/nokon, mye/mykje, hvem/kven*). Maks én bok per forfatter og maks tre numre per avistittel per celle. Ingen dokumenter større enn 35 % av cellemålet.
+- Antall ord per dokument regnes ut fra dhlab-frekvens-API-et: frekvens / relativ frekvens for et vanlig ord.
+- **Resultat:** `korpus/korpusoversikt.tsv` med 224 dokumenter og 10 724 916 ord: 58 skjønnlitterære bøker (3,6 M), 64 fagbøker (3,7 M) og 102 avisnumre fra 80 titler (3,5 M). Alle celler har 418 000–547 000 ord. Trukket 2026-11-18.
+
+### Tekniske observasjoner
+- `Corpus(lang="nob")` filtrerer ikke strengt: første trekning hadde 10 bøker med `langs == "nob"` som var nynorsk eller dialekt (bokmålsandel 0,00–0,93, f.eks. *Om distrikts- og regionalpolitikken*, *Breheimen til framtida*, *Jærsk humor*). Språksjekken gjelder derfor nå også bøker, og korpuset ble trukket på nytt.
+- Aviser har ikke språk i metadata (`lang="nob"` gir 0 treff), så språksjekken er eneste filter for dem.
+- **Svakheter i metadataene som ikke fanges automatisk** (sett i første trekning): feil `literaryform` (f.eks. *Nye forstads- og tunnelbaner i Oslo* og *Etnopolitikk som skolepolitikk* merket som skjønnlitteratur), oversettelser uten originalspråk i metadata (*Ponson du Terrail*, trolig også flere westernhefter fra 1950–80-tallet) og nyutgivelser av eldre verk som havner i feil tiår (*Amalie Skram*, utgave 1993).
+- Utvalget trekkes tilfeldig av dhlab-API-et og kan ikke gjenskapes ved ny kjøring. Den lagrede oversikten er den reproduserbare definisjonen av korpuset.
+
+### Neste steg
+- Gå gjennom `korpus/korpusoversikt.tsv` for hånd og merke dokumenter som bør ut (feil sjanger, oversettelser, nyutgivelser). Eventuelt legge inn en ekskluderingsliste som skriptet bruker til å fylle cellene opp igjen.
+- Hente fulltekstene fra URN-ene til Linux-maskinen (utenfor repoet), og starte med en pilot på ca. 10 bøker for å måle hvor lang tid OBT bruker.
