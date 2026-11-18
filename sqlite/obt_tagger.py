@@ -41,8 +41,9 @@ _READING_RE = re.compile(r'^\s+"(.*)"(?:\s+(.*))?$')
 
 
 def _is_marker(tag: str) -> bool:
-    """OBT-markører som ikke er ordklasse eller bøyningstrekk."""
-    return tag.startswith("<") or tag.startswith("samset") or tag.startswith("flerord")
+    """OBT-markører som ikke er ordklasse eller bøyningstrekk. `clb` (setningsgrense) settes av OBT
+    både på setningsavsluttende tegn ("$." clb <punkt>) og på konjunksjoner (*og*, *men*)."""
+    return tag == "clb" or tag.startswith("<") or tag.startswith("samset") or tag.startswith("flerord")
 
 
 def run_obt(

@@ -585,3 +585,26 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Overføre tekstene til Linux-maskinen (utenfor repoet).
 - Pilot: tagge ca. 10 dokumenter (blandet teksttype og tiår), måle tidsbruk, og sjekke `koble` / `ukoblet` i `korpus_profiler.py`.
+
+---
+
+## 2026-11-18 (del 24) — Pilot: 10 korpusdokumenter tagget med OBT; rettelser i koblingen
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Valgte 10 pilotdokumenter fra `korpus/korpusoversikt.tsv` (dokumentet nærmest medianlengden i hver celle): skjønnlitteratur og faglitteratur fra 1950-, 1980- og 2010-tallet, aviser fra 1950-, 1980-, 2010- og 2020-tallet. Til sammen 432 414 ord. dhlabid: 100529224 100354617 100212799 100554427 100113405 100410017 202147427 204377691 201547312 204608626.
+- Marie tagget dem på Linux-maskinen med `python -m sqlite.korpus_profiler --db /tmp/pilot.db tagg …` og kjørte `koble` og `ukoblet`.
+- Rettelser etter piloten:
+  - `clb` (OBTs setningsgrensemarkør) behandles som markør, ikke som trekk: i `obt_tagger._is_marker` og i `korpus_profiler._core_tags`. OBT setter `clb` både på setningsavsluttende tegn (`"$." clb <punkt>` → nå `pos = "tegn"`) og på konjunksjoner (*og*, *men*, *for*), som derfor bare ble `delvis` koblet.
+  - `koble --på-nytt` kobler alt på nytt (trengs etter endringer i koblingsreglene, uten å tagge på nytt).
+  - `koble` viser i tillegg koblingen per ordklasse for `subst` (uten egennavn), `verb` og `adj` (`mapping_report_by_pos`).
+
+### Viktige funn
+- **Tid:** ca. 4 minutter for 432 000 ord (ca. 1 800 ord/s). Hele korpuset (10,7 M ord) anslås til 1½–2 timer.
+- **Kobling (før rettelsen, alle ordklasser):** eksakt 75,8 %, `ingen` 18,5 %, delvis 2,9 %, flertydig 2,8 %. Nesten alt i `ingen` er ord uten paradigme: ubøyelige ord der OBT og Ordbanken bruker ulik ordklasse (*ut, opp, inn, ned, her, der, hjem, tilbake, frem* er `prep` hos OBT, adverb i Ordbanken; *å* er `inf-merke`), tall, egennavn (*Truls, Aagot, Gud, Norge*) og høflighets-*De*. Det påvirker ikke paradigmeprofilene.
+- **OCR-feil gir falske bøyningsformer:** *seiv* er tagget 524 ganger som preteritum av *sive*. Det er nesten sikkert OCR-feil for *selv* (*l* lest som *i*). Slike feil kan blåse opp enkeltceller i paradigmer (jf. *katt/hatt* i del 7) og må holdes øye med i profilene.
+
+### Neste steg
+- Marie: `git pull`, kjøre `koble --på-nytt` på pilotdatabasen og se på koblingen for subst/verb/adj, og kjøre linjeskifttesten (sammenligning av tagging med og uten linjeskift).
+- Deretter tagge hele korpuset (i bakgrunnen, f.eks. med `nohup`).

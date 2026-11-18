@@ -188,11 +188,12 @@ def tag_and_add(
 # ---------------------------------------------------------------------------
 
 def _core_tags(tag_string: str) -> frozenset[str]:
-    """Kjernetrekk fra en Ordbank-tag eller OBT-analyse: alt unntatt <…>-markører og normering,
-    men med <perf-part>/<pres-part> beholdt (de skiller partisipp-cellene)."""
+    """Kjernetrekk fra en Ordbank-tag eller OBT-analyse: alt unntatt <…>-markører, normering og
+    OBTs setningsgrensemarkør `clb` (som OBT f.eks. setter på *og*, *men*), men med
+    <perf-part>/<pres-part> beholdt (de skiller partisipp-cellene)."""
     out = set()
     for t in tag_string.split():
-        if t in ("normert", "unormert"):
+        if t in ("normert", "unormert", "clb"):
             continue
         if t.startswith("<") and t not in PART_MARKERS:
             continue
@@ -273,6 +274,29 @@ def mapping_report(conn: sqlite3.Connection) -> dict[str, float]:
     ).fetchall()
     total = sum(r["n"] for r in rows) or 1.0
     return {r["status"]: round(r["n"] / total, 4) for r in rows}
+
+
+def mapping_report_by_pos(
+    conn: sqlite3.Connection, pos_list: Iterable[str] = ("subst", "verb", "adj")
+) -> dict[str, dict[str, float]]:
+    """Som `mapping_report`, men per ordklasse (OBT-ordklasse). Egennavn (subst prop) holdes
+    utenfor substantivene, siden de normalt ikke står i Ordbanken."""
+    out = {}
+    for pos in pos_list:
+        extra = " AND t.trekk NOT LIKE '%prop%'" if pos == "subst" else ""
+        rows = conn.execute(
+            f"""
+            SELECT k.status, SUM(t.n * k.vekt) AS n
+            FROM obt_typer t JOIN type_kobling k USING (form, lemma, pos, trekk, partisipp)
+            WHERE t.pos = ?{extra}
+            GROUP BY k.status
+            """,
+            (pos,),
+        ).fetchall()
+        total = sum(r["n"] for r in rows)
+        out[pos] = {r["status"]: round(r["n"] / total, 4) for r in rows} if total else {}
+        out[pos]["tokens"] = round(total)
+    return out
 
 
 def unmatched(conn: sqlite3.Connection, limit: int = 30) -> list[dict[str, Any]]:
@@ -482,7 +506,9 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("tagg", help="Tagg tekstfiler med OBT og lagre kun telletall")
     s.add_argument("filer", nargs="+")
     s.add_argument("--obt-dir", default=str(DEFAULT_OBT_DIR))
-    sub.add_parser("koble", help="Koble analysetyper til Ordbank-paradigmer og vis koblingsrapport")
+    s = sub.add_parser("koble", help="Koble analysetyper til Ordbank-paradigmer og vis koblingsrapport")
+    s.add_argument("--på-nytt", dest="paa_nytt", action="store_true",
+                   help="Slett eksisterende koblinger og koble alt på nytt (etter endringer i koblingsreglene)")
     s = sub.add_parser("profil", help="Paradigmeprofil for et lemma")
     s.add_argument("grunnform")
     s.add_argument("--pos", help="subst, verb, adj …")
@@ -501,7 +527,9 @@ def main(argv: list[str] | None = None) -> int:
     elif args.cmd == "tagg":
         tag_and_add(conn, args.filer, obt_dir=args.obt_dir)
     elif args.cmd == "koble":
-        print(map_types(conn))
+        print("Alle ordklasser:", map_types(conn, remap=args.paa_nytt))
+        for pos, rep in mapping_report_by_pos(conn).items():
+            print(f"  {pos:6s}", rep)
     elif args.cmd == "profil":
         rows = paradigm_profile(conn, lemma_id=args.lemma_id, grunnform=args.grunnform,
                                 pos=args.pos, per_doc=args.per_dok)
