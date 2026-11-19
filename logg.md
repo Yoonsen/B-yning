@@ -735,3 +735,38 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Kjøre profiler på det ekte korpuset, f.eks. `python -m sqlite.korpus_profiler profil bli --pos verb`, og sammenligne med n-gram-profilene.
+
+---
+
+## 2026-11-19 (del 30) — Første korpusprofil (*bli*) og profiler per tiår/teksttype
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie kjørte `profil bli --pos verb` på det taggede korpuset (lemma_id 7528 og 7530 slått sammen).
+- Nye funksjoner i `sqlite/korpus_profiler.py`:
+  - `load_metadata`: leser `korpus/korpusoversikt.tsv`; doc_id i `korpus.db` er dhlabid.
+  - `profile_by_group(conn, grunnform, pos, by=("tiaar",) …)`: paradigmeprofil per gruppe av dokumenter (kolonner i korpusoversikten, f.eks. `tiaar`, `teksttype`). Bygger på `paradigm_profile(per_doc=True)` og summerer per gruppe.
+  - Felter per gruppe og celle: `n`, `andel`, `n_lemma`, `per_mill` (lemmaets forekomster per million tokens) og `n_dok`.
+- Kommandolinje:
+  - `profil bli --pos verb --etter tiaar [teksttype]` gir en tabell med én linje per gruppe og andel per celle (celler som er tomme overalt, utelates).
+  - `--celler 1 2 4 5` begrenser til bestemte bøyningsnumre; andelene regnes da innenfor dem. `--celler` virker også uten `--etter`.
+- Testet med konstruerte telletall på ekte dhlabid-er fra oversikten. Dokumenter som mangler i oversikten havner i gruppen `ukjent`.
+
+**Funn**
+- *bli* i hele korpuset: 55 282 forekomster.
+
+  | celle | andel |
+  |---|---|
+  | pret (ble/blei/bleiv/blev) | 48,6 % |
+  | pres | 24,2 % |
+  | inf | 17,3 % |
+  | perf-part | 9,7 % |
+  | imp | 0,2 % (128) |
+
+  - S-passiv og partisippformene brukt som adjektiv er tomme.
+  - Imperativ kommer trolig fra kontekstdisambigueringen («Bli her!»).
+
+**Neste steg**
+- Kjøre `profil bli --pos verb --etter tiaar teksttype` på korpuset og vurdere stabiliteten over tid.
+- Sammenligne med n-gram-profilen (`compute_paradigm_profile`) for samme periode.

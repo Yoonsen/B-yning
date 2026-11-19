@@ -37,6 +37,8 @@ from sqlite.obt_tagger import DEFAULT_OBT_DIR, parse_obt_output, run_obt
 from sqlite.queries import DEFAULT_DB_PATH as ORDBANK_DB_PATH
 
 DEFAULT_KORPUS_DB = Path(__file__).resolve().parent / "korpus.db"
+# Korpusoversikten (metadata per dokument, se korpusutvalg.py); doc_id = dhlabid
+DEFAULT_OVERSIKT = Path(__file__).resolve().parent.parent / "korpus" / "korpusoversikt.tsv"
 
 # Tokens med disse ordklassene telles ikke (tegnsetting, setningsgrenser, symboler)
 SKIP_POS = {"tegn", "clb", "symb", ""}
@@ -494,6 +496,90 @@ def paradigm_profile(
     return out
 
 
+def load_metadata(oversikt: str | Path = DEFAULT_OVERSIKT) -> dict[str, dict[str, str]]:
+    """Leser korpusoversikten (TSV) til {dhlabid: rad}. doc_id i korpus.db er dhlabid."""
+    import csv
+
+    with open(oversikt, encoding="utf-8", newline="") as f:
+        return {r["dhlabid"]: r for r in csv.DictReader(f, delimiter="	")}
+
+
+def profile_by_group(
+    conn: sqlite3.Connection,
+    grunnform: str | None = None,
+    pos: str | None = None,
+    by: Iterable[str] = ("tiaar",),
+    lemma_id: int | None = None,
+    slots: Iterable[int] | None = None,
+    merge_homographs: bool = True,
+    oversikt: str | Path = DEFAULT_OVERSIKT,
+) -> list[dict[str, Any]]:
+    """
+    Paradigmeprofil per gruppe av dokumenter, der gruppene er kolonner i korpusoversikten
+    (f.eks. `by=("tiaar",)`, `("teksttype",)` eller `("tiaar", "teksttype")`).
+    Bygger på `paradigm_profile(per_doc=True)` (samme homografsammenslåing) og summerer per gruppe.
+
+    Én rad per (gruppe, celle) med `n`, `andel` (innen gruppen), `n_lemma` (alle celler i gruppen),
+    `per_mill` (lemmaets forekomster per million tokens i gruppen) og `n_dok`.
+    Dokumenter som mangler i oversikten havner i gruppen "ukjent".
+    """
+    by = tuple(by)
+    meta = load_metadata(oversikt)
+    rows = paradigm_profile(conn, lemma_id=lemma_id, grunnform=grunnform, pos=pos, per_doc=True,
+                            slots=slots, merge_homographs=merge_homographs)
+    tokens = dict(conn.execute("SELECT doc_id, antall_tokens FROM dokumenter").fetchall())
+
+    def key_of(doc: str) -> tuple[str, ...]:
+        m = meta.get(doc)
+        return tuple(m.get(b, "ukjent") if m else "ukjent" for b in by)
+
+    cells: dict[int, dict[str, Any]] = {}
+    freq: dict[tuple[str, ...], dict[int, float]] = {}
+    docs: dict[tuple[str, ...], set[str]] = {}
+    for r in rows:
+        k = key_of(r["doc_id"])
+        cells.setdefault(r["boy_nummer"], r)
+        freq.setdefault(k, {}).setdefault(r["boy_nummer"], 0.0)
+        freq[k][r["boy_nummer"]] += r["n"]
+        docs.setdefault(k, set()).add(r["doc_id"])
+
+    out = []
+    for k in sorted(freq):
+        total = sum(freq[k].values())
+        n_tok = sum(tokens.get(d) or 0 for d in docs[k])
+        for bn in sorted(cells):
+            c = cells[bn]
+            n = freq[k].get(bn, 0.0)
+            row = dict(zip(by, k))
+            row.update({
+                "lemma_ids": c["lemma_ids"], "grunnform": c["grunnform"], "pos": c["pos"],
+                "boy_nummer": bn, "boy_tekst": c["boy_tekst"], "former": c["former"],
+                "n": n, "andel": n / total if total else 0.0,
+                "n_lemma": total, "per_mill": total / n_tok * 1e6 if n_tok else 0.0,
+                "n_dok": len(docs[k]),
+            })
+            out.append(row)
+    return out
+
+
+def _print_wide(rows: list[dict[str, Any]], by: tuple[str, ...]) -> None:
+    """Skriver gruppeprofiler som tabell: én linje per gruppe, én kolonne (andel) per celle.
+    Celler som er tomme i alle grupper utelates."""
+    cells: dict[int, str] = {}
+    groups: dict[tuple, dict[str, Any]] = {}
+    for r in rows:
+        g = tuple(r[b] for b in by)
+        groups.setdefault(g, {"n_lemma": r["n_lemma"], "per_mill": r["per_mill"], "n_dok": r["n_dok"], "celler": {}})
+        groups[g]["celler"][r["boy_nummer"]] = r["andel"]
+        cells.setdefault(r["boy_nummer"], r["boy_tekst"])
+    used = [bn for bn in sorted(cells) if any(g["celler"].get(bn, 0) > 0 for g in groups.values())]
+    print("	".join(list(by) + ["n_dok", "n_lemma", "per_mill"] + [f"{bn}:{cells[bn]}" for bn in used]))
+    for g, v in groups.items():
+        vals = list(g) + [str(v["n_dok"]), f"{v['n_lemma']:.0f}", f"{v['per_mill']:.0f}"]
+        vals += [f"{v['celler'].get(bn, 0.0):.3f}" for bn in used]
+        print("	".join(vals))
+
+
 # ---------------------------------------------------------------------------
 # 4. Flertydige former: faktisk fordeling og sammenligning med decomposer
 # ---------------------------------------------------------------------------
@@ -610,6 +696,10 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--per-dok", action="store_true")
     s.add_argument("--ikke-slå-sammen", dest="ikke_slaa_sammen", action="store_true",
                    help="Ikke slå sammen homografe lemmaer; bruk lemma_id-et med flest forekomster")
+    s.add_argument("--etter", nargs="+", metavar="KOLONNE",
+                   help="Profil per gruppe fra korpusoversikten, f.eks. --etter tiaar teksttype")
+    s.add_argument("--celler", nargs="+", type=int, metavar="BOY_NUMMER",
+                   help="Bare disse bøyningsnumrene (andelene regnes innen dem), f.eks. --celler 1 2 4 5")
     s = sub.add_parser("form", help="Faktisk fordeling av en ordform på lemma/kategori")
     s.add_argument("form")
     s = sub.add_parser("sammenlign", help="OBT-fordeling vs. decomposer.py for en ordform")
@@ -635,8 +725,15 @@ def main(argv: list[str] | None = None) -> int:
         for pos, rep in mapping_report_by_pos(conn).items():
             print(f"  {pos:6s}", rep)
     elif args.cmd == "profil":
+        if args.etter:
+            rows = profile_by_group(conn, grunnform=args.grunnform, pos=args.pos, by=args.etter,
+                                    lemma_id=args.lemma_id, slots=args.celler,
+                                    merge_homographs=not args.ikke_slaa_sammen)
+            _print_wide(rows, tuple(args.etter))
+            conn.close()
+            return 0
         rows = paradigm_profile(conn, lemma_id=args.lemma_id, grunnform=args.grunnform,
-                                pos=args.pos, per_doc=args.per_dok,
+                                pos=args.pos, per_doc=args.per_dok, slots=args.celler,
                                 merge_homographs=not args.ikke_slaa_sammen)
         cols = (["doc_id"] if args.per_dok else []) + ["lemma_ids", "boy_nummer", "boy_tekst", "former", "n", "andel"]
         _print_rows(rows, cols)
