@@ -39,6 +39,8 @@ from sqlite.queries import DEFAULT_DB_PATH as ORDBANK_DB_PATH
 DEFAULT_KORPUS_DB = Path(__file__).resolve().parent / "korpus.db"
 # Korpusoversikten (metadata per dokument, se korpusutvalg.py); doc_id = dhlabid
 DEFAULT_OVERSIKT = Path(__file__).resolve().parent.parent / "korpus" / "korpusoversikt.tsv"
+# Delt kopi av telletallene i repoet (Git LFS); bruk med --db korpus/obt_frekvenser.db
+DEFAULT_SHARED_DB = Path(__file__).resolve().parent.parent / "korpus" / "obt_frekvenser.db"
 
 # Tokens med disse ordklassene telles ikke (tegnsetting, setningsgrenser, symboler)
 SKIP_POS = {"tegn", "clb", "symb", ""}
@@ -661,6 +663,29 @@ def compare_with_decomposer(
 # Kommandolinje
 # ---------------------------------------------------------------------------
 
+def export_shared(conn: sqlite3.Connection, target: str | Path = DEFAULT_SHARED_DB) -> Path:
+    """
+    Lager en kopi av korpusdatabasen til deling i repoet (Git LFS): kun telletall, ingen tekst.
+    Kolonnen `kilde` (lokal filsti til fulltekstene) erstattes med filnavnet, og fila komprimeres
+    med VACUUM. En eksisterende målfil overskrives.
+    """
+    target = Path(target)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists():
+        target.unlink()
+    out = sqlite3.connect(target)
+    try:
+        conn.backup(out)
+        rows = out.execute("SELECT doc_id, kilde FROM dokumenter").fetchall()
+        out.executemany("UPDATE dokumenter SET kilde = ? WHERE doc_id = ?",
+                        [(Path(k).name if k else None, d) for d, k in rows])
+        out.commit()
+        out.execute("VACUUM")
+    finally:
+        out.close()
+    return target
+
+
 def _print_rows(rows: list[dict[str, Any]], cols: list[str]) -> None:
     print("\t".join(cols))
     for r in rows:
@@ -704,6 +729,8 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("form")
     s = sub.add_parser("sammenlign", help="OBT-fordeling vs. decomposer.py for en ordform")
     s.add_argument("form")
+    s = sub.add_parser("eksporter", help="Lag delingskopi (kun telletall) til repoet, standard korpus/obt_frekvenser.db")
+    s.add_argument("--til", default=str(DEFAULT_SHARED_DB))
     s = sub.add_parser("ukoblet", help="Hyppigste analyser som ikke ble koblet (eller med annen status)")
     s.add_argument("--status", nargs="+", default=["ingen", "delvis"],
                    help="Koblingsstatus å vise: ingen, delvis, flertydig, eksakt (standard: ingen delvis)")
@@ -742,6 +769,9 @@ def main(argv: list[str] | None = None) -> int:
     elif args.cmd == "sammenlign":
         _print_rows(compare_with_decomposer(conn, args.form),
                     ["lemma_id", "grunnform", "pos", "boy_tekst", "decomposer_andel", "obt_andel", "obt_n"])
+    elif args.cmd == "eksporter":
+        path = export_shared(conn, args.til)
+        print(f"Skrev {path} ({path.stat().st_size / 1e6:.0f} MB)")
     elif args.cmd == "ukoblet":
         _print_rows(unmatched(conn, limit=args.antall, statuses=args.status, pos=args.pos),
                     ["form", "lemma", "pos", "trekk", "partisipp", "status", "n", "celler"])

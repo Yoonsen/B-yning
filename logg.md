@@ -799,3 +799,33 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Måle variasjonen mellom dokumenter (dokumentet er utvalgsenheten): spredning per celle, f.eks. bootstrap over dokumenter, så vi ser hvilke forskjeller mellom tiår og teksttyper som er større enn støyen.
 - Finne dokumentene som driver avvikene (faglitteratur 1980-tallet, skjønnlitteratur 2020-tallet) med `profil … --per-dok`.
 - Sammenligne med n-gram-profilen for *bli*.
+
+---
+
+## 2026-11-19 (del 32) — Telletallene fra OBT-taggingen deles i repoet (Git LFS)
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie ønsker at kollegaen skal kunne analysere resultatet av taggingen. Fulltekstene deles ikke. Det som deles, er en kopi av korpusdatabasen med bare telletall (ca. 300 MB): `korpus/obt_frekvenser.db`.
+- `.gitattributes`: `korpus/obt_frekvenser.db` spores med Git LFS (som `sqlite/ordbank.db`).
+- `.gitignore`: unntak `!korpus/obt_frekvenser.db` fra regelen `*.db`. `sqlite/korpus.db` (den lokale arbeidsdatabasen) er fortsatt ignorert, så lokale databaser ikke kolliderer ved `git pull`.
+- Ny kommando `eksporter` (`export_shared`) i `sqlite/korpus_profiler.py`: kopierer databasen, erstatter `kilde` (lokal filsti til fulltekstene) med filnavnet og kjører VACUUM.
+
+**Innholdet i `korpus/obt_frekvenser.db`** (ingen tekst; teksten kan ikke gjenskapes)
+- `obt_typer`: (doc_id, form, lemma, pos, trekk, partisipp, n) per dokument, der n er vektet antall.
+- `type_kobling`: koblingen av hver analysetype til Ordbank-celler (lemma_id, boy_nummer, vekt, status). Homografe lemmaer ligger som egne rader med status `flertydig` (se del 29).
+- `dokumenter`: doc_id (= dhlabid i `korpus/korpusoversikt.tsv`), filnavn og antall tokens.
+- `tagging_feil`: de to dokumentene som fikk tidsavbrudd (del 28).
+
+**Bruk**
+- Alle kommandoene tar `--db korpus/obt_frekvenser.db`, f.eks.:
+  `python -m sqlite.korpus_profiler --db korpus/obt_frekvenser.db profil bli --pos verb --etter tiaar`
+- Ordbanken (`sqlite/ordbank.db`) må også være hentet med Git LFS.
+- Oppdatering etter ny tagging eller ny kobling: kjør `eksporter` på nytt, og commit og push.
+
+**Funn / merknader**
+- Hver ny versjon av fila legges til i LFS-lagringen på GitHub og teller på kvoten til eieren av repoet.
+
+**Neste steg**
+- Marie lager fila på Linux-maskinen (`git pull`, `eksporter`, `git add`, commit, push).
