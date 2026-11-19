@@ -829,3 +829,32 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Marie lager fila på Linux-maskinen (`git pull`, `eksporter`, `git add`, commit, push).
+
+---
+
+## 2026-11-19 (del 33) — Ordformer vs. lemmaer: morfologisk variasjon i korpuset
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie lastet opp `korpus/obt_frekvenser.db` (LFS, se del 32). Den er hentet lokalt på Windows-maskinen.
+- Overordnede oppgaver avklart med Marie:
+  1. validere decomposer mot den taggede fordelingen;
+  2. undersøke om bøyningsprofilene er stabile over tid, for utvalgte eksempelparadigmer.
+- Først besvares et spørsmål fra kollegaen: hvor mye endrer antallet seg når bøyningsformene slås sammen til lemma?
+- Ny modul `sqlite/morfologisk_variasjon.py`:
+  - tokens, formtyper, lemmatyper (OBT-lemma + ordklasse), former per lemma og andel bøyde tokens (form ≠ lemma);
+  - tallene gis per ordklasse, per lemmafrekvens og per tiår og teksttype;
+  - typer sammenlignes ved likt antall tokens (eksakt rarefaction).
+  - Kjøres med `python -m sqlite.morfologisk_variasjon [--db …] [--utvalg 200000]`.
+- Rapport: `rapport_morfologisk_variasjon.md`.
+
+**Funn**
+- Ca. 2 % av tokens (9 % av formtypene) har tegn i starten eller slutten fra tokenisering eller OCR, f.eks. «er.», «er|», «_vært», «kl.». Disse renses (`clean_form`) før telling. Uten rensingen blir forholdet former/lemma for høyt.
+- Alle ord: 410 711 formtyper og 363 042 lemmaer, altså 1,13 former per lemma. Men 30 % av tokens står i en annen form enn lemmaet (58 % for substantiv, verb og adjektiv; 79 % for verb).
+- Det lave forholdet former/lemma skyldes sjeldne lemmaer, egennavn og ukjente ord. Egennavn og ukjente ord er 13 % av tokens, men 49 % av formtypene. Lemmaer med over 1 000 forekomster har over 6 former (substantiv, verb) og 5,2 former (adjektiv).
+- Etter teksttype: skjønnlitteratur har mest bøyning (andel bøyd 0,32; subst/verb/adj 0,64) og aviser minst (0,26 / 0,52). Over tid er tallene stabile samlet sett.
+- Aviser: andelen bøyde ord faller fra 0,28 til 0,23 fra 1950-tallet til 2020-tallet. Det skyldes dels flere egennavn (14 % → 21 %) og færre verb, men andelen faller også innenfor subst/verb/adj (0,55 → 0,49).
+
+**Neste steg**
+- Validere decomposer (oppgave 1) og velge eksempelparadigmer for stabilitetsanalysen (oppgave 2).
