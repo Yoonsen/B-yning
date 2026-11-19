@@ -439,7 +439,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Agent:** Claude Code (Claude Opus 5.5)
 
 ### Beslutning
-- Lars valgte bokkorpuset 1950–2020 (`dhlab ngram_book`) som korpus for alle verb- og substantivtall i foredraget. `nb_totals` brukes fortsatt til å velge ut verb og substantiv (100 000-grensen), men ikke til profilene.
+- Det ble besluttet å bruke bokkorpuset 1950–2020 (`dhlab ngram_book`) for alle verb- og substantivtall i foredraget. `nb_totals` brukes fortsatt til å velge ut verb og substantiv (100 000-grensen), men ikke til profilene.
 
 ### Hva ble gjort
 - `sqlite/verbtyper.py`: henter bokprofiler for alle 606 verb og skriver ut typefordelingen i bokkorpuset for N = 606 / 580 / 533; `nb_totals` vises etterpå til sammenligning (`--offline` gir bare `nb_totals`).
