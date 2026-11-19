@@ -2,7 +2,8 @@
 """
 Verbtyper: gullstandard (Sett A), de seks rangeringstypene og rang-stabilitet (1950–2020).
 
-Gjenskaper tallene i rapport_verbtyper.md §2–4. Kjør fra repo-roten:
+Gjenskaper tallene i rapport_verbtyper.md §2–4. Hovedkorpus er bokkorpuset 1950–2020 (dhlab ngram_book);
+nb_totals brukes til utvalget (100 000-grensen) og vises til sammenligning. Kjør fra repo-roten:
 
     python3 -m sqlite.verbtyper            # alt, inkl. n-gram for bokkorpuset; skriver resultater/verbtyper.tsv
     python3 -m sqlite.verbtyper --offline  # bare ordbank + nb_totals
@@ -202,17 +203,19 @@ def main() -> None:
     print("Utvalg:")
     for label, n in steps:
         print(f"  {label:45s} {n:6d}")
-    print_types(sets, "nb_slot")
     if args.offline:
+        print_types(sets, "nb_slot")
         return
-    add_book_profiles(sets["580"])
-    print_types({"580": [d for d in sets["580"] if "book_rank" in d]}, "book_slot")
+    add_book_profiles(sets["606"])  # 580 og 533 er delmengder og deler objektene
+    print_types({k: [d for d in v if "book_rank" in d] for k, v in sets.items()}, "book_slot")
     full = [d for d in sets["580"] if "book_rank" in d and d["n_years"] == 71]
     if full:
         print(f"\nSett A i bokkorpuset: {len(full)} verb belagt alle 71 år.")
         print(f"  samme 1. plass alle år: {sum(d['top_stab'] == 1 for d in full)}  "
               f"samme hele rangering alle år: {sum(d['full_stab'] == 1 for d in full)}")
     report_verbs(verbs, sets["580"])
+    print("\n--- Til sammenligning: samme utvalg i nb_totals (hele NB-korpuset) ---")
+    print_types(sets, "nb_slot")
     print(f"\nSkrev {write_tsv(sets['580'])}")
 
 

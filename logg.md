@@ -431,3 +431,22 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Bestemme korpus for foredraget (bokkorpuset 1950–2020 anbefales, siden stabilitet og eksempler bruker det) og oppdatere lysbilde 6 og §3 deretter.
 - Figurer (hull 2), validering av dekomponereren (hull 4), referanser (hull 6).
+
+---
+
+## 2026-11-19 (del 17) — Bokkorpuset 1950–2020 som felles korpus for foredraget
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Beslutning
+- Lars valgte bokkorpuset 1950–2020 (`dhlab ngram_book`) som korpus for alle verb- og substantivtall i foredraget. `nb_totals` brukes fortsatt til å velge ut verb og substantiv (100 000-grensen), men ikke til profilene.
+
+### Hva ble gjort
+- `sqlite/verbtyper.py`: henter bokprofiler for alle 606 verb og skriver ut typefordelingen i bokkorpuset for N = 606 / 580 / 533; `nb_totals` vises etterpå til sammenligning (`--offline` gir bare `nb_totals`).
+- `rapport_verbtyper.md` §3 skrevet om på bokkorpuset: hovedtyper inf 54,0 / pret 27,6 / pres 18,4 %; 1A 26,9 / 1B 27,1 / 2A 20,2 / 2B 7,4 / 3A 12,2 / 3B 6,2 %; nye snittprofiler og eksempler; sammenligningstabell med `nb_totals`.
+- Lysbilde 6 i decket oppdatert (diagram, tittel, 73 % / 66 %, talenotat). Planen oppdatert.
+
+### Merk
+- Når `inf` er på topp, deler verbene seg likt mellom 1A og 1B (49,8 / 50,2 %) i bokkorpuset. Påstander om at 1A er klart vanligere enn 1B gjelder bare `nb_totals`.
+- Eldre loggoppføringer (del 9, 12) har `nb_totals`-tallene; de er historikk og er ikke endret.
+- §5 i rapporten (perf-part og -ende) er ikke regnet om; korpuset der er ikke dokumentert.

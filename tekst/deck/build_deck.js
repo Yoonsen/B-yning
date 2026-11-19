@@ -218,12 +218,12 @@ s.addNotes("Gjenskapes med python3 -m sqlite.verbtyper (resultater/verbtyper.tsv
 pres.addSection({ title: "Verb" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Verb" });
 s.addText("Seks verbtyper, ikke tre", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [{ name: "Andel av Sett A", labels: ["1A inf>pres>pret", "1B inf>pret>pres", "2A pret>inf>pres", "2B pret>pres>inf", "3A pres>inf>pret", "3B pres>pret>inf"], values: [29.8, 21.2, 17.9, 7.2, 14.8, 9.0] }],
-  chartOpts({ x: MX, y: 1.5, w: 7.4, h: 5.2, barDir: "bar", catAxisOrientation: "maxMin", chartColors: [HEX.accent1, HEX.accent1, HEX.accent2, HEX.accent2, HEX.dk2, HEX.dk2], showLegend: false, showTitle: true, title: "Andel av verbene i Sett A (N = 580), hele NB-korpuset", valAxisMaxVal: 35, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addChart(pres.charts.BAR, [{ name: "Andel av Sett A", labels: ["1A inf>pres>pret", "1B inf>pret>pres", "2A pret>inf>pres", "2B pret>pres>inf", "3A pres>inf>pret", "3B pres>pret>inf"], values: [26.9, 27.1, 20.2, 7.4, 12.2, 6.2] }],
+  chartOpts({ x: MX, y: 1.5, w: 7.4, h: 5.2, barDir: "bar", catAxisOrientation: "maxMin", chartColors: [HEX.accent1, HEX.accent1, HEX.accent2, HEX.accent2, HEX.dk2, HEX.dk2], showLegend: false, showTitle: true, title: "Andel av verbene i Sett A (N = 580), bøker 1950–2020", valAxisMaxVal: 35, valAxisHidden: true, valGridLine: { style: "none" } }));
 s.addText("Infinitiv vil helst stå på 2. plass", { x: 8.4, y: 1.7, w: 4.3, h: 0.9, fontSize: 20, bold: true, color: C.text1, margin: 0, valign: "top", isTextBox: true });
-body(s, bullets(["pret på topp: 71 % har inf på 2. plass", "pres på topp: 62 % har inf på 2. plass", "Unntakene er ikke-viljestyrte overganger (forsvinne, ankomme) og tilstander (trenge, bestå)"]), 8.4, 2.7, 4.3, 2.6, 16);
+body(s, bullets(["pret på topp: 73 % har inf på 2. plass", "pres på topp: 66 % har inf på 2. plass", "Unntakene er ikke-viljestyrte overganger (forsvinne, ankomme) og tilstander (trenge, bestå)"]), 8.4, 2.7, 4.3, 2.6, 16);
 missing(s, "Ternærplott inf/pres/pret for alle 580 verb", 8.4, 5.4, 4.3, 1.1);
-s.addNotes("Tall fra rapport_verbtyper.md §3 (nb_totals, hele NB-korpuset). I bokkorpuset 1950–2020 blir fordelingen 1A 26,9 / 1B 27,1 / 2A 20,2 / 2B 7,4 / 3A 12,2 / 3B 6,2 %. Inf på 2. plass holder i begge (pret på topp: 73 %, pres på topp: 66 % i bokkorpuset), men 1A/1B deler seg nesten likt i bokkorpuset. Bestem hvilket korpus foredraget bruker, og bruk det samme på alle lysbilder. Hver farge er én hovedtype. Søylediagrammet kan byttes ut med ternærplottet når det finnes.");
+s.addNotes("Tall fra rapport_verbtyper.md §3, bokkorpuset 1950–2020 (python3 -m sqlite.verbtyper). Når inf er på topp, deler verbene seg likt mellom 1A og 1B (49,8 / 50,2 %). I hele NB-korpuset (nb_totals) er fordelingen 1A 29,8 / 1B 21,2 / 2A 17,9 / 2B 7,2 / 3A 14,8 / 3B 9,0 %; inf på 2. plass holder der også (71 % og 62 %). Hver farge er én hovedtype. Søylediagrammet kan byttes ut med ternærplottet når det finnes.");
 
 // 7 Stabilitet
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Verb" });
