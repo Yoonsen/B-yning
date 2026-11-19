@@ -409,3 +409,25 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Samkjøre abstract og foredrag for *eple* og *vite*.
 - Teste semantiske forklaringer (genus, tellbarhet, animathet) og skille simplex fra sammensetninger (`leddanalyse`).
 - Figurer: tidsserier for noen stabile substantiv, ev. sammen med verbene på lysbilde 7.
+
+---
+
+## 2026-11-19 (del 16) — Skript som gjenskaper verbtallene (`sqlite/verbtyper.py`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Nytt skript `sqlite/verbtyper.py` (`python3 -m sqlite.verbtyper`, `--offline` for bare `nb_totals`). Det bygger Sett A, regner de seks typene, snittprofiler, 2.-plass-fordeling og stabilitet, og skriver `resultater/verbtyper.tsv`.
+- **Alle tall i `rapport_verbtyper.md` §2–4 gjenskapes nøyaktig:** N = 606 / 580 / 533, typefordelingen for alle tre utvalg, snittprofilene og hele §4-tabellen (profiler, topp- og full-rang-stabilitet for alle 41 verb).
+- Presise kriterier (rapporten var uklar på dette): 100 000-grensen gjelder **inf + pres + pret** i `nb_totals`; «internt distinkt» betyr at ingen form står i to av de fire kategoriene. Skrevet inn i rapporten §2.
+- Rapporten §3 og §4 fikk tillegg (se under); lysbilde 5–7 i decket oppdatert; planen oppdatert (hull 3 løst).
+
+### Viktige funn
+- **Typefordelingen i §3 er regnet på `nb_totals` (hele NB), ikke på bokkorpuset 1950–2020 som resten av rapporten.** I bokkorpuset: 1A 26,9 / 1B 27,1 / 2A 20,2 / 2B 7,4 / 3A 12,2 / 3B 6,2 %. Inf-på-2.-plass-funnet holder (73,1 % / 66,4 %), men 1A/1B deler seg nesten likt (49,8 / 50,2 %) i stedet for 58,4 / 41,6 %.
+- **Stabilitet for hele Sett A:** av 569 verb belagt alle 71 år har 260 (45,7 %) samme topp hvert år og 80 (14,1 %) samme fullstendige rekkefølge. Verbene med 100 % i §4 er utvalgte, ikke typiske.
+- Sett A inneholder noen ikke-standard former (*tilstede, sæte, meine*); marginal effekt, men ikke bruk dem som eksempler.
+- *forlate* er formelt ikke i Sett A (580) fordi *forlatt* også er adjektiv; rapporten merker den allerede «Sett A\*».
+
+### Neste steg
+- Bestemme korpus for foredraget (bokkorpuset 1950–2020 anbefales, siden stabilitet og eksempler bruker det) og oppdatere lysbilde 6 og §3 deretter.
+- Figurer (hull 2), validering av dekomponereren (hull 4), referanser (hull 6).

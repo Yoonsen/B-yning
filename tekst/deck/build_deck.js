@@ -200,7 +200,6 @@ s.addNotes("Linjene fra «fisker» kan trenge justering. Tall fra rapport_verbty
 // 5 Gullstandard
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
 s.addText("Gullstandard: verb uten konkurrenter", { placeholder: "title" });
-status(s, "UTKAST");
 const funnel = [["606", "verb der inf, pres og pret ikke deler form med noe annet lemma"], ["580", "også perf-part entydig (Sett A)"], ["533", "alle fire former belagt i korpuset"]];
 funnel.forEach(([n, t], i) => {
   const x = MX + i * 4.1;
@@ -211,21 +210,20 @@ funnel.forEach(([n, t], i) => {
 body(s, [
   { text: "Sett B: ", options: { bold: true, color: C.text1 } },
   { text: "høyfrekvente kjerneverb med én kjent kollisjon (gå/går ~ i går, ha ~ ha!), tatt med og flagget.", options: { breakLine: true } },
-  { text: "Krav: ≥ 100 000 treff, pret ≠ perf-part.", options: {} },
+  { text: "Krav: inf + pres + pret ≥ 100 000 treff; ingen form står i to kategorier (pret ≠ perf-part).", options: {} },
 ], MX, 4.7, W - 2 * MX, 1.0, 16);
-missing(s, "Skript som gjenskaper tallene (sqlite/verbtyper.py)", MX, 5.85, 6.0, 0.9);
-s.addNotes("Tallene er regnet ad hoc og kan ikke gjenskapes fra kode ennå (hull 3 i planen). Ikke vis dem før skriptet finnes.");
+s.addNotes("Gjenskapes med python3 -m sqlite.verbtyper (resultater/verbtyper.tsv). 100 000-grensen gjelder inf + pres + pret i nb_totals. «Internt distinkt» betyr at ingen form står i to av de fire kategoriene.");
 
 // 6 Seks verbtyper
 pres.addSection({ title: "Verb" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Verb" });
 s.addText("Seks verbtyper, ikke tre", { placeholder: "title" });
 s.addChart(pres.charts.BAR, [{ name: "Andel av Sett A", labels: ["1A inf>pres>pret", "1B inf>pret>pres", "2A pret>inf>pres", "2B pret>pres>inf", "3A pres>inf>pret", "3B pres>pret>inf"], values: [29.8, 21.2, 17.9, 7.2, 14.8, 9.0] }],
-  chartOpts({ x: MX, y: 1.5, w: 7.4, h: 5.2, barDir: "bar", catAxisOrientation: "maxMin", chartColors: [HEX.accent1, HEX.accent1, HEX.accent2, HEX.accent2, HEX.dk2, HEX.dk2], showLegend: false, showTitle: true, title: "Andel av verbene i Sett A (N = 580)", valAxisMaxVal: 35, valAxisHidden: true, valGridLine: { style: "none" } }));
+  chartOpts({ x: MX, y: 1.5, w: 7.4, h: 5.2, barDir: "bar", catAxisOrientation: "maxMin", chartColors: [HEX.accent1, HEX.accent1, HEX.accent2, HEX.accent2, HEX.dk2, HEX.dk2], showLegend: false, showTitle: true, title: "Andel av verbene i Sett A (N = 580), hele NB-korpuset", valAxisMaxVal: 35, valAxisHidden: true, valGridLine: { style: "none" } }));
 s.addText("Infinitiv vil helst stå på 2. plass", { x: 8.4, y: 1.7, w: 4.3, h: 0.9, fontSize: 20, bold: true, color: C.text1, margin: 0, valign: "top", isTextBox: true });
 body(s, bullets(["pret på topp: 71 % har inf på 2. plass", "pres på topp: 62 % har inf på 2. plass", "Unntakene er ikke-viljestyrte overganger (forsvinne, ankomme) og tilstander (trenge, bestå)"]), 8.4, 2.7, 4.3, 2.6, 16);
 missing(s, "Ternærplott inf/pres/pret for alle 580 verb", 8.4, 5.4, 4.3, 1.1);
-s.addNotes("Tall fra rapport_verbtyper.md §3. Hver farge er én hovedtype (inf/pret/pres på topp). Søylediagrammet kan byttes ut med ternærplottet når det finnes.");
+s.addNotes("Tall fra rapport_verbtyper.md §3 (nb_totals, hele NB-korpuset). I bokkorpuset 1950–2020 blir fordelingen 1A 26,9 / 1B 27,1 / 2A 20,2 / 2B 7,4 / 3A 12,2 / 3B 6,2 %. Inf på 2. plass holder i begge (pret på topp: 73 %, pres på topp: 66 % i bokkorpuset), men 1A/1B deler seg nesten likt i bokkorpuset. Bestem hvilket korpus foredraget bruker, og bruk det samme på alle lysbilder. Hver farge er én hovedtype. Søylediagrammet kan byttes ut med ternærplottet når det finnes.");
 
 // 7 Stabilitet
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Verb" });
@@ -235,7 +233,7 @@ stat(s, "71 av 71", "år (1950–2020) med nøyaktig samme rekkefølge av alle t
 const stable = ["vurdere", "undersøke", "overta", "forsvinne", "ankomme", "rope", "trenge", "bestå"];
 stable.forEach((v, i) => chip(s, v, MX + (i % 2) * 2.1, 3.6 + Math.floor(i / 2) * 0.7, { w: 1.95, h: 0.55, fontSize: 16 }));
 missing(s, "Tidsserier for 4–6 av disse verbene, 1950–2020", 5.4, 1.6, 7.3, 4.8);
-s.addNotes("Alle åtte er Sett A-verb (rapport_verbtyper.md §4). Figur: andel per form per år, ett panel per verb.");
+s.addNotes("Alle åtte er Sett A-verb (rapport_verbtyper.md §4). De er utvalgte eksempler: for hele Sett A har 46 % samme topp alle 71 år og 14 % samme hele rangering (80 av 569 verb). Figur: andel per form per år, ett panel per verb.");
 
 // 8 Substantiv
 pres.addSection({ title: "Substantiv" });

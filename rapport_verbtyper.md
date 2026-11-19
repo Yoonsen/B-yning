@@ -27,6 +27,14 @@ Vi gjennomfører derfor en eksplisitt **to-trinns vask**:
   - Utvides kravet til også å gjelde 4. form (`perf-part`, slik at også leksikaliserte partisipp-adjektiver som *forlatt, opptatt, forbudt, betjent* lukes ut), gjenstår **$N = 580$ verb** (og **$N = 533$ verb** dersom vi i tillegg krever at hver eneste av de 4 kjerneformene alene ligger inne blant topp 500 000 ordformer i `nb_totals`, noe som fjerner arkaiske riksmålsformer som *tilstede*).
 - **Sett B — Praktisk rene kjerneverb (med eksplisitt flagget ordbokskollisjon):** Sentrale norske kjerneverb (*gå, komme, si, gjøre, lese, spise, kjøpe, ha, vite, ligge*) som har en teknisk ordbokskollisjon i én form (f.eks. *går* mot *i går* / imp. *gåre*, eller *ha* mot interjeksjon *ha!* og *hektar*), men der verbformen dominerer i korpuset. Åpenbare støykandidater der kollisjonen forrykker profilen (*dø, stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape*) er luket ut av gullstandard-tabellen, og *dø / dør* analyseres i stedet med dekomponeringsmetoden i **seksjon 7.2**.
 
+**Reproduserbarhet (lagt til 2026-11-19):** Alle tall i §2–4 gjenskapes nøyaktig med `python3 -m sqlite.verbtyper` (per-verb-resultater i `resultater/verbtyper.tsv`). Presise kriterier, slik skriptet bruker dem:
+1. Alle fire kjerneformer finnes (`boy_nummer` 1, 2, 4, 5).
+2. Internt distinkte: ingen ordform står i to av de fire kategoriene. Det utelukker `-et/-a`-verbene der `pret = perf-part`.
+3. **`inf + pres + pret` ≥ 100 000** i `nb_totals` (perf-part teller ikke med i grensen).
+4. `inf`, `pres` og `pret` har `antall_lemma_id = 1` → **606**; også `perf-part` → **580** (Sett A); alle fire kategorier har minst én form i `nb_totals` → **533**.
+
+Sett A inneholder noen ikke-standard former som har sneket seg gjennom (*tilstede, sæte, meine*). De påvirker typefordelingen marginalt, men bør ikke brukes som eksempler.
+
 ---
 
 ## 3. De 6 verbtypene i den strenge gullstandarden (Sett A)
@@ -52,11 +60,26 @@ Sammenligningen mellom $N = 606$ (3 former globalt POS-isolerte), **$N = 580$ (S
 
 *(Merk: `oppnå`, `foreta` og `overta` skifter mellom `nb_totals` (1810–2020) og `ngram_book` (1950–2020) avhengig av om hele NB-korpuset eller kun etterkrigsbøker legges til grunn; i seksjon 4 vises tallene for bokkorpuset 1950–2020.)*
 
+**Korpus for typefordelingen (lagt til 2026-11-19):** Tabellen over er regnet på `nb_totals` (hele NB-korpuset). I bokkorpuset 1950–2020 (`ngram_book`), som §4 bruker, blir fordelingen for de samme 580 verbene noe annerledes:
+
+| Type | `nb_totals` | Bokkorpuset 1950–2020 |
+| :--- | ---: | ---: |
+| 1A `inf > pres > pret` | 29,8 % | 26,9 % |
+| 1B `inf > pret > pres` | 21,2 % | 27,1 % |
+| 2A `pret > inf > pres` | 17,9 % | 20,2 % |
+| 2B `pret > pres > inf` | 7,2 % | 7,4 % |
+| 3A `pres > inf > pret` | 14,8 % | 12,2 % |
+| 3B `pres > pret > inf` | 9,0 % | 6,2 % |
+
+Hovedfunnet står seg: `inf` på 2. plass når `pret` er på topp (73,1 % i bokkorpuset) og når `pres` er på topp (66,4 %). Men når `inf` er på topp, er delingen mellom 1A og 1B i bokkorpuset nesten lik (49,8 % mot 50,2 %), ikke 58,4 % mot 41,6 %. Etterkrigsbøkene har altså relativt mer preteritum og mindre presens enn hele NB-korpuset. Lysbilder og tekst må si hvilket korpus tallene kommer fra.
+
 ---
 
 ## 4. Detaljerte profiler og rang-stabilitet (1950–2020) for rensede kjerneverb (Sett A og Sett B)
 
 Tabellen under viser profilene i bokkorpuset (1950–2020, 71 enkeltår) etter at støy-homografer (*dø, stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape*) er luket ut og erstattet med **100 % globalt POS-isolerte verb (Sett A)**. For sentrale høyfrekvente kjerneverb i **Sett B** er den tekniske ordbokskollisjonen eksplisitt angitt.
+
+**Hele Sett A (lagt til 2026-11-19):** Av de 569 Sett A-verbene som er belagt alle 71 år i bokkorpuset, har **260 (45,7 %)** samme form på 1. plass hvert år, og **80 (14,1 %)** har nøyaktig samme rekkefølge av alle tre formene hvert år. Verbene i tabellen under er altså utvalgte eksempler, ikke typiske. Det typiske verbet har stabil topp, mens 2. og 3. plass kan bytte i enkelte år.
 
 | Undertype (`1. > 2. > 3.`) | Verb | Sett | `inf` | `pres` | `pret` | Topp-stabilitet (1. plass) | Full-rang-stabilitet (`1. > 2. > 3.`) | Ev. teknisk kollisjon i Ordbanken (for Sett B) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
