@@ -28,6 +28,7 @@ import argparse
 import csv
 import os
 import re
+import signal
 import subprocess
 import sys
 from pathlib import Path
@@ -46,15 +47,23 @@ def _is_marker(tag: str) -> bool:
     return tag == "clb" or tag.startswith("<") or tag.startswith("samset") or tag.startswith("flerord")
 
 
+class ObtTimeout(RuntimeError):
+    """OBT brukte lengre tid enn tidsgrensen (f.eks. fordi mtag.py henger på en tekst)."""
+
+
 def run_obt(
     text_path: str | Path,
     obt_dir: str | Path = DEFAULT_OBT_DIR,
     stat: bool = True,
+    timeout: float | None = None,
 ) -> str:
     """
     Kjører OBT på `text_path` (UTF-8 ren tekst) og returnerer rå OBT-utdata som streng.
     `stat=True` bruker tag-bm.sh (CG + OBT-Stat), `stat=False` tag-nostat-bm.sh (kun CG).
     Advarsler fra mtag/OBT-Stat på stderr ignoreres med mindre kjøringen feiler.
+    `timeout` (sekunder): hele OBT-kjeden (skallskript + mtag/vislcg3/ruby/perl) avbrytes og
+    `ObtTimeout` kastes hvis den bruker lengre tid. mtag.py kan gå i evig løkke på enkelte tekster
+    under nyere Python (sett 2026-11-19, logg del 27).
     """
     obt_dir = Path(obt_dir).expanduser().resolve()
     script = obt_dir / ("tag-bm.sh" if stat else "tag-nostat-bm.sh")
@@ -67,17 +76,28 @@ def run_obt(
         raise FileNotFoundError(text_path)
 
     # Skriptet finner mtag/, cg/ og OBT-Stat/ via $(dirname $0), så vi kaller det med full sti.
-    result = subprocess.run(
+    # Egen prosessgruppe (start_new_session), slik at hele kjeden kan stoppes ved tidsavbrudd;
+    # subprocess.run(timeout=…) ville bare stoppet skallskriptet og latt mtag.py fortsette.
+    proc = subprocess.Popen(
         [str(script), str(text_path)],
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
         encoding="utf-8",
+        start_new_session=True,
     )
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"OBT feilet (kode {result.returncode}):\n{result.stderr[-2000:]}"
-        )
-    return result.stdout
+    try:
+        stdout, stderr = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        proc.communicate()
+        raise ObtTimeout(f"OBT brukte mer enn {timeout:.0f} s på {text_path.name}")
+    if proc.returncode != 0:
+        raise RuntimeError(f"OBT feilet (kode {proc.returncode}):\n{stderr[-2000:]}")
+    return stdout
 
 
 def parse_obt_output(obt_text: str) -> list[dict[str, Any]]:

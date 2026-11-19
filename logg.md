@@ -652,3 +652,23 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - Når taggingen er ferdig: `koble`, `ukoblet --status flertydig --pos verb`, og deretter de første paradigmeprofilene og sammenligningen med `decomposer.py`.
+
+---
+
+## 2026-11-19 (del 27) — Taggingen hang på dokument 5; tidsgrense per dokument i OBT-kjøringen
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Sjekket den nattlige taggingen: bare 4 av 224 dokumenter var tagget. Prosessen sto fast på dokument 5 (`100029013`) i nesten 14 timer: `mtag.py` brukte 99,9 % CPU, mens `vislcg3`, OBT-Stat (Ruby) og `perl` sto på 0 % og ventet. Multitaggeren gikk altså i evig løkke på noe i denne teksten.
+- `sqlite/obt_tagger.run_obt` har fått `timeout`. OBT-kjeden kjøres i egen prosessgruppe (`start_new_session=True`), og ved tidsavbrudd stoppes hele gruppa (`os.killpg`) og `ObtTimeout` kastes. `subprocess.run(timeout=…)` ville bare stoppet skallskriptet og latt `mtag.py` fortsette.
+- `sqlite/korpus_profiler.tag_and_add` / `tagg`: dokumenter som feiler eller får tidsavbrudd, noteres i ny tabell `tagging_feil` og hoppes over, så resten av korpuset blir tagget. Nye valg: `--tidsgrense` (standard 900 s) og `--prøv-feilede`. Ny kommando `feilet` lister feilede dokumenter.
+- Logikken (notere, hoppe over, prøve igjen) er testet med simulert tidsavbrudd på Windows. Selve avbruddet av prosessgruppa bruker Linux-funksjoner og må testes på Linux-maskinen.
+
+### Tekniske observasjoner
+- Tempo før stoppen: ca. 1 000 tokens/s. Det største dokumentet (ca. 143 000 ord) bør da ta 2–3 minutter, så 900 s er god margin.
+- Mulig årsak: `mtag`-dokumentasjonen advarer om problemer med ordformer som inneholder spesialtegn for regulære uttrykk under Python ≥ 3.7 (maskinen har 3.12). Ikke bekreftet; `100029013` bør undersøkes for å finne hva som utløser løkka.
+
+### Neste steg
+- Stoppe den hengende prosessen (`kill -- -<PID>`), hente rettelsen, teste tidsgrensen på `100029013` og starte taggingen på nytt.
+- Finne hva i `100029013` som får `mtag.py` til å henge, og om det kan rettes (f.eks. ved å fjerne eller erstatte tegn før tagging).

@@ -82,6 +82,13 @@ CREATE TABLE IF NOT EXISTS type_kobling (
 );
 CREATE INDEX IF NOT EXISTS idx_type_kobling ON type_kobling(form, lemma, pos, trekk, partisipp);
 CREATE INDEX IF NOT EXISTS idx_type_kobling_lemma ON type_kobling(lemma_id, boy_nummer);
+-- Dokumenter som feilet eller fikk tidsavbrudd under tagging (se tag_and_add)
+CREATE TABLE IF NOT EXISTS tagging_feil (
+    doc_id    TEXT PRIMARY KEY,
+    feiltype  TEXT,
+    melding   TEXT,
+    tidspunkt TEXT
+);
 CREATE VIEW IF NOT EXISTS v_celle_frekvens AS
     SELECT t.doc_id, k.lemma_id, k.boy_nummer, SUM(t.n * k.vekt) AS n
     FROM obt_typer t
@@ -176,24 +183,51 @@ def tag_and_add(
     stat: bool = True,
     doc_id_from_path=lambda p: Path(p).stem,
     skip_existing: bool = True,
+    timeout: float | None = 900,
+    retry_failed: bool = False,
 ) -> None:
     """Tagger tekstfiler med OBT og lagrer KUN telletall (OBT-utdataene skrives ikke til disk).
     Dokumenter som allerede finnes i databasen hoppes over (med mindre skip_existing=False), så en
-    avbrutt kjøring kan startes på nytt med samme kommando."""
+    avbrutt kjøring kan startes på nytt med samme kommando.
+    Et dokument som feiler eller bruker mer enn `timeout` sekunder, noteres i tabellen
+    `tagging_feil` og hoppes over, så resten av korpuset blir tagget. Feilede dokumenter prøves
+    ikke igjen ved neste kjøring med mindre retry_failed=True."""
     import time
 
     text_paths = list(text_paths)
     done = {r[0] for r in conn.execute("SELECT doc_id FROM dokumenter")} if skip_existing else set()
-    todo = [p for p in text_paths if doc_id_from_path(p) not in done]
-    if len(todo) < len(text_paths):
-        print(f"Hopper over {len(text_paths) - len(todo)} dokumenter som allerede er tagget.", flush=True)
+    failed = set() if retry_failed else {r[0] for r in conn.execute("SELECT doc_id FROM tagging_feil")}
+    todo = [p for p in text_paths if doc_id_from_path(p) not in done | failed]
+    n_done = sum(1 for p in text_paths if doc_id_from_path(p) in done)
+    n_failed = sum(1 for p in text_paths if doc_id_from_path(p) in failed - done)
+    if n_done:
+        print(f"Hopper over {n_done} dokumenter som allerede er tagget.", flush=True)
+    if n_failed:
+        print(f"Hopper over {n_failed} dokumenter som feilet tidligere (bruk --prøv-feilede for å prøve igjen).", flush=True)
     t0 = time.time()
+    n_ok = n_err = 0
     for i, p in enumerate(todo, start=1):
         t = time.time()
-        tokens = parse_obt_output(run_obt(p, obt_dir=obt_dir, stat=stat))
-        n = add_document(conn, doc_id_from_path(p), tokens, kilde=str(p))
-        print(f"[{i}/{len(todo)}] {doc_id_from_path(p)}: {n} tokens, {time.time() - t:.0f} s "
+        doc_id = doc_id_from_path(p)
+        try:
+            tokens = parse_obt_output(run_obt(p, obt_dir=obt_dir, stat=stat, timeout=timeout))
+        except Exception as e:  # tidsavbrudd (ObtTimeout) eller annen OBT-feil
+            n_err += 1
+            msg = str(e).splitlines()[0][:500] if str(e) else type(e).__name__
+            with conn:
+                conn.execute(
+                    "INSERT OR REPLACE INTO tagging_feil VALUES (?,?,?,?)",
+                    (doc_id, type(e).__name__, msg, datetime.now().isoformat(timespec="seconds")),
+                )
+            print(f"[{i}/{len(todo)}] {doc_id}: FEIL ({type(e).__name__}) etter {time.time() - t:.0f} s: {msg}", flush=True)
+            continue
+        n = add_document(conn, doc_id, tokens, kilde=str(p))
+        with conn:
+            conn.execute("DELETE FROM tagging_feil WHERE doc_id = ?", (doc_id,))
+        n_ok += 1
+        print(f"[{i}/{len(todo)}] {doc_id}: {n} tokens, {time.time() - t:.0f} s "
               f"(totalt {(time.time() - t0) / 60:.1f} min)", flush=True)
+    print(f"Ferdig: {n_ok} tagget, {n_err} feilet i denne kjøringen.", flush=True)
 
 
 # ---------------------------------------------------------------------------
@@ -530,6 +564,11 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("tagg", help="Tagg tekstfiler med OBT og lagre kun telletall")
     s.add_argument("filer", nargs="+")
     s.add_argument("--obt-dir", default=str(DEFAULT_OBT_DIR))
+    s.add_argument("--tidsgrense", type=float, default=900,
+                   help="Maks sekunder per dokument før det avbrytes og noteres som feilet (standard 900)")
+    s.add_argument("--prøv-feilede", dest="prov_feilede", action="store_true",
+                   help="Prøv på nytt dokumenter som feilet i en tidligere kjøring")
+    sub.add_parser("feilet", help="Vis dokumenter som feilet eller fikk tidsavbrudd under tagging")
     s = sub.add_parser("koble", help="Koble analysetyper til Ordbank-paradigmer og vis koblingsrapport")
     s.add_argument("--på-nytt", dest="paa_nytt", action="store_true",
                    help="Slett eksisterende koblinger og koble alt på nytt (etter endringer i koblingsreglene)")
@@ -553,7 +592,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "legg-til":
         add_obt_files(conn, args.filer)
     elif args.cmd == "tagg":
-        tag_and_add(conn, args.filer, obt_dir=args.obt_dir)
+        tag_and_add(conn, args.filer, obt_dir=args.obt_dir, timeout=args.tidsgrense,
+                    retry_failed=args.prov_feilede)
+    elif args.cmd == "feilet":
+        _print_rows([dict(r) for r in conn.execute("SELECT * FROM tagging_feil ORDER BY tidspunkt")],
+                    ["doc_id", "feiltype", "melding", "tidspunkt"])
     elif args.cmd == "koble":
         print("Alle ordklasser:", map_types(conn, remap=args.paa_nytt))
         for pos, rep in mapping_report_by_pos(conn).items():
