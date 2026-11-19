@@ -770,3 +770,32 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Neste steg**
 - Kjøre `profil bli --pos verb --etter tiaar teksttype` på korpuset og vurdere stabiliteten over tid.
 - Sammenligne med n-gram-profilen (`compute_paradigm_profile`) for samme periode.
+
+---
+
+## 2026-11-19 (del 31) — Profilen for *bli* per tiår og teksttype
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie kjørte `profil bli --pos verb --etter tiaar`, `--etter teksttype` og `--etter tiaar teksttype --celler 1 2 4 5` på det taggede korpuset (222 dokumenter).
+
+**Funn** (andeler av inf/pres/pret/perf-part)
+- **Per tiår er profilen ganske stabil.** inf 0,14–0,19, pret 0,44–0,59, perf-part 0,08–0,12. Presens varierer mest (0,18–0,30). Det er ingen tydelig trend over tid på tvers av teksttypene.
+- **Teksttype betyr mer enn tiår:**
+  - faglitteratur har mest preteritum (0,56) og minst infinitiv (0,13), trolig *ble*-passiv;
+  - skjønnlitteratur har mest infinitiv (0,22) og perf-part (0,13);
+  - aviser har mest presens (0,29).
+- **Celler med få dokumenter styres av enkeltdokumenter.** Eksempler:
+  - faglitteratur 1980-tallet: pret 0,71 og 11 149 forekomster per million, nesten dobbelt så høyt som ellers, trolig én eller to bøker med mye passiv;
+  - skjønnlitteratur 2020-tallet: pres 0,32 og pret 0,30, trolig romaner skrevet i presens.
+  - I skjønnlitteratur avhenger pres/pret mye av hvilken tid fortellingen står i.
+- **Aviser (10–20 dokumenter per tiår) er jevnest og viser en mulig trend:**
+  - presens øker fra 0,23 (1950-tallet) til 0,33–0,34 (1980-tallet og senere), og preteritum går ned fra 0,53 til ca. 0,40;
+  - samtidig synker forekomster per million fra 8 131 til 4 745.
+  - Det kan tyde på mer presens i nyhetsspråket og/eller mindre *bli*-passiv, men er foreløpig ikke testet mot variasjonen mellom dokumenter.
+
+**Neste steg**
+- Måle variasjonen mellom dokumenter (dokumentet er utvalgsenheten): spredning per celle, f.eks. bootstrap over dokumenter, så vi ser hvilke forskjeller mellom tiår og teksttyper som er større enn støyen.
+- Finne dokumentene som driver avvikene (faglitteratur 1980-tallet, skjønnlitteratur 2020-tallet) med `profil … --per-dok`.
+- Sammenligne med n-gram-profilen for *bli*.
