@@ -22,7 +22,7 @@ Bruk fra Python / notebook:
 
 Kommandolinje (fra repo-roten), se `python -m sqlite.korpus_profiler -h`.
 
-Status: skrevet og testet på et lite, konstruert OBT-utdrag; ikke testet på et ekte tagget korpus.
+Status: brukt på det OBT-taggede korpuset (222 dokumenter, logg del 28).
 """
 
 import argparse
@@ -385,6 +385,10 @@ def find_lemma_ids(conn: sqlite3.Connection, grunnform: str, pos: str | None = N
     return [r[0] for r in conn.execute(q, params)]
 
 
+def _in_list(ids: list[int]) -> str:
+    return ",".join("?" for _ in ids)
+
+
 def paradigm_profile(
     conn: sqlite3.Connection,
     lemma_id: int | None = None,
@@ -392,15 +396,29 @@ def paradigm_profile(
     pos: str | None = None,
     per_doc: bool = False,
     slots: Iterable[int] | None = None,
+    merge_homographs: bool = True,
 ) -> list[dict[str, Any]]:
     """
     Frekvens og andel per bøyningskategori for ett lemma, med alle paradigmets celler (også de med 0).
-    Gis `grunnform` uten `lemma_id` og det finnes flere homografe lemmaer, velges det med flest
-    forekomster i korpuset (alle kandidater listes i feltet `kandidater`).
+
+    Gis `grunnform` (uten `lemma_id`), slås homografe lemmaer med samme grunnform og ordklasse
+    sammen (`merge_homographs=True`): frekvensene summeres per `boy_nummer` over alle lemma_id-ene,
+    og cellene er unionen av paradigmene. Grunnen er at OBT ikke skiller homografer i Ordbanken
+    (f.eks. *bli* 7528/7530, *la* 81665/82098); koblingen deler da vekten likt mellom dem, og ett
+    enkelt lemma_id gir halverte tall eller en skjev profil når paradigmene er ulike (logg del 28).
+    Uten `pos` og med kandidater i flere ordklasser velges ordklassen med flest forekomster.
+    `merge_homographs=False` gir den gamle oppførselen: lemma_id-et med flest forekomster.
+    Gis `lemma_id`, brukes bare det.
+
     `slots` begrenser til bestemte boy_nummer (f.eks. (1, 2, 4) for inf/pres/pret); andelene regnes
     da innenfor disse. `per_doc=True` gir én rad per (dokument, celle).
+    Feltet `lemma_ids` viser hvilke lemma_id som inngår; `kandidater` (ved flere) viser
+    korpusfrekvensen for hvert av dem.
     """
-    if lemma_id is None:
+    totals: dict[int, float] = {}
+    if lemma_id is not None:
+        ids = [lemma_id]
+    else:
         if not grunnform:
             raise ValueError("Oppgi lemma_id eller grunnform")
         cands = find_lemma_ids(conn, grunnform, pos)
@@ -412,18 +430,27 @@ def paradigm_profile(
             ).fetchone()[0]
             for lid in cands
         }
-        lemma_id = max(cands, key=lambda lid: totals[lid])
-    else:
-        cands, totals = [lemma_id], {}
+        if merge_homographs:
+            # boy_nummer betyr ulike ting i ulike ordklasser, så det slås bare sammen innen én ordklasse.
+            pos_of = dict(conn.execute(
+                f"SELECT lemma_id, MIN(pos) FROM ob.lemma_former WHERE lemma_id IN ({_in_list(cands)}) "
+                "GROUP BY lemma_id", cands).fetchall())
+            per_pos: dict[str, float] = {}
+            for lid in cands:
+                per_pos[pos_of[lid]] = per_pos.get(pos_of[lid], 0.0) + totals[lid]
+            chosen_pos = max(per_pos, key=lambda k: per_pos[k])
+            ids = sorted(lid for lid in cands if pos_of[lid] == chosen_pos)
+        else:
+            ids = [max(cands, key=lambda lid: totals[lid])]
 
     cells = conn.execute(
-        """
+        f"""
         SELECT boy_nummer, MIN(boy_tekst) AS boy_tekst, GROUP_CONCAT(DISTINCT oppslag) AS former,
                MIN(grunnform) AS grunnform, MIN(pos) AS pos
-        FROM ob.lemma_former WHERE lemma_id = ?
+        FROM ob.lemma_former WHERE lemma_id IN ({_in_list(ids)})
         GROUP BY boy_nummer ORDER BY boy_nummer
         """,
-        (lemma_id,),
+        ids,
     ).fetchall()
     if slots is not None:
         slots = set(slots)
@@ -434,10 +461,11 @@ def paradigm_profile(
     else:
         docs = [None]
 
+    ids_text = ",".join(str(i) for i in ids)
     out = []
     for doc in docs:
-        q = "SELECT boy_nummer, SUM(n) FROM v_celle_frekvens WHERE lemma_id = ?"
-        params: list[Any] = [lemma_id]
+        q = f"SELECT boy_nummer, SUM(n) FROM v_celle_frekvens WHERE lemma_id IN ({_in_list(ids)})"
+        params: list[Any] = list(ids)
         if doc is not None:
             q += " AND doc_id = ?"
             params.append(doc)
@@ -446,7 +474,7 @@ def paradigm_profile(
         for c in cells:
             n = freq.get(c["boy_nummer"], 0.0)
             row = {
-                "lemma_id": lemma_id,
+                "lemma_ids": ids_text,
                 "grunnform": c["grunnform"],
                 "pos": c["pos"],
                 "boy_nummer": c["boy_nummer"],
@@ -457,8 +485,8 @@ def paradigm_profile(
             }
             if doc is not None:
                 row["doc_id"] = doc
-            if len(cands) > 1:
-                row["kandidater"] = {lid: totals.get(lid) for lid in cands}
+            if len(totals) > 1:
+                row["kandidater"] = totals
             out.append(row)
     return out
 
@@ -575,8 +603,10 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("profil", help="Paradigmeprofil for et lemma")
     s.add_argument("grunnform")
     s.add_argument("--pos", help="subst, verb, adj …")
-    s.add_argument("--lemma-id", type=int)
+    s.add_argument("--lemma-id", type=int, help="Bruk bare dette lemma_id-et")
     s.add_argument("--per-dok", action="store_true")
+    s.add_argument("--ikke-slå-sammen", dest="ikke_slaa_sammen", action="store_true",
+                   help="Ikke slå sammen homografe lemmaer; bruk lemma_id-et med flest forekomster")
     s = sub.add_parser("form", help="Faktisk fordeling av en ordform på lemma/kategori")
     s.add_argument("form")
     s = sub.add_parser("sammenlign", help="OBT-fordeling vs. decomposer.py for en ordform")
@@ -603,8 +633,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {pos:6s}", rep)
     elif args.cmd == "profil":
         rows = paradigm_profile(conn, lemma_id=args.lemma_id, grunnform=args.grunnform,
-                                pos=args.pos, per_doc=args.per_dok)
-        cols = (["doc_id"] if args.per_dok else []) + ["lemma_id", "boy_nummer", "boy_tekst", "former", "n", "andel"]
+                                pos=args.pos, per_doc=args.per_dok,
+                                merge_homographs=not args.ikke_slaa_sammen)
+        cols = (["doc_id"] if args.per_dok else []) + ["lemma_ids", "boy_nummer", "boy_tekst", "former", "n", "andel"]
         _print_rows(rows, cols)
     elif args.cmd == "form":
         _print_rows(form_split(conn, args.form), ["lemma_id", "boy_nummer", "lemma", "pos", "trekk", "status", "n", "andel"])

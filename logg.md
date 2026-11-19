@@ -672,3 +672,53 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Stoppe den hengende prosessen (`kill -- -<PID>`), hente rettelsen, teste tidsgrensen på `100029013` og starte taggingen på nytt.
 - Finne hva i `100029013` som får `mtag.py` til å henge, og om det kan rettes (f.eks. ved å fjerne eller erstatte tegn før tagging).
+
+---
+
+## 2026-11-19 (del 28) — Hele korpuset tagget; kobling mot Ordbanken
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Taggingen av hele korpuset ble fullført på Linux-maskinen (220 dokumenter i denne kjøringen, 149 min; 4 var tagget fra før). 222 av 224 dokumenter er tagget.
+- Kjørte `feilet`, `koble` og `ukoblet --status flertydig --pos verb`.
+
+**Funn**
+- To dokumenter feilet med tidsavbrudd (900 s), begge faglitteratur 1950–1959:
+  `100029013` (*Menn med øreringer i Norge*, 1957, 37 147 ord) og `100496944` (kommunal inndeling i Sør-Trøndelag, 1958, 46 496 ord). Cellen faglitteratur 1950-tallet mister dermed ca. 84 000 av 447 000 ord (ca. 19 %). Godtas foreløpig.
+- Kobling mot `fullformsliste`, vektede tokens:
+
+  | | eksakt | flertydig | delvis | ingen | tokens |
+  |---|---|---|---|---|---|
+  | alle ordklasser | 72,2 % | 2,3 % | 1,0 % | 24,5 % | |
+  | subst (uten prop) | 80,7 % | 1,5 % | 1,4 % | 16,4 % | 1 749 197 |
+  | verb | 91,1 % | 5,2 % | 1,9 % | 1,8 % | 1 418 488 |
+  | adj | 90,2 % | 0,4 % | 0,3 % | 9,1 % | 701 441 |
+
+  Tallene ligger nær piloten. `ingen` for alle ordklasser skyldes særlig egennavn, tall og ubøyelige ord.
+- Verb med status `flertydig` er homografe lemmaer i Ordbanken med samme grunnform og samme celle (f.eks. *være* 80033/80034, *bli* 7528/7530, *la* 81665/82098, *rekke* med tre lemma_id). Formen er ikke flertydig i teksten; vekten deles likt mellom lemma_id-ene.
+  - Konsekvens: `paradigm_profile` med `grunnform` velger ett lemma_id. Når homografene har like paradigmer, blir andelene riktige, men tallene halvert. Når paradigmene er ulike (f.eks. svak/sterk bøyning, *henge*), får celler som bare finnes i det ene paradigmet full vekt, mens delte celler får halv vekt, og profilen blir skjev.
+
+**Neste steg**
+- Slå sammen homografe lemma_id (samme grunnform og pos) i profilene, f.eks. ved å summere per `boy_nummer` over alle kandidatene.
+- Se på `ingen` for substantiv (16 %): sammensetninger, OCR-feil, eldre rettskrivning.
+- Undersøke tidsavbruddene i `mtag.py` bare hvis det blir nødvendig.
+
+---
+
+## 2026-11-19 (del 29) — Homografe lemmaer slås sammen i paradigmeprofilene
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- `paradigm_profile` i `sqlite/korpus_profiler.py` slår nå sammen alle lemma_id med samme grunnform og ordklasse når profilen hentes med `grunnform` (ny parameter `merge_homographs=True`). Frekvensene summeres per `boy_nummer`, og cellene er unionen av paradigmene.
+  - Uten `pos`, og med kandidater i flere ordklasser, velges ordklassen med flest forekomster, fordi `boy_nummer` betyr ulike ting i ulike ordklasser.
+  - `--lemma-id` gir fortsatt ett enkelt lemma_id. `--ikke-slå-sammen` (eller `merge_homographs=False`) gir den gamle oppførselen.
+  - Utdatafeltet `lemma_id` heter nå `lemma_ids`, f.eks. `7528,7530`.
+- Testet på en liten database med konstruerte telletall mot Ordbanken. Ingen andre moduler bruker funksjonen.
+
+**Funn**
+- Med konstruerte tall (blir 100, ble 60, blitt 40) ga den gamle profilen for *bli* (lemma_id 7528) presens 38 %, preteritum 46 % og perfektum partisipp 15 %. Riktig fordeling er 50/30/20 %. *ble* finnes bare i 7528-paradigmet og fikk full vekt, mens *blir* og *blitt* ble delt på to lemma_id. Profilene for homografe verb var altså skjeve før rettelsen, ikke bare halverte.
+
+**Neste steg**
+- Kjøre profiler på det ekte korpuset, f.eks. `python -m sqlite.korpus_profiler profil bli --pos verb`, og sammenligne med n-gram-profilene.
