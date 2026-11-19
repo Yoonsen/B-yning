@@ -720,5 +720,18 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Funn**
 - Med konstruerte tall (blir 100, ble 60, blitt 40) ga den gamle profilen for *bli* (lemma_id 7528) presens 38 %, preteritum 46 % og perfektum partisipp 15 %. Riktig fordeling er 50/30/20 %. *ble* finnes bare i 7528-paradigmet og fikk full vekt, mens *blir* og *blitt* ble delt på to lemma_id. Profilene for homografe verb var altså skjeve før rettelsen, ikke bare halverte.
 
+**Hva sammenslåingen IKKE endrer: ingen data går tapt**
+- Sammenslåingen skjer bare når profilen regnes ut (i `paradigm_profile`). Ingenting i databasen er endret eller slettet.
+- `korpus.db` lagrer fortsatt:
+  - `obt_typer`: hver ordform med lemma, ordklasse og trekk fra OBT, og antall per dokument;
+  - `type_kobling`: én rad per Ordbank-oppføring (lemma_id) som formen kan høre til, med status `flertydig` og vekten den fikk (f.eks. 0,5 + 0,5).
+- Informasjonen om at en form kan høre til flere oppføringer kan derfor alltid hentes ut igjen:
+  - `ukoblet --status flertydig [--pos verb]`: alle former som kan høre til flere oppføringer, med lemma_id og celle (kolonnen `celler`);
+  - `form <ordform>`: fordelingen av én ordform på lemma_id og celle;
+  - `profil <grunnform> --lemma-id N`: profilen for én bestemt oppføring;
+  - `profil <grunnform> --ikke-slå-sammen`: den gamle beregningen;
+  - `lemma_ids` i profilen viser hvilke oppføringer som er slått sammen.
+- Merk: OBT selv skiller ikke mellom homografe oppføringer i Ordbanken. Korpuset har derfor aldri hatt informasjon om *hvilken* oppføring et ord i teksten tilhører, bare om at formen passer med flere. Den likedelte vekten (0,5/0,5) er en teknisk fordeling, ikke en observasjon. Skal homografene skilles (f.eks. *la* «la være» vs. *la* «lade»), trengs betydningsanalyse eller manuell gjennomgang. Da er `type_kobling` utgangspunktet.
+
 **Neste steg**
 - Kjøre profiler på det ekte korpuset, f.eks. `python -m sqlite.korpus_profiler profil bli --pos verb`, og sammenligne med n-gram-profilene.

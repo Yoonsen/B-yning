@@ -409,6 +409,9 @@ def paradigm_profile(
     Uten `pos` og med kandidater i flere ordklasser velges ordklassen med flest forekomster.
     `merge_homographs=False` gir den gamle oppførselen: lemma_id-et med flest forekomster.
     Gis `lemma_id`, brukes bare det.
+    Sammenslåingen skjer bare i denne beregningen: `type_kobling` beholder én rad per lemma_id
+    (status `flertydig`), så koblingen til hver enkelt homograf kan alltid hentes ut igjen
+    (`unmatched(statuses=("flertydig",))`, `form_split`, eller `lemma_id=`).
 
     `slots` begrenser til bestemte boy_nummer (f.eks. (1, 2, 4) for inf/pres/pret); andelene regnes
     da innenfor disse. `per_doc=True` gir én rad per (dokument, celle).
