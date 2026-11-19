@@ -858,3 +858,42 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Validere decomposer (oppgave 1) og velge eksempelparadigmer for stabilitetsanalysen (oppgave 2).
+
+---
+
+## 2026-11-19 (del 34) — Første sammenligning av decomposer med OBT-fordelingen
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie ønsker å validere decomposer på et utvalg flertydige former med paradigmer som er brukt i repoet, ikke på alle lemmaer.
+- Kjørte `compare_with_decomposer` (uendret, korpustallene fra `korpus/obt_frekvenser.db` brukes som `nb_totals`) på 12 former: fisker, dør, døde, går, hatt, kroner, dager, ønsker, møter, viser, landet, tro. Ingen kode er endret.
+
+**Funn** (andel per kandidat i prosent, decomposer / OBT; antall forekomster i korpuset i parentes)
+- God overensstemmelse (1–4 prosentpoeng):
+  - *hatt* (2 843): ha 95/95, hatt 5/5;
+  - *ønsker* (2 044): verb 94/92;
+  - *møter* (978): verb 68/72;
+  - *landet* (2 099): land 85/83;
+  - *dager* (2 570): dag 98/100.
+- Middels:
+  - *viser* (2 649): vise verb 99/93, subst *vise* 0/6;
+  - *fisker* (367): fiske verb 58/68, fisker 20/17, fisk 21/7.
+- Dårlig:
+  - *dør* (628): subst 67/48, verb 33/51;
+  - *kroner* (2 943): verb *krone* 26/1, fordi verbets egne former (inf *krone*) også er flertydige;
+  - *døde* (1 580): adj *død* 0/28, den kjente adjektivmangelen (rapport_verbtyper §7.2);
+  - *går* (8 486): subst *går* («i går») 0/15;
+  - *tro* (1 932): verb 96/59, subst 0/14, adj 0/4.
+- Mønster: decomposer svikter når en kandidat mangler regler eller andre former å regne ut fra (adjektiv, *går*, *tro*), og når ankerformene selv er flertydige (*krone*).
+- Forbehold:
+  - noen former er sjeldne i korpuset;
+  - OBT er ikke fasit (*tro* som pret av *trå* 160 ganger virker mistenkelig);
+  - 0–7 % av forekomstene er ukoblet;
+  - homografe oppføringer (f.eks. subst *tro* 71278/71279) er ikke slått sammen i `compare_with_decomposer`.
+
+**Neste steg** (foreslått, venter på Maries svar)
+- Fast ordliste på ca. 20 former: de 12 over pluss «støykandidatene» fra rapport_verbtyper (stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape).
+- Liten modul som slår sammen homografer på begge sider og gir et avviksmål per form.
+- Stikkprøver av OBT-analyser for mistenkelige tilfeller.
+- Rapport `rapport_decomposer_validering.md`.
