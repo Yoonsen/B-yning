@@ -282,12 +282,12 @@ s.addText("«dør» er mest et substantiv", { placeholder: "title" });
 status(s, "UTKAST");
 s.addChart(pres.charts.BAR, [
   { name: "Råtall", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [15.1, 20.6, 64.3] },
-  { name: "Etter dekomponering", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [17.7, 6.9, 75.4] },
+  { name: "Etter dekomponering", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [17.4, 8.7, 74.0] },
 ], chartOpts({ x: MX, y: 1.5, w: 7.2, h: 4.6, barGrouping: "clustered", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Profilen til verbet dø, bokkorpuset 1950–2020", valAxisMaxVal: 85, valAxisHidden: true, valGridLine: { style: "none" } }));
-stat(s, "71 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene", 8.3, 1.5, 4.4);
+stat(s, "64 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene (±10–15 pp)", 8.3, 1.5, 4.4);
 body(s, [{ text: "dø flytter fra type 2B (pret > pres > inf) til 2A (pret > inf > pres).", options: { bold: true, color: C.text1 } }], 8.3, 3.6, 4.4, 1.0, 16);
-missing(s, "«døde» er også adjektivet død. pret er derfor et øvre anslag (69–76 %).", 8.3, 4.8, 4.4, 1.3);
-s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5. Rangeringen 2A holder i sensitivitetsoverslaget, men prosentene må regnes på nytt når adjektivandelen av «døde» er beregnet. Valideringen (lysbilde 13) viser at de faste reglene undervurderer substantivandelen for denne typen homografer (ent ub + pres) med ca. 13 pp i median, så 71 % substantiv er trolig et lavt anslag.");
+missing(s, "«døde» er også adjektivet død. pret er derfor et øvre anslag (64–74 %).", 8.3, 4.8, 4.4, 1.3);
+s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5, regnet om 2026-11-20 med log-regresjon lært i bokkorpuset: estimate_wordform_shares(\"dør\", corpus=\"book\") gir 63,5 % substantiv / 36,5 % verb; summen av de ukappede anslagene er 1,05 × observert. Tidligere tall (faste regler fra nb_totals) var 71 / 29 %. For at pres skulle komme over inf, måtte verbandelen være over 73 %, altså 36 pp feil, mer enn 90-persentilen i valideringen. Med adjektivkorreksjon på 13–38 % av «døde» blir profilen pret 64–71 / inf 19–24 / pres 10–12 %; 2A holder.");
 
 // 11 fisker over tid
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
@@ -309,7 +309,7 @@ s.addChart(pres.charts.BAR, [
 stat(s, "78–80 %", "av de kunstige homografene får riktig leksem i flertall (log-regresjon; faste regler 66–76 %)", 8.4, 1.5, 4.3);
 stat(s, "× 1,6–2", "typisk avvik når én form anslås fra resten av paradigmet (log-regresjon)", 8.4, 3.55, 4.3, C.accent2);
 body(s, [{ text: "Retning: ja. Presise andeler: ±10–15 pp.", options: { bold: true, color: C.text1 } }], 8.4, 5.55, 4.3, 0.7, 16);
-s.addNotes("python3 -m sqlite.valider_dekomponering. Gullstandarden (2 772 substantiv og 533 verb med alle kategorier i nb_totals) har kjent fasit. Test 1: én kategori holdes ute og anslås fra de andre; typisk avvik ×1,55–2,0 med log-regresjon, ×1,7–2,7 med de faste reglene i decomposer.py. Test 2: en substantivform og en verbform slås sammen til en kunstig homograf; 90-persentilen for feilen er fortsatt ca. 30 pp. De faste reglene er skjeve: for ent ub + pres (dør-typen) undervurderer de substantivandelen med 13 pp i median, så 71 % substantiv for «dør» er trolig et lavt anslag. Log-regresjonen er lært med 5-delt kryssvalidering.");
+s.addNotes("python3 -m sqlite.valider_dekomponering. Gullstandarden (2 772 substantiv og 533 verb med alle kategorier i nb_totals) har kjent fasit. Test 1: én kategori holdes ute og anslås fra de andre; typisk avvik ×1,55–2,0 med log-regresjon, ×1,7–2,7 med de faste reglene i decomposer.py. Test 2: en substantivform og en verbform slås sammen til en kunstig homograf; 90-persentilen for feilen er fortsatt ca. 30 pp. De faste reglene er skjeve (for ent ub + pres undervurderer de substantivandelen med 13 pp i median). Dekomponereren bruker derfor nå log-regresjon lært i samme korpus; for «dør» i bøker gir det 64 % substantiv, mot 71 % før. Det enkelte ordet kan altså avvike fra den typiske skjevheten. Log-regresjonen er lært med 5-delt kryssvalidering.");
 
 // 13 Litteratur
 pres.addSection({ title: "Avslutning" });

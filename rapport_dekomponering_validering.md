@@ -53,7 +53,7 @@ En substantivform og en verbform med kjent fasit slås sammen til én kunstig fl
 - **Leksemet i flertall:** med log-regresjon er det riktig i omtrent 4 av 5 tilfeller.
 - **Andelene:** de bommer med 10–15 pp i median, og 90-persentilen ligger rundt 30 pp. Når fasiten ligger mellom 20 og 80 %, er medianfeilen 13–14 pp.
 - **Skjevheten i reglene forklarer to tidligere observasjoner:**
-  - *dør:* for denne typen (ent ub + pres) undervurderer reglene substantivandelen med 13 pp i median. Anslaget på 71 % substantiv for «dør» (`rapport_verbtyper.md` §7.2) er derfor trolig for lavt.
+  - *dør:* for denne typen (ent ub + pres) undervurderer reglene substantivandelen med 13 pp i median. For «dør» selv gikk anslaget likevel ned da reglene ble byttet ut: fra 71 % til 64 % substantiv i bokkorpuset (§6). Skjevheten gjelder typen i gjennomsnitt, ikke hvert enkelt ord.
   - *landet:* for denne typen (ent be + pret) blir summen av de ukappede anslagene 1,9 × observert, fordi både `ent be` og `pret` overvurderes med omtrent en faktor 2.
 - **Kalibrering:** med log-regresjon ligger summen av anslagene på 0,9–1,0 × observert (median).
 
@@ -83,7 +83,21 @@ Til sammenligning er det observert 224 000 forekomster av «fisker» i alt. Niv�
 - Log-regresjon på de øvrige formene i paradigmet er bedre enn de faste reglene i `decomposer.py` og er ikke skjev. Reglene bør byttes ut, og forholdstallene bør læres i samme korpus som de brukes på.
 - Enkeltord med uvanlige profiler, som *fisker* med svært mye flertall, er ekstra følsomme for valget av referansegruppe.
 
-## 6. Begrensninger
+## 6. Dekomponereren etter omleggingen (2026-11-20)
+
+`estimate_wordform_shares` i `sqlite/decomposer.py` bruker nå log-regresjon som standard (`method="logreg"`). Regresjonen er lært på gullstandarden i samme korpus som frekvensene (`corpus="nb_totals"` eller `"book"`).
+
+**Ankerkrav:** minst to kategorier der alle formene er entydige. Uten det, eller når mål-kategorien ikke finnes i gullstandarden (imperativ, s-passiv, adjektiv), brukes de gamle reglene som reserve, og forklaringsteksten sier fra. Vi prøvde også å bruke delvis entydige kategorier og én enkelt ankerkategori. Det ga åpenbart gale svar: «landet» ble 63 % verb og «ønsker» 67 % substantiv. Derfor brukes reglene i de tilfellene.
+
+| Ordform | Før: regler, tall fra `nb_totals` | Nå: bokkorpuset | Metode nå |
+| :--- | :---: | :---: | :--- |
+| *dør* | subst. 71,4 / verb 28,6 % | 63,5 / 36,5 % | log-regresjon for begge; sum anslag / obs. 1,05 |
+| *fisker* | *en fisker* 45 / *fisk* 32 / *fiske* 22 % | 15 / 64 / 20 % | log-regresjon for *en fisker*; reserveregler for de andre |
+| *landet* | subst. 90 / verb 10 % | 96 / 4 % | reserveregel for substantivet, log-regresjon for verbet |
+
+Når metodene blandes slik, er andelene mindre sikre enn i valideringen.
+
+## 7. Begrensninger
 
 - Gullstandarden består av høyfrekvente, entydige lemmaer. Ekte homografer kan ha andre profiler, for eksempel fordi sjeldne ordbokshomografer er overrepresentert.
 - De kunstige homografene parer tilfeldige substantiv og verb. Ekte homografpar kan være korrelerte, for eksempel i semantikk eller frekvens.

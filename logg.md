@@ -500,3 +500,29 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Bytte reglene i `decomposer.py` ut med log-regresjon lært i samme korpus, og regne *dør* på nytt (lysbilde 10 og rapport §7.2).
 - Adjektivandelen av «døde» (hull 5), referanser (hull 6) og figur for paradigmegrafen.
+
+---
+
+## 2026-11-20 (del 20) — Log-regresjon som standard i dekomponereren; *dør* regnet om
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/decomposer.py`:
+  - `estimate_wordform_shares(oppslag, corpus="nb_totals"|"book", method="logreg"|"regler")` bruker nå log-regresjon som standard. Regresjonen er lært på gullstandarden (substantiv; Sett A for verb) i samme korpus som frekvensene.
+  - Nye hjelpefunksjoner: `corpus_freqs`, `gold_profiles`, `fit_logreg` og `estimate_logreg`.
+  - De gamle reglene brukes som reserve når det finnes færre enn to helt entydige ankerkategorier, eller når mål-kategorien ligger utenfor gullstandarden. Forklaringsteksten sier da «regler (reserve)».
+  - `--metode regler` gir nøyaktig samme andeler som før omleggingen (sjekket med diff).
+  - Ny kommandolinje: `python3 -m sqlite.decomposer [ord ...] --korpus book --metode logreg`.
+- `rapport_verbtyper.md` §7.2 punkt 3–5, lysbilde 10, `rapport_dekomponering_validering.md` (ny §6) og planen er oppdatert.
+
+### Funn
+- *dør* i bokkorpuset: **63,5 % substantiv / 36,5 % verb**. Før var det 71,4 / 28,6 %, med faste regler lært på `nb_totals`. Summen av de ukappede anslagene er 1,05 × observert.
+- Profilen til *dø* etter dekomponering er nå pret 74,0 / inf 17,4 / pres 8,7 % (2A). Med adjektivkorreksjon på 13–38 % av «døde» blir den 64–71 / 19–24 / 10–12 %. For at pres skal komme over inf, måtte anslaget for verbandelen bomme med 36 pp.
+- **Rettelse til del 19:** der står det at 71 % substantiv for «dør» trolig er for lavt, fordi reglene i snitt undervurderer substantivet med 13 pp for denne typen. For «dør» gikk anslaget likevel *ned*. Skjevheten gjelder typen i snitt, ikke hvert enkelt ord.
+- Delvis entydige ankre og bare én ankerkategori ga åpenbart gale svar («landet» 63 % verb, «ønsker» 67 % substantiv). Derfor kreves minst to helt entydige kategorier.
+- *fisker* i bøker med den nye dekomponereren: *fisk* (fl) 64 / *fiske* (pres) 20 / *en fisker* 15 %. Det stemmer med `book_decomposition()`. Bare *en fisker* bruker log-regresjon; de to andre bruker reserveregler.
+
+### Neste steg
+- Adjektivandelen av «døde» (hull 5): bigrammer eller adjektivankre.
+- Referanser (hull 6) og figur for paradigmegrafen.
