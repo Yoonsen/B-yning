@@ -287,7 +287,7 @@ s.addChart(pres.charts.BAR, [
 stat(s, "71 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene", 8.3, 1.5, 4.4);
 body(s, [{ text: "dø flytter fra type 2B (pret > pres > inf) til 2A (pret > inf > pres).", options: { bold: true, color: C.text1 } }], 8.3, 3.6, 4.4, 1.0, 16);
 missing(s, "«døde» er også adjektivet død. pret er derfor et øvre anslag (69–76 %).", 8.3, 4.8, 4.4, 1.3);
-s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5. Rangeringen 2A holder i sensitivitetsoverslaget, men prosentene må regnes på nytt når adjektivandelen av «døde» er beregnet.");
+s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5. Rangeringen 2A holder i sensitivitetsoverslaget, men prosentene må regnes på nytt når adjektivandelen av «døde» er beregnet. Valideringen (lysbilde 13) viser at de faste reglene undervurderer substantivandelen for denne typen homografer (ent ub + pres) med ca. 13 pp i median, så 71 % substantiv er trolig et lavt anslag.");
 
 // 11 fisker over tid
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
@@ -295,18 +295,21 @@ s.addText("«fisker» fordelt på leksemer over tid", { placeholder: "title" });
 status(s, "UTKAST");
 chip(s, "fisker", MX, 1.7, { w: 1.8, h: 0.7, fontSize: 22, bold: true, fill: C.accent1, color: C.background1 });
 body(s, bullets(["Ankre: fiskeren, fiskere, fiskerne (en fisker)", "fisken, fiskene (en fisk)", "fiske, fisket/fiska, fiskes (å fiske)"]), MX, 2.7, 4.4, 2.4, 16);
-s.addImage({ path: FIG("fisker_over_tid.png"), x: 5.4, y: 1.6, w: 7.3, h: 4.49, altText: "Ordformen fisker fordelt på en fisker, fisk i flertall og å fiske i presens, andel per år 1950–2020" });
-missing(s, "De ukappede anslagene summerer til ca. 2 × observert «fisker». Andelene er normalisert; se validering.", MX, 5.2, 4.4, 1.3);
-s.addNotes("python3 -m sqlite.figurer. Forholdstallene (ent ub / øvrige former for -er-personord, fl ub / fl be for dyreord, pres / s-passiv for aktivitetsverb) er anslått på nb_totals i sqlite/decompose_fisker.py og brukt år for år på bokkorpuset, med 5 års glidende snitt. Andeler 1950 / 1985 / 2020: en fisker 57 / 55 / 51 %, fisk (fl) 33 / 33 / 42 %, å fiske 11 / 12 / 7 %. Summen av de ukappede anslagene er median 2,0 × observert «fisker» (spenn 0,8–3,0), så nivået er usikkert; det er derfor lysbilde 12 trengs.");
+s.addImage({ path: FIG("fisker_over_tid.png"), x: 5.4, y: 1.5, w: 7.3, h: 4.33, altText: "Ordformen fisker fordelt på en fisker, fisk i flertall og å fiske i presens, andel per år 1950–2020" });
+missing(s, "Nivået avhenger av hvor forholdstallene er lært: en fisker 14–21 % eller ca. 50 %. Bare økningen for fisk (flertall) er robust.", MX, 5.0, 4.4, 1.5);
+s.addNotes("python3 -m sqlite.figurer. Heltrukket: forholdstall lært i bokkorpuset (log-regresjon på 5 799 gullstandard-substantiv; pres / s-passiv for aktivitetsverb), sqlite/decompose_fisker.py book_decomposition. Stiplet: forholdstallene fra nb_totals (mest aviser) overført til bøker. «fiskene» er relativt nesten dobbelt så vanlig i bøker som i nb_totals, så tall lært i ett korpus passer dårlig i et annet. Andeler 1950 / 2020, bok: en fisker 21 / 14 %, fisk (fl) 57 / 74 %, å fiske 22 / 12 %. Sum av ukappede anslag / observert: 1,3 (bok) mot 2,0 (overført). 5 års glidende snitt.");
 
 // 12 Validering
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Hvor godt treffer metoden?", { placeholder: "title" });
-status(s, "MANGLER");
-s.addText("Forslag til test", { x: MX, y: 1.7, w: 5.0, h: 0.5, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-body(s, bullets(["Velg entydige lemmaer med kjent fasit", "Lat som én form er flertydig", "Estimer den fra resten av paradigmet", "Mål feilen, per ordklasse og bøyningskategori"]), MX, 2.4, 5.0, 3.0, 16);
-missing(s, "Feilfordeling for estimatene (f.eks. median og spredning i prosentpoeng)", 6.2, 1.6, 6.5, 4.8);
-s.addNotes("Hull 4 i planen. For «dør» summerer de ukappede estimatene til 4,7 M mot 3,4 M observert før normalisering, så valideringen trengs før vi kan si noe om presisjon.");
+s.addChart(pres.charts.BAR, [
+  { name: "Faste regler (i dag)", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [13.3, 14.6, 14.4, 16.8] },
+  { name: "Log-regresjon", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [11.0, 11.5, 10.5, 10.1] },
+], chartOpts({ x: MX, y: 1.5, w: 7.4, h: 4.7, barDir: "bar", barGrouping: "clustered", catAxisOrientation: "maxMin", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Median feil i substantivandel (prosentpoeng), 3 000 kunstige homografer per type", valAxisMaxVal: 20, valAxisHidden: true, valGridLine: { style: "none" } }));
+stat(s, "78–80 %", "av de kunstige homografene får riktig leksem i flertall (log-regresjon; faste regler 66–76 %)", 8.4, 1.5, 4.3);
+stat(s, "× 1,6–2", "typisk avvik når én form anslås fra resten av paradigmet (log-regresjon)", 8.4, 3.55, 4.3, C.accent2);
+body(s, [{ text: "Retning: ja. Presise andeler: ±10–15 pp.", options: { bold: true, color: C.text1 } }], 8.4, 5.55, 4.3, 0.7, 16);
+s.addNotes("python3 -m sqlite.valider_dekomponering. Gullstandarden (2 772 substantiv og 533 verb med alle kategorier i nb_totals) har kjent fasit. Test 1: én kategori holdes ute og anslås fra de andre; typisk avvik ×1,55–2,0 med log-regresjon, ×1,7–2,7 med de faste reglene i decomposer.py. Test 2: en substantivform og en verbform slås sammen til en kunstig homograf; 90-persentilen for feilen er fortsatt ca. 30 pp. De faste reglene er skjeve: for ent ub + pres (dør-typen) undervurderer de substantivandelen med 13 pp i median, så 71 % substantiv for «dør» er trolig et lavt anslag. Log-regresjonen er lært med 5-delt kryssvalidering.");
 
 // 13 Litteratur
 pres.addSection({ title: "Avslutning" });

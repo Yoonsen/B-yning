@@ -10,7 +10,7 @@ resultater/verbtyper.tsv (skrives av `python3 -m sqlite.verbtyper`).
 
 1. verb_ternaer.png      – hvert verb i Sett A (N = 580) som et punkt i inf/pres/pret-trekanten
 2. verb_stabilitet.png   – andel per form per år for fire stabile verb
-3. fisker_over_tid.png   – ordformen «fisker» fordelt på tre leksemer per år
+3. fisker_over_tid.png   – ordformen «fisker» fordelt på tre leksemer per år, to sett forholdstall
 """
 
 import contextlib
@@ -189,31 +189,41 @@ def fisker_yearly(smooth: int = 5) -> tuple[dict[str, np.ndarray], np.ndarray, n
 
 
 def fig_fisker() -> Path:
-    shares, ratio, _ = fisker_yearly()
+    """To varianter: forholdstall lært på nb_totals (stiplet) og i bokkorpuset (heltrukket)."""
+    from sqlite.decompose_fisker import book_decomposition
+
+    nb_shares, nb_ratio, _ = fisker_yearly()
+    book = book_decomposition(PERIOD)
     fig, ax = plt.subplots(figsize=(7.3, 4.6))
-    bottom = np.zeros(len(YEARS))
     for lx, col in LEXEME_COLOR.items():
-        ax.fill_between(YEARS, bottom, bottom + shares[lx], color=col, lw=0, alpha=0.9)
-        ax.plot(YEARS, bottom + shares[lx], color="white", lw=2)
-        mid = bottom + shares[lx] / 2
-        i = YEARS.index(1985)
-        ax.text(1985, mid[i], f"{lx}", ha="center", va="center", color="white", fontsize=14, fontweight="bold")
-        bottom = bottom + shares[lx]
+        ax.plot(YEARS, book["shares"][lx], color=col, lw=2.5, solid_capstyle="round")
+        ax.plot(YEARS, nb_shares[lx], color=col, lw=1.8, ls=(0, (4, 2.5)), alpha=0.9)
+    # Direkte etiketter ved enden av den heltrukne linjen, skjøvet fra hverandre
+    ends = sorted(LEXEME_COLOR, key=lambda lx: book["shares"][lx][-1])
+    ys = [book["shares"][lx][-1] for lx in ends]
+    for i in range(1, len(ys)):
+        ys[i] = max(ys[i], ys[i - 1] + 7)
+    for lx, y in zip(ends, ys):
+        ax.text(PERIOD[1] + 1.5, y, lx, color=INK, fontsize=12, va="center")
     ax.set_xlim(PERIOD)
-    ax.set_ylim(0, 100)
-    ax.set_yticks([0, 25, 50, 75, 100])
-    ax.set_yticklabels(["0", "25", "50", "75", "100 %"])
-    ax.set_xticks([1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020])
+    ax.set_ylim(0, 80)
+    ax.set_yticks([0, 20, 40, 60, 80])
+    ax.set_yticklabels(["0", "20", "40", "60", "80 %"])
+    ax.set_xticks([1950, 1970, 1990, 2010])
+    ax.grid(axis="y", color=GRID, lw=0.8)
     ax.tick_params(length=0)
-    for sp in ax.spines.values():
-        sp.set_visible(False)
+    handles = [plt.Line2D([], [], color=MUTED, lw=2.5), plt.Line2D([], [], color=MUTED, lw=1.8, ls=(0, (4, 2.5)))]
+    ax.legend(handles, ["forholdstall lært i bokkorpuset", "forholdstall lært i hele NB-korpuset"], loc="upper center",
+              bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False, fontsize=11)
     out = OUT_DIR / "fisker_over_tid.png"
     fig.savefig(out)
     plt.close(fig)
-    for lx in LEXEME_COLOR:
-        v = shares[lx]
-        print(f"  {lx:18s} 1950 {v[0]:5.1f} %  1985 {v[35]:5.1f} %  2020 {v[-1]:5.1f} %  (min {v.min():.1f}, maks {v.max():.1f})")
-    print(f"  Sum ukappede estimater / observert «fisker»: median {np.median(ratio):.2f} (spenn {ratio.min():.2f}–{ratio.max():.2f})")
+    for name, sh, ratio in (("bok", book["shares"], book["sum_obs"]), ("nb_totals", nb_shares, nb_ratio)):
+        print(f"  Forholdstall lært i {name}:")
+        for lx in LEXEME_COLOR:
+            v = sh[lx]
+            print(f"    {lx:18s} 1950 {v[0]:5.1f} %  1985 {v[35]:5.1f} %  2020 {v[-1]:5.1f} %")
+        print(f"    Sum ukappede anslag / observert «fisker»: median {np.median(ratio):.2f} (spenn {ratio.min():.2f}–{ratio.max():.2f})")
     return out
 
 

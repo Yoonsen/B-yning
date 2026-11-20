@@ -474,3 +474,29 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Valider dekomponereren (hull 4, lysbilde 13). Se særlig hvorfor anslagene for *fisker* blir for høye.
 - Figur for paradigmegrafen (lysbilde 4), referanser (hull 6).
+
+---
+
+## 2026-11-20 (del 19) — Validering av dekomponereren
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/decomposer.py`: anslagsregelen er skilt ut som den rene funksjonen `estimate_from_slots`. Utskriften fra `python3 -m sqlite.decomposer` er identisk med før.
+- Nytt skript `sqlite/valider_dekomponering.py` validerer på gullstandardene i `nb_totals` (2 772 substantiv, 533 verb):
+  - Test 1 holder én kategori ute og anslår den fra resten av paradigmet.
+  - Test 2 lager 3 000 kunstige homografer per type (fl ub + pres, ent be + pret, ent ub + inf, ent ub + pres).
+  - Tre metoder sammenlignes: dagens faste regler, lært medianforhold og log-regresjon, de to siste med 5-delt kryssvalidering.
+  - Resultatene skrives til `resultater/dekomponering_validering.tsv`.
+- `sqlite/decompose_fisker.py`: ny `book_decomposition()` som lærer forholdstallene i bokkorpuset. `fisker_over_tid.png` viser nå begge variantene.
+- Ny rapport `rapport_dekomponering_validering.md`. I decket er lysbilde 13 fylt ut (diagram og tall), lysbilde 12 har ny figur og ny merknad, og talenotatet på lysbilde 10 er oppdatert. Planen er oppdatert (hull 4 løst).
+
+### Funn
+- Én form anslått fra resten av paradigmet bommer typisk med en faktor på 1,6–2 med log-regresjon og 1,7–2,7 med reglene.
+- Kunstige homografer: med log-regresjon er leksemet i flertall riktig i 78–80 % av tilfellene, med median feil 10–11 pp og 90-persentil rundt 30 pp. Reglene gir 66–76 % og 13–17 pp.
+- Reglene er skjeve: `ent be` og `pret` overvurderes med omtrent en faktor 2, mens `ent ub` (×0,6) og `perf-part` (×0,5) undervurderes. For dør-typen (ent ub + pres) blir substantivandelen 13 pp for lav, så 71 % substantiv for «dør» er trolig et lavt anslag.
+- *fisker*: forholdstall lært i `nb_totals` passer ikke for bøker, der *fiskene* er relativt nesten dobbelt så vanlig. Med tall lært i bokkorpuset er *en fisker* 14–21 %, mot ca. 50 % med de overførte tallene. Valget av referansegruppe flytter anslaget for *en fisker* mellom 39 000 og 322 000, mens det er observert 224 000 «fisker». Bare økningen for *fisk* (flertall) er robust.
+
+### Neste steg
+- Bytte reglene i `decomposer.py` ut med log-regresjon lært i samme korpus, og regne *dør* på nytt (lysbilde 10 og rapport §7.2).
+- Adjektivandelen av «døde» (hull 5), referanser (hull 6) og figur for paradigmegrafen.

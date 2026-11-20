@@ -34,6 +34,100 @@ from sqlite.queries import get_conn, get_paradigm, lookup_wordform
 #       imp (11)      ≈ 0.005 * (inf + pres + pret)  (imperativ er ekstremt lavfrekvent i bok/avis!)
 
 
+def estimate_from_slots(
+    bg: str,
+    tslots: set[int],
+    slot_info: dict[int, dict[str, Any]],
+    unamb_total_in_paradigm: float,
+) -> tuple[float, str]:
+    """
+    Kjerneregelen: anslår frekvensen til mål-kategoriene `tslots` ut fra resten av paradigmet.
+
+    `slot_info` har én post per øvrig bøyningskategori med nøklene `freq`, `eff_freq`
+    (nedvektet hvis formen deles med andre lemmaer), `min_lem_cnt` og `boy_tekst`.
+    Brukes av `estimate_wordform_shares` og av valideringen i `sqlite/valider_dekomponering.py`.
+    """
+    est_freq = 0.0
+    anchor_explanation = ""
+
+    if bg == "substantiv":
+        f1 = slot_info.get(1, {}).get("eff_freq", 0.0)
+        f2 = slot_info.get(2, {}).get("eff_freq", 0.0)
+        f3 = slot_info.get(3, {}).get("eff_freq", 0.0)
+        f4 = slot_info.get(4, {}).get("eff_freq", 0.0)
+
+        # Hvis paradigmet ikke har NOEN entydige former i det hele tatt (som 'et fiske' id=17310,
+        # der alle former kolliderer med 'å fiske' eller 'en fisk'), nedskaler kraftig
+        scale = 1.0 if unamb_total_in_paradigm > 0 else 0.05
+
+        if 1 in tslots:  # Vi skal estimere ent ub (f.eks. 'en fisker', 'en hatt')
+            est_freq = scale * (0.85 * f2 + 0.22 * (f3 + f4))
+            anchor_explanation = f"0.85*ent_be({f2:,.0f}) + 0.22*fl({f3+f4:,.0f})"
+        elif 2 in tslots:  # Vi skal estimere ent be (f.eks. 'landet')
+            if f4 > 0 and slot_info.get(4, {}).get("min_lem_cnt", 99) == 1:
+                est_freq = scale * (3.50 * f4 + 0.25 * f1)
+                anchor_explanation = f"3.50*fl_be({f4:,.0f}) + 0.25*ent_ub({f1:,.0f})"
+            else:
+                est_freq = scale * (0.45 * f1 + 1.50 * f4)
+                anchor_explanation = f"0.45*ent_ub({f1:,.0f}) + 1.50*fl_be({f4:,.0f})"
+        elif 3 in tslots:  # Vi skal estimere fl ub (f.eks. 'fisker', 'kroner', 'dager', 'ønsker')
+            # Hvis kun ent_be er 100% entydig (som 'fisken' for 'en fisk'), mens fl_be ('fiskene') har 2 lemmaer:
+            f4_raw = slot_info.get(4, {}).get("freq", 0) if unamb_total_in_paradigm > 0 else f4
+            if f4_raw > 0:
+                est_freq = scale * (3.34 * f4_raw)
+                anchor_explanation = f"3.34*fl_be({f4_raw:,.0f})"
+            else:
+                est_freq = scale * (0.22 * (f1 + f2))
+                anchor_explanation = f"0.22*(ent_ub+ent_be)({f1+f2:,.0f})"
+        elif 4 in tslots:  # Vi skal estimere fl be
+            est_freq = scale * (0.30 * f3 if f3 > 0 else 0.08 * (f1 + f2))
+            anchor_explanation = f"0.30*fl_ub({f3:,.0f})"
+
+    elif bg == "verb, normal":
+        # Finn beste entydige verb-ankere (inf=1, pres=2, pass=3, pret=4, perf=5)
+        # Prioriter kjerneformer (1, 2, 4, 5) som har min_lem_cnt == 1
+        unamb_core = {
+            b: slot_info[b]["freq"]
+            for b in (1, 2, 4, 5)
+            if b in slot_info and slot_info[b]["min_lem_cnt"] == 1
+        }
+        all_core = {
+            b: slot_info[b]["freq"] for b in (1, 2, 4, 5) if b in slot_info
+        }
+        ref_core = unamb_core if unamb_core else all_core
+
+        # Normalvekter for kjerneverb: 1(inf)=0.32, 2(pres)=0.24, 4(pret)=0.26, 5(perf)=0.18
+        w_map = {1: 0.32, 2: 0.24, 4: 0.26, 5: 0.18}
+        target_w = sum(w_map.get(b, 0.005) for b in tslots if b in w_map)
+        if 11 in tslots and target_w == 0:
+            # Imperativ alene (f.eks. 'fisk!', 'hatt!', 'mann!', 'land!') er ~0.5% av verbets kjerne
+            target_w = 0.005
+
+        if ref_core and sum(w_map[b] for b in ref_core) > 0:
+            denom_w = sum(w_map[b] for b in ref_core)
+            sum_ref = sum(ref_core.values())
+            # Hvis vi ikke hadde noen 100% entydige kjerneformer, men vi har en 100% entydig s-passiv (3):
+            if not unamb_core and 3 in slot_info and slot_info[3]["min_lem_cnt"] == 1 and slot_info[3]["freq"] > 0:
+                f_pass = slot_info[3]["freq"]
+                est_freq = (target_w / 0.24) * (2.61 * f_pass)
+                anchor_explanation = f"fra entydig s-passiv ({f_pass:,d})"
+            else:
+                est_freq = (target_w / denom_w) * sum_ref
+                used_names = "+".join(slot_info[b]["boy_tekst"] for b in ref_core)
+                anchor_explanation = f"fra verbkjerne {used_names} ({sum_ref:,d})"
+        elif 3 in slot_info and slot_info[3]["freq"] > 0:
+            f_pass = slot_info[3]["freq"]
+            est_freq = (target_w / 0.24) * (2.61 * f_pass)
+            anchor_explanation = f"fra s-passiv ({f_pass:,d})"
+
+    else:
+        # Ubøyelige ord / andre ordklasser uten andre former i paradigmet
+        est_freq = 0.0
+        anchor_explanation = "ingen andre bøyningsformer i paradigmet"
+
+    return est_freq, anchor_explanation
+
+
 def estimate_wordform_shares(
     oppslag: str,
     conn: sqlite3.Connection | None = None,
@@ -112,85 +206,9 @@ def estimate_wordform_shares(
                     f"{w} ({fr:,d}{'*' if is_unamb else ''})"
                 )
 
-            bg = meta["boy_gruppe"]
-            tslots = set(meta["target_slots"])
-            est_freq = 0.0
-            anchor_explanation = ""
-
-            if bg == "substantiv":
-                f1 = slot_info.get(1, {}).get("eff_freq", 0.0)
-                f2 = slot_info.get(2, {}).get("eff_freq", 0.0)
-                f3 = slot_info.get(3, {}).get("eff_freq", 0.0)
-                f4 = slot_info.get(4, {}).get("eff_freq", 0.0)
-
-                # Hvis paradigmet ikke har NOEN entydige former i det hele tatt (som 'et fiske' id=17310,
-                # der alle former kolliderer med 'å fiske' eller 'en fisk'), nedskaler kraftig
-                scale = 1.0 if unamb_total_in_paradigm > 0 else 0.05
-
-                if 1 in tslots:  # Vi skal estimere ent ub (f.eks. 'en fisker', 'en hatt')
-                    est_freq = scale * (0.85 * f2 + 0.22 * (f3 + f4))
-                    anchor_explanation = f"0.85*ent_be({f2:,.0f}) + 0.22*fl({f3+f4:,.0f})"
-                elif 2 in tslots:  # Vi skal estimere ent be (f.eks. 'landet')
-                    if f4 > 0 and slot_info.get(4, {}).get("min_lem_cnt", 99) == 1:
-                        est_freq = scale * (3.50 * f4 + 0.25 * f1)
-                        anchor_explanation = f"3.50*fl_be({f4:,.0f}) + 0.25*ent_ub({f1:,.0f})"
-                    else:
-                        est_freq = scale * (0.45 * f1 + 1.50 * f4)
-                        anchor_explanation = f"0.45*ent_ub({f1:,.0f}) + 1.50*fl_be({f4:,.0f})"
-                elif 3 in tslots:  # Vi skal estimere fl ub (f.eks. 'fisker', 'kroner', 'dager', 'ønsker')
-                    # Hvis kun ent_be er 100% entydig (som 'fisken' for 'en fisk'), mens fl_be ('fiskene') har 2 lemmaer:
-                    f4_raw = slot_info.get(4, {}).get("freq", 0) if unamb_total_in_paradigm > 0 else f4
-                    if f4_raw > 0:
-                        est_freq = scale * (3.34 * f4_raw)
-                        anchor_explanation = f"3.34*fl_be({f4_raw:,.0f})"
-                    else:
-                        est_freq = scale * (0.22 * (f1 + f2))
-                        anchor_explanation = f"0.22*(ent_ub+ent_be)({f1+f2:,.0f})"
-                elif 4 in tslots:  # Vi skal estimere fl be
-                    est_freq = scale * (0.30 * f3 if f3 > 0 else 0.08 * (f1 + f2))
-                    anchor_explanation = f"0.30*fl_ub({f3:,.0f})"
-
-            elif bg == "verb, normal":
-                # Finn beste entydige verb-ankere (inf=1, pres=2, pass=3, pret=4, perf=5)
-                # Prioriter kjerneformer (1, 2, 4, 5) som har min_lem_cnt == 1
-                unamb_core = {
-                    b: slot_info[b]["freq"]
-                    for b in (1, 2, 4, 5)
-                    if b in slot_info and slot_info[b]["min_lem_cnt"] == 1
-                }
-                all_core = {
-                    b: slot_info[b]["freq"] for b in (1, 2, 4, 5) if b in slot_info
-                }
-                ref_core = unamb_core if unamb_core else all_core
-
-                # Normalvekter for kjerneverb: 1(inf)=0.32, 2(pres)=0.24, 4(pret)=0.26, 5(perf)=0.18
-                w_map = {1: 0.32, 2: 0.24, 4: 0.26, 5: 0.18}
-                target_w = sum(w_map.get(b, 0.005) for b in tslots if b in w_map)
-                if 11 in tslots and target_w == 0:
-                    # Imperativ alene (f.eks. 'fisk!', 'hatt!', 'mann!', 'land!') er ~0.5% av verbets kjerne
-                    target_w = 0.005
-
-                if ref_core and sum(w_map[b] for b in ref_core) > 0:
-                    denom_w = sum(w_map[b] for b in ref_core)
-                    sum_ref = sum(ref_core.values())
-                    # Hvis vi ikke hadde noen 100% entydige kjerneformer, men vi har en 100% entydig s-passiv (3):
-                    if not unamb_core and 3 in slot_info and slot_info[3]["min_lem_cnt"] == 1 and slot_info[3]["freq"] > 0:
-                        f_pass = slot_info[3]["freq"]
-                        est_freq = (target_w / 0.24) * (2.61 * f_pass)
-                        anchor_explanation = f"fra entydig s-passiv ({f_pass:,d})"
-                    else:
-                        est_freq = (target_w / denom_w) * sum_ref
-                        used_names = "+".join(slot_info[b]["boy_tekst"] for b in ref_core)
-                        anchor_explanation = f"fra verbkjerne {used_names} ({sum_ref:,d})"
-                elif 3 in slot_info and slot_info[3]["freq"] > 0:
-                    f_pass = slot_info[3]["freq"]
-                    est_freq = (target_w / 0.24) * (2.61 * f_pass)
-                    anchor_explanation = f"fra s-passiv ({f_pass:,d})"
-
-            else:
-                # Ubøyelige ord / andre ordklasser uten andre former i paradigmet
-                est_freq = 0.0
-                anchor_explanation = "ingen andre bøyningsformer i paradigmet"
+            est_freq, anchor_explanation = estimate_from_slots(
+                meta["boy_gruppe"], set(meta["target_slots"]), slot_info, unamb_total_in_paradigm
+            )
 
             # En kandidat kan aldri bidra med flere forekomster av oppslagsordet enn obs_freq
             capped_est = min(est_freq, float(obs_freq)) if obs_freq > 0 else est_freq
