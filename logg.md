@@ -1131,3 +1131,39 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Neste steg**
 - Marie fletter når kollegaen har gitt klarsignal.
 - Etter flettingen bør `main` flettes inn i `figurer-deck` før nye loggoppføringer skrives der, så nummereringen fortsetter fra del 45 og vi unngår konflikt i `logg.md`.
+
+---
+
+## 2026-11-20 (del 45) — Stabilitet over tid: n-gram for bøker med flertydige former fordelt etter OBT per tiår
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- PR #5 (`multitagger-oppsett` → `main`) ble flettet av Marie etter klarsignal fra kollegaen. `multitagger-oppsett` og `notebook-dataoppslag` (helt inneholdt i `main`) er slettet. `rapport-verbtyper` og `figurer-deck` er kollegaens og er ikke rørt.
+- Ny gren `stabilitet-obt-fordeling`. Navnet viser at dette er én mulig analyse av stabilitet, basert på taggingen.
+- Metode, avtalt med Marie:
+  - Entydige former hentes rett fra NBs n-gram for bøker (bokmål, 1950–2020).
+  - Flertydige former fordeles med andelen leksemet har av formen i det OBT-taggede korpuset, regnet per tiår fra bøkene (skjønn- og faglitteratur).
+  - Aviser er holdt utenfor foreløpig: n-gram for aviser har ikke bokmålsfilter (*ikkje* ≈ 10 % av *ikke* + *ikkje* mot under 2 % i bøkene), mens OBT-andelene er fra bokmålsaviser.
+- Ny modul `sqlite/stabilitet_obt.py` (`python -m sqlite.stabilitet_obt`):
+  - Eksempellemmaer: substantiv *fisk*, *fisker*, *dør*, *krone*; verb *dø*, *gå*, *svare*, *sette*, *bygge*.
+  - Andeler per tiår med Wilson-intervall. Under 30 koblede forekomster i tiåret brukes andelen for hele perioden.
+  - Fire varianter: `obt_tiaar`, `obt_fast` (én andel for hele perioden), `decomposer` (regler, per tiår på n-gram-tallene) og `naiv` (rå formtall).
+  - Stabilitetsmål: gjennomsnittlig endring mellom påfølgende tiår og største avvik fra snittprofilen (pp).
+  - Skriver `resultater/stabilitet_obt_andeler.tsv` og `resultater/stabilitet_obt_profiler.tsv`.
+
+**Funn**
+- **Former der ett leksem dominerer** (*går* 91–96 % *gå*, *kroner* 96–99 % *krone*, *sett* 0 % *sette*, *svarer* 98–100 %): variantene gir nesten samme profil, og stabilitetsbildet er robust.
+  - *gå*: preteritum går ned fra 41 % (1950-tallet) til 33 % (1980–90-tallet) og opp igjen til 39 % (2020).
+  - *krone*: flertall ubestemt stiger fra 81 til 89 %.
+  - *fisk*: entall ubestemt er stabil rundt 67–70 % med OBT-fordeling, men 52–61 % med naive tall, fordi *fisker* (flertall) er overtelt.
+- **Former der flere leksemer har store andeler** (*satt*: *sette*/*sitte*; *dør*: *dø*/*dør*; *døde*: *dø*/*død*; *svart*/*svarte*: *svare*/adjektivet *svart*): OBT-andelene per tiår svinger mye (*satt* 19–43 %, *dør* som verb 33–72 %, *døde* 58–87 %).
+  - Svingningene skyldes i stor grad hvilke bøker som er med. Innenfor ett tiår varierer andelen for *satt* fra 6 til 78 % mellom bøkene, og et tiår har bare 6–10 bøker per teksttype.
+  - Variant `obt_tiaar` ser derfor *mindre* stabil ut enn de andre for slike lemmaer (*sette* 10,4 pp per tiår mot 5,3 naivt; *dø* 5,1 mot 2,0). Det er i stor grad målestøy, ikke språkendring.
+  - Wilson-intervallene er regnet per forekomst og er for smale, fordi forekomster i samme bok ikke er uavhengige.
+- **Decomposer** gjentar feilene fra valideringen (del 42): *svart* og *svarte* gis 100 % til *svare* (adjektivet mangler), *kroner* bare 60–64 % til *krone*, og *fisker* 47–61 % til *fisk*.
+
+**Neste steg** (ikke avtalt)
+- Usikkerhet med bootstrap over dokumenter (boka som enhet), for å skille ekte endring fra utvalgsstøy i andeler og profiler.
+- Alternativt bredere tidsvinduer (f.eks. 20 år) eller et større tagget korpus for formene der flere leksemer har store andeler.
+- Rapport når metoden er avklart.
