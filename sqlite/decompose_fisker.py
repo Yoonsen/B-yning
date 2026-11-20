@@ -253,6 +253,13 @@ def analyze_fisker_decomposition():
     print(f"  3. Verb   «å fiske»   (presens)        | {raw_3:14,.0f} | {norm_3:10,.0f} ({norm_3/obs_fisker*100:5.1f} %)")
     print("  ------------------------------------------------------------------------")
 
+    # Koeffisientene brukes av sqlite/figurer.py til å dekomponere «fisker» år for år.
+    return {
+        "fisker_noun_weights": [float(w) for w in weights_er],  # · (fiskeren, fiskere, fiskerne)
+        "fisk_fl_ub_per_fiskene": med_animal_fl_ratio,
+        "fiske_pres_per_fiskes": med_pres_to_pass,
+    }
+
 
 if __name__ == "__main__":
     analyze_fisker_decomposition()

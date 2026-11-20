@@ -450,3 +450,27 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Når `inf` er på topp, deler verbene seg likt mellom 1A og 1B (49,8 / 50,2 %) i bokkorpuset. Påstander om at 1A er klart vanligere enn 1B gjelder bare `nb_totals`.
 - Eldre loggoppføringer (del 9, 12) har `nb_totals`-tallene; de er historikk og er ikke endret.
 - §5 i rapporten (perf-part og -ende) er ikke regnet om; korpuset der er ikke dokumentert.
+
+---
+
+## 2026-11-20 (del 18) — Figurer til decket
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Nytt skript `sqlite/figurer.py` (`python3 -m sqlite.figurer`, krever matplotlib og numpy) lager tre PNG-er i `tekst/figurer/`, alle på bokkorpuset 1950–2020:
+  - `verb_ternaer.png`: de 580 verbene i Sett A som punkter i trekanten inf/pres/pret, farget etter formen på topp, med utvalgte verb merket.
+  - `verb_stabilitet.png`: andel per form per år for *vurdere, undersøke, forsvinne, trenge*.
+  - `fisker_over_tid.png`: «fisker» fordelt på *en fisker*, *fisk* (flertall) og *å fiske* (presens) per år, med 5 års glidende snitt.
+- `sqlite/decompose_fisker.py` returnerer nå forholdstallene sine, slik at figurskriptet kan bruke dem år for år. Utskriften er uendret.
+- Decket: nytt lysbilde 7 med trekanten (15 lysbilder totalt); figurer på stabilitetslysbildet (8) og *fisker*-lysbildet (12); søylene på lysbilde 6 bruker samme formfarger. Formfargene er inf `B5482F`, pres `3D5A98`, pret `2A9D8F` (sjekket for fargeblindhet; temaets `4A4E69`/`4F7C7A` var for like).
+- Planen er oppdatert (hull 2 stort sett løst, hull 7 delvis).
+
+### Funn
+- *fisker* 1950 / 1985 / 2020: en fisker 57 / 55 / 51 %, fisk (fl) 33 / 33 / 42 %, å fiske 11 / 12 / 7 %.
+- **Advarsel:** summen av de ukappede anslagene er median 2,0 × observert «fisker» i bokkorpuset (spenn 0,8–3,0). Forholdstallene er anslått på `nb_totals` og overført til bokkorpuset. Andelene er normalisert, men nivået er uvalidert. Dette er markert på lysbildet og styrker behovet for hull 4.
+- Stabil rangering betyr ikke stabile andeler: *vurdere* går fra ca. 80 til 63 % infinitiv og *trenger* fra ca. 50 til 70 % presens, mens rekkefølgen er den samme i alle 71 år. Det er et poeng for foredraget.
+
+### Neste steg
+- Valider dekomponereren (hull 4, lysbilde 13). Se særlig hvorfor anslagene for *fisker* blir for høye.
+- Figur for paradigmegrafen (lysbilde 4), referanser (hull 6).
