@@ -526,3 +526,28 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Adjektivandelen av «døde» (hull 5): bigrammer eller adjektivankre.
 - Referanser (hull 6) og figur for paradigmegrafen.
+
+---
+
+## 2026-11-20 (del 21) — Adjektivet i «døde» (hull 5)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny `sqlite/adjektiv_gold.py`: gullstandard for adjektiv, dvs. 1 852 lemmaer i `boy_gruppe 'adjektiv'` der m/f, e-form og nøytrum er innbyrdes ulike og helt entydige. 1 840 av dem er belagt i bokkorpuset. Skriptet kryssvaliderer log-regresjonen for e-formen.
+- `sqlite/decomposer.py`:
+  - `GOLD_SLOTS["adjektiv"] = (1, 2, 4)`; kategori 3 (be ent) slås sammen med 2 (fl) via `SLOT_ALIAS`.
+  - Adjektiv kan bruke ett anker (`MIN_ANCHORS_BY_BG`), fordi paradigmet bare har to mulige ankre.
+  - Nytt felt `calibration` (sum ukappede anslag / observert). CLI-et gir advarsel utenfor 0,5–2 (`CALIBRATION_OK`).
+- `rapport_verbtyper.md` §7.2 punkt 5 er skrevet om med tabell. Ny tekst om adjektiv i `rapport_dekomponering_validering.md` §6. Lysbilde 11 (boks og notat) og plan (hull 5, rad 10) er oppdatert.
+- Bigrammer (*den døde* / *han døde*) ble prøvd: bok-API-et gir 0 treff for flerordsuttrykk, og n-gram-viewer-endepunktet (`fetch_ngram_sp`) svarer med 301 / HTML. Tomme bigramrader i den lokale cachen er slettet.
+
+### Funn
+- Adjektivmodellen: typisk avvik ×1,67 (m/f + nøyt) og ×1,91 (bare nøyt) i bøker, uten skjevhet.
+- «døde» i bøker: 57 % *dø* / 39 % *død* / 4 % *døde*, men sum / obs. er **0,05**. Ankrene i ordfamilien er atypiske: *dødd* er sjelden (adjektivet tar partisippets plass: *er død*), *dødt* er sjelden, og *dødene* har 25 treff. «død» har samme problem (0,19). **Adjektivandelen er ikke bestemt av ordboksankrene.**
+- Overslag for adjektivandelen: 2 % (alle adjektiv; frekvente *-t*-former er ofte adverb) til 14–35 % (tilstandsadjektiv *blind, naken, syk, gammel*) og 46 % (grovt overslag fra del 17). *dø* er 2A så lenge adjektivet er under **76,5 %** av «døde». Profil: pret 74–61 / inf 18–26 / pres 9–13 %.
+- «dør» er robust for at *dødd* er atypisk. Med bare infinitiv som verbanker blir verbandelen 34,8 % i stedet for 36,5 %.
+
+### Neste steg
+- En presis adjektivandel krever kontekstdata (bigrammer eller konkordanser fra DH-lab). Det er ikke nødvendig for foredraget.
+- Referanser (hull 6) og figur for paradigmegrafen.

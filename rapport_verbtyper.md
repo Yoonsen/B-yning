@@ -193,12 +193,23 @@ Et perfekt demonstrasjonseksempel er verbet **`dø`** (`lemma_id = 13385`) vs. s
    - Når substantivet *en/ei dør* trekkes fra strengen *«dør»*, faller presensandelen til verbet *dø* fra **20,6 %** til **8,7 %** ($\approx 246\,300$ treff mot $492\,694$ for infinitiv *dø*):
      - **Før dekomponering (råtall):** `pret` (64,3 %) > `pres` (20,6 %) > `inf` (15,1 %), som gir **2B (`pret > pres > inf`)**.
      - **Etter dekomponering:** `pret` (**74,0 %**) > `inf` (**17,4 %**) > `pres` (**8,7 %**), som gir **2A (`pret > inf > pres`)**.
-   - **Hvor robust er det?** For at `pres` skal komme over `inf`, måtte verbet stå for over 73 % av «dør», altså 36 pp mer enn anslaget. Det er større enn 90-persentilen for feilen i valideringen (ca. 30 pp).
-5. **Forbehold (lagt til 2026-11-17): også `«døde»` er flertydig — og adjektivet er ikke trukket fra ennå.**
-   - `ordform_flertydighet` gir `døde` **`antall_lemma_id = 3`**: preteritum av *å dø* (13385), bestemt/flertall av adjektivet **`død`** (13386: *de døde, den døde mannen*) og det sjeldne verbet *å døde* (13402). Preteritumstallet over ($2\,100\,037$ i bøker; $12\,621\,972$ i `nb_totals`) inneholder altså også adjektivbruk.
-   - `estimate_wordform_shares("døde")` gir i dag verbet **100 %**, fordi `sqlite/decomposer.py` mangler ankre for adjektiv. Log-regresjonen dekker bare substantiv og verb, og adjektivkandidaten får 0 («ingen andre bøyningsformer»), selv om `dødt` er entydig med $343\,621$ i `nb_totals`. **Dette er en kjent mangel i dekomponereren.**
-   - **Sensitivitetsoverslag:** Forholdet `-e`-form / `-t`-form for entydige, «tilstandsaktige» adjektiv ligger rundt 4,7 (*blinde/blindt*), 9–10 (*nakne/nakent*, *syke/sykt*) og 14 (*gamle/gammelt*). Det gir adjektivet *døde* 13–38 % av treffene. Profilen til *dø* i bokkorpuset (med `pres` = $246\,300$ fra dør-dekomponeringen) blir da `pret` 64–71 % > `inf` 19–24 % > `pres` 10–12 % (uten adjektivkorreksjon 74 / 17 / 9 %). I `nb_totals` blir den 68–75 / 18–23 / 7–9 %.
-   - **Konklusjon:** Rangeringen `pret > inf > pres` (2A) er robust for adjektivkorreksjonen, men prosenttallene i punkt 4 er et øvre anslag for `pret`. Før foredraget bør adjektivandelen beregnes ordentlig (f.eks. med bigrammer *de/den/det døde* vs. *han/hun/som døde*, eller adjektivankre i dekomponereren).
+   - **Hvor robust er det?** For at `pres` skal komme over `inf`, måtte verbet stå for over 73 % av «dør», altså 36 pp mer enn anslaget. Det er større enn 90-persentilen for feilen i valideringen (ca. 30 pp). Adjektivet i «døde» er ikke trukket fra her; se punkt 5.
+5. **Forbehold: også `«døde»` er flertydig (oppdatert 2026-11-20).**
+   - `ordform_flertydighet` gir `døde` **`antall_lemma_id = 3`**: preteritum av *å dø* (13385), bestemt/flertall av adjektivet **`død`** (13386: *de døde, den døde mannen*) og det sjeldne verbet *å døde* (13402). Preteritumstallet over ($2\,100\,037$ i bøker) inneholder altså også adjektivbruk.
+   - **Adjektivankre i dekomponereren:** `sqlite/adjektiv_gold.py` velger 1 840 adjektiv (belagt i bokkorpuset) der m/f, e-form og nøytrum er entydige. Med kryssvalidering anslås e-formen med typisk avvik ×1,67 fra m/f + nøytrum og ×1,91 fra nøytrum alene. For *død* er nøytrum (*dødt*, $69\,425$) eneste anker, fordi «død» også er et substantiv.
+   - **Ankrene bestemmer ikke adjektivandelen.** `estimate_wordform_shares("døde", corpus="book")` gir 57 % *dø* / 39 % *død* / 4 % *døde*, men summen av de ukappede anslagene er bare **0,05 × observert**. Hele ordfamilien har atypiske ankre: *dødd* er sjelden fordi adjektivet overtar partisippets rolle (*han er død*, ikke *han har dødd*), *dødt* er sjelden, og substantivet *død* har nesten ikke flertall (*dødene*: 25 treff). Dekomponeringen av «død» har samme problem (0,19). Dekomponereren skriver nå ut en advarsel når summen / observert ligger utenfor 0,5–2.
+   - **Spennet:** modellen for alle adjektiv gir adjektivet bare ca. 2 % av «døde» (90-persentil 7 %), fordi frekvente *-t*-former ofte er adverb (*godt, sterkt*). Forholdet e-form / *-t*-form for tilstandsadjektiv i bøker (*blind* 4,1, *naken* 6,5, *syk* 9,8, *gammel* 10,5) gir 14–35 %. Det grove overslaget fra 2026-11-17 gikk opp til 46 %.
+   - **Profilen til *dø* i bokkorpuset** (med `pres` = $246\,300$ fra dør-dekomponeringen):
+
+     | Adjektivandel av «døde» | pret | inf | pres |
+     | :--- | ---: | ---: | ---: |
+     | 0 % (ingen korreksjon) | 74,0 % | 17,4 % | 8,7 % |
+     | 2 % (alle adjektiv) | 73,6 % | 17,6 % | 8,8 % |
+     | 14–35 % (tilstandsadjektiv) | 71–65 % | 19–23 % | 10–12 % |
+     | 46 % (høyeste overslag) | 60,5 % | 26,3 % | 13,1 % |
+
+   - **Konklusjon:** rangeringen `pret > inf > pres` (2A) holder så lenge adjektivet står for under **77 %** av «døde». Det er langt over alle overslagene. Prosenttallene er usikre, rangeringen er det ikke. En presis adjektivandel krever kontekst (*de/den/det døde* mot *han/hun/som døde*), og bigrammer var ikke tilgjengelige fra API-ene vi bruker.
+   - **Sjekk av «dør»:** *dødd* er også anker for verbet i dør-dekomponeringen. Med bare infinitiv som anker blir verbandelen av «dør» 34,8 % i stedet for 36,5 %, så dør-resultatet påvirkes knapt.
 6. **Språklig tolkning:**
    - Og dette gir umiddelbart dyp språklig mening: Mens *forsvinne*, *ankomme* og *omkomme* (som er 100 % kollisjonsfrie i Sett A og blir stående i **2B**) sjelden brukes etter modalverb eller *å*, snakker vi på norsk svært ofte om *«å dø»* i infinitiv (*frykten for å dø, i ferd med å dø, skal dø, må dø, heller dø enn...*), mens pågående nåtid (*«han dør nå»*) er langt sjeldnere enn både fortid (*døde*) og infinitiv (*å dø*)!
 

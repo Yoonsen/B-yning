@@ -137,9 +137,17 @@ def estimate_from_slots(
 # som reserve når mål-kategorien ikke finnes i gullstandarden (imperativ, s-passiv, adjektiv osv.)
 # eller når kandidaten mangler entydige ankre.
 
-GOLD_SLOTS = {"substantiv": (1, 2, 3, 4), "verb, normal": (1, 2, 4, 5)}
+GOLD_SLOTS = {"substantiv": (1, 2, 3, 4), "verb, normal": (1, 2, 4, 5), "adjektiv": (1, 2, 4)}
+# Adjektiv: kategori 2 (fl) og 3 (be ent) har samme form (*store*) og behandles som én «e-form» (2).
+SLOT_ALIAS = {"adjektiv": {3: 2}}
 BOOK_PERIOD = (1950, 2020)
 MIN_ANCHORS = 2  # minst to helt entydige ankerkategorier for å bruke log-regresjon
+# Adjektivparadigmet har bare to mulige ankre (m/f og nøytrum). For *død* er «død» også et substantiv,
+# så nøytrum (*dødt*) er eneste anker. Kryssvalidert feil med bare nøytrum: se sqlite/adjektiv_gold.py.
+MIN_ANCHORS_BY_BG = {"adjektiv": 1}
+# Sum ukappede anslag / observert utenfor dette intervallet gir advarsel i CLI-et. I valideringen
+# (kunstige homografer, log-regresjon) lå medianen på 0,9–1,0.
+CALIBRATION_OK = (0.5, 2.0)
 _GOLD_CACHE: dict[tuple[str, str], list[dict[int, float]]] = {}
 _MODEL_CACHE: dict[tuple, tuple[np.ndarray, int]] = {}
 
@@ -172,6 +180,10 @@ def gold_profiles(bg: str, corpus: str, conn: sqlite3.Connection) -> list[dict[i
             from sqlite.substantivtyper import load_noun_forms, select_gold
 
             gold, _ = select_gold(load_noun_forms(conn))
+        elif bg == "adjektiv":
+            from sqlite.adjektiv_gold import select_adjective_gold
+
+            gold = select_adjective_gold(conn)
         else:
             from sqlite.verbtyper import load_verbs, select_sets
 
@@ -204,6 +216,8 @@ def estimate_logreg(
         return None
     # Mål-kategorier utenfor gullstandarden (f.eks. adjektivisk partisipp som deler form med pret/perf-part)
     # ignoreres; finnes ingen mål-kategori i gullstandarden, brukes reglene.
+    alias = SLOT_ALIAS.get(bg, {})
+    tslots = {alias.get(t, t) for t in tslots}
     targets = sorted(t for t in tslots if t in slots)
     if not targets:
         return None
@@ -213,7 +227,7 @@ def estimate_logreg(
         s for s in slots
         if s not in tslots and s in slot_info and slot_info[s]["max_lem_cnt"] == 1 and slot_info[s]["freq"] > 0
     )
-    if len(anchors) < MIN_ANCHORS:
+    if len(anchors) < MIN_ANCHORS_BY_BG.get(bg, MIN_ANCHORS):
         return None
     est = 0.0
     for t in targets:
@@ -346,6 +360,9 @@ def estimate_wordform_shares(
             "obs_freq": obs_freq,
             "total_raw_est": total_est,
             "total_uncapped_est": total_uncapped,
+            # Sum av ukappede anslag / observert. Langt unna 1 betyr at ankrene er atypiske for minst én
+            # kandidat, og da er andelene lite pålitelige (f.eks. «døde»: 0,05, se rapport_verbtyper.md §7.2).
+            "calibration": (total_uncapped / obs_freq) if obs_freq > 0 else None,
             "candidates": results,
         }
     finally:
@@ -367,6 +384,9 @@ if __name__ == "__main__":
         print(f"\n======================================================================================")
         print(f"ORDFORM: «{word}» (Observert i {args.korpus}: {res['obs_freq']:,.0f} | Sum uavh. paradigme-est.: {res['total_raw_est']:,.0f})")
         print(f"======================================================================================")
+        cal = res.get("calibration")
+        if cal is not None and not (CALIBRATION_OK[0] <= cal <= CALIBRATION_OK[1]):
+            print(f"  ADVARSEL: sum ukappede anslag / observert = {cal:.2f}. Ankrene passer dårlig; andelene er usikre.")
         for c in res["candidates"]:
             print(
                 f"  -> {c['share']*100:5.1f}% ({c['norm_est']:10,.0f}) | "

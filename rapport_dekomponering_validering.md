@@ -97,6 +97,14 @@ Til sammenligning er det observert 224 000 forekomster av «fisker» i alt. Niv�
 
 Når metodene blandes slik, er andelene mindre sikre enn i valideringen.
 
+**Adjektiv (lagt til samme dag):** dekomponereren har nå ankre for vanlige adjektiv (`sqlite/adjektiv_gold.py`, 1 840 entydige adjektiv i bokkorpuset). E-formen (*store*) anslås med typisk avvik ×1,67 fra m/f + nøytrum og ×1,91 fra nøytrum alene. Her holder ett anker, fordi adjektivparadigmet bare har to.
+
+| Ordform | Nå: bokkorpuset | Sum anslag / obs. |
+| :--- | :---: | ---: |
+| *døde* | *dø* 57 / *død* (adj.) 39 / *døde* (verb) 4 % | 0,05 |
+
+«døde» viser grensen for metoden. Alle ankrene i ordfamilien er atypisk sjeldne (*dødd, dødt, dødene*), så anslagene er 20 ganger for lave, og andelene sier lite. Dekomponereren gir nå en advarsel når summen / observert ligger utenfor 0,5–2. Se `rapport_verbtyper.md` §7.2 punkt 5 for hvordan *dø* likevel kan plasseres som 2A.
+
 ## 7. Begrensninger
 
 - Gullstandarden består av høyfrekvente, entydige lemmaer. Ekte homografer kan ha andre profiler, for eksempel fordi sjeldne ordbokshomografer er overrepresentert.
