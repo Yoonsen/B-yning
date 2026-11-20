@@ -1117,3 +1117,17 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Trengs en testtekst igjen, kan en kort, åpen tekst legges til på nytt.
+
+---
+
+## 2026-11-20 (del 44) — Pull request: `multitagger-oppsett` inn i `main`
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie opprettet en pull request på GitHub fra `multitagger-oppsett` til `main` (via nettleseren, siden GitHub CLI ikke er installert). Claude skrev tittel og beskrivelse.
+- Pull requesten inneholder også `figurer-deck` og `rapport-verbtyper` (flettet inn i del 41).
+
+**Neste steg**
+- Marie fletter når kollegaen har gitt klarsignal.
+- Etter flettingen bør `main` flettes inn i `figurer-deck` før nye loggoppføringer skrives der, så nummereringen fortsetter fra del 45 og vi unngår konflikt i `logg.md`.
