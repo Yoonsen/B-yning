@@ -640,6 +640,61 @@ def _corpus_gold_profiles(dconn: sqlite3.Connection, ordbank_path: str | Path) -
     return out
 
 
+class DecomposerSession:
+    """
+    Kjører `decomposer.estimate_wordform_shares` på korpustallene, for mange former etter hverandre.
+    En egen tilkobling til Ordbanken får en midlertidig, indeksert tabell `nb_totals` med
+    formfrekvensene i korpuset (alle analyser av formen, som i NBs nb_totals), så decomposer.py
+    brukes uendret.
+
+    `method`: 'logreg' (standard i decomposer.py fra 2026-11-20) eller 'regler' (de faste
+    forholdstallene). For 'logreg' læres regresjonen på gullstandardprofiler med korpusfrekvenser
+    (se `_corpus_gold_profiles`). Decomposerens modellbuffere byttes ut under hvert kall og settes
+    tilbake etterpå, så andre kall i samme prosess ikke påvirkes.
+
+        with DecomposerSession(k) as d:
+            d.estimate("fisker")
+    """
+
+    def __init__(self, conn: sqlite3.Connection, ordbank_path: str | Path = ORDBANK_DB_PATH,
+                 method: str = "logreg"):
+        dbs = conn.execute("PRAGMA database_list").fetchall()
+        korpus_file = next(r[2] for r in dbs if r[1] == "main")
+        self.method = method
+        self.dconn = sqlite3.connect(_ro_uri(ordbank_path), uri=True)
+        self.dconn.row_factory = sqlite3.Row
+        self.dconn.execute("ATTACH DATABASE ? AS k", (_ro_uri(korpus_file),))
+        self.dconn.execute(
+            "CREATE TEMP TABLE nb_totals AS SELECT form AS oppslag, SUM(n) AS freq FROM k.obt_typer GROUP BY form"
+        )
+        self.dconn.execute("CREATE INDEX temp.ix_nb_totals ON nb_totals(oppslag)")
+        self._gold = _corpus_gold_profiles(self.dconn, ordbank_path) if method == "logreg" else {}
+        self._models: dict = {}
+
+    def estimate(self, form: str) -> dict[str, Any]:
+        import sqlite.decomposer as dec
+
+        saved = (dict(dec._GOLD_CACHE), dict(dec._MODEL_CACHE))
+        try:
+            dec._GOLD_CACHE.clear(); dec._GOLD_CACHE.update(self._gold)
+            dec._MODEL_CACHE.clear(); dec._MODEL_CACHE.update(self._models)
+            est = dec.estimate_wordform_shares(form, conn=self.dconn, corpus="nb_totals", method=self.method)
+            self._models = dict(dec._MODEL_CACHE)
+        finally:
+            dec._GOLD_CACHE.clear(); dec._GOLD_CACHE.update(saved[0])
+            dec._MODEL_CACHE.clear(); dec._MODEL_CACHE.update(saved[1])
+        return est
+
+    def close(self) -> None:
+        self.dconn.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+
+
 def compare_with_decomposer(
     conn: sqlite3.Connection,
     form: str,
@@ -647,38 +702,13 @@ def compare_with_decomposer(
     method: str = "logreg",
 ) -> list[dict[str, Any]]:
     """
-    Sammenligner OBT-fordelingen av `form` per lemma_id med `decomposer.estimate_wordform_shares`
-    kjørt på de SAMME korpustallene: en midlertidig view `nb_totals` (formfrekvenser i korpuset)
-    skygger for Ordbankens `nb_totals` i en egen tilkobling, så decomposer.py brukes uendret.
-    Merk: korpustallene teller alle forekomster av formen (alle ordklasser), som nb_totals.
-
-    `method`: 'logreg' (standard i decomposer.py fra 2026-11-20) eller 'regler' (de faste
-    forholdstallene). For 'logreg' læres regresjonen på gullstandardprofiler med korpusfrekvenser
-    (se `_corpus_gold_profiles`); decomposerens egne modellbuffere byttes ut midlertidig og settes
-    tilbake etterpå, så andre kall i samme prosess ikke påvirkes.
+    Sammenligner OBT-fordelingen av `form` per lemma_id med decomposer kjørt på de SAMME
+    korpustallene (se `DecomposerSession`). Én rad per lemma_id; lemma_id None = OBT-analyser som
+    ikke er koblet til Ordbanken. For mange former: bruk `DecomposerSession` direkte
+    (se `sqlite/valider_dekomponering_obt.py`).
     """
-    import sqlite.decomposer as dec
-
-    dbs = conn.execute("PRAGMA database_list").fetchall()
-    korpus_file = next(r["file"] for r in dbs if r["name"] == "main")
-
-    dconn = sqlite3.connect(_ro_uri(ordbank_path), uri=True)
-    dconn.row_factory = sqlite3.Row
-    saved = (dict(dec._GOLD_CACHE), dict(dec._MODEL_CACHE))
-    try:
-        dconn.execute("ATTACH DATABASE ? AS k", (_ro_uri(korpus_file),))
-        dconn.execute(
-            "CREATE TEMP VIEW nb_totals AS SELECT form AS oppslag, SUM(n) AS freq FROM k.obt_typer GROUP BY form"
-        )
-        dec._GOLD_CACHE.clear()
-        dec._MODEL_CACHE.clear()
-        if method == "logreg":
-            dec._GOLD_CACHE.update(_corpus_gold_profiles(dconn, ordbank_path))
-        est = dec.estimate_wordform_shares(form, conn=dconn, corpus="nb_totals", method=method)
-    finally:
-        dec._GOLD_CACHE.clear(); dec._GOLD_CACHE.update(saved[0])
-        dec._MODEL_CACHE.clear(); dec._MODEL_CACHE.update(saved[1])
-        dconn.close()
+    with DecomposerSession(conn, ordbank_path, method) as d:
+        est = d.estimate(form)
 
     actual: dict[int | None, float] = {}
     for r in form_split(conn, form):

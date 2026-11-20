@@ -1064,3 +1064,42 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Fast ordliste og valideringsmodul (del 40, neste steg), og kjøre begge metodene.
+
+---
+
+## 2026-11-20 (del 42) — Validering av decomposer mot det OBT-taggede korpuset
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Avklart med Marie: validering i to deler.
+  1. Bred og automatisk: alle aktuelle flertydige former.
+  2. Dyp: utvalgte former og profiler.
+- `sqlite/korpus_profiler.py`: ny klasse `DecomposerSession`. Den gjenbruker én tilkobling med en indeksert temp-tabell `nb_totals` (korpusets formtall) og gullstandarden for log-regresjonen, så mange former kan kjøres raskt (under 1 ms per form etter ca. 20 s oppstart). `compare_with_decomposer` bruker den.
+- Ny modul `sqlite/valider_dekomponering_obt.py` (`python -m sqlite.valider_dekomponering_obt`, ca. 1,5 min):
+  - sammenligner per leksem (grunnform + ordklasse; homografer slått sammen);
+  - mål: avvik i pp (total variasjonsavstand), riktig flest, umodellert andel og grunnlag (sum anslag / observert);
+  - varianter: `regler`, `logreg` og `logreg_hom` (homografe lemma_id telles én gang);
+  - profiler i tre varianter: OBT, decomposer (formfrekvens × andel) og naiv (rå formfrekvens);
+  - skriver `resultater/dekomponering_obt_former.tsv` og `resultater/dekomponering_obt_profiler.tsv`.
+- Rapport: `rapport_dekomponering_obt.md`.
+
+**Funn**
+- Utvalg: 1 775 former med ≥ 100 forekomster og ≥ 2 leksemer blant subst/verb/adj. Av dem gir OBT ≥ 90 % subst/verb/adj for 1 721.
+- Når alle kandidatene er modellert (1 206 former), gir decomposer riktig leksem størst andel i 80 % av formene, med medianavvik 7,9 pp (logreg) / 7,8 pp (regler). Med grunnlag ≥ 0,5: 84 % og 5,7 pp. Det stemmer med kollegaens syntetiske test (ca. 80 %, 10–15 pp).
+- Største feilkilde er umodellerte kandidater: 515 former (31 % av forekomstene) har ≥ 5 % på et leksem decomposer gir 0 %. Medianavviket er 50 pp, og riktig leksem får størst andel i 44 %. To tredjedeler av forekomstene er adjektiver (*hele*, *nye*, *godt*, *litt*, *døde*, *få*).
+- Regler og logreg gir nesten samme resultat, fordi logreg krever to entydige ankerkategorier og bare brukes i 566 av 2 962 kandidatanslag (19 %).
+- Homografe lemma_id telles dobbelt i decomposer (*la*, *rekke*), men å telle dem én gang endrer medianavviket bare fra 7,9 til 8,1 pp.
+- Andre feiltyper:
+  - lite grunnlag (*fall*: sum anslag 17 mot 1 738 observert);
+  - delte ankre behandles ulikt for verb og substantiv (*arbeid*, *livet* dras mot verbet);
+  - idiosynkratiske profiler (*la*/*legge*).
+- Profiler:
+  - substantiv blir klart bedre med decomposer: *fisker* 1,4 pp mot naiv 37,6; *fisk* 4,5 mot 23,2;
+  - verb blir blandet: bedre for *sette*, *svare*, *bygge*; verre enn naiv for *dø* (11,7 mot 8,1) og *legge* (23,9 mot 11,0); dårlig begge veier for *stille* og *tape*.
+  - *dø*: rekkefølgen pret > inf > pres holder, men decomposer undervurderer presens (8 mot 15 %) og overvurderer preteritum (66 mot 54 %).
+
+**Neste steg**
+- Dele rapporten med kollegaen.
+- Anbefalingene til decomposer (adjektivkandidater, vise grunnlaget, delte ankre) er hans modul, så de må avtales med ham.
+- Eventuelt stikkprøver av OBT (*tro*/*trå*, *å*).
