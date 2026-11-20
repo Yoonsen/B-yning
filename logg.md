@@ -1131,3 +1131,51 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Neste steg**
 - Marie fletter når kollegaen har gitt klarsignal.
 - Etter flettingen bør `main` flettes inn i `figurer-deck` før nye loggoppføringer skrives der, så nummereringen fortsetter fra del 45 og vi unngår konflikt i `logg.md`.
+
+---
+
+## 2026-11-20 (del 46) — Korpuset utvidet til fem ganger størrelsen, i lag; fulltekster hentet
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+*Merk: del 45 ligger på grenen `stabilitet-obt-fordeling`, som ikke er flettet inn i `main` ennå. Denne grenen (`korpus-utvidelse`) er laget fra `main`.*
+
+**Hva ble gjort**
+- Marie ønsket et større korpus i reserve. Det skal ikke tagges nå; omfanget avgjøres senere sammen med kollegaen.
+- Avtalt: fem ganger så stort, trukket i fire nye lag. Hvert lag er balansert som det opprinnelige (3 teksttyper × 8 tiår, ca. 417 000 ord per celle), slik at man kan tagge bare noen lag.
+- `sqlite/korpusutvalg.py`:
+  - ny funksjon `utvid_korpus` og valgene `--utvid` / `--nye-lag`, og ny kolonne `lag` (det opprinnelige korpuset = lag 1);
+  - ingen dokumenter trekkes to ganger;
+  - bøker: maks én bok per forfatter per celle i hele korpuset (alle lag), for å få mange ulike forfattere;
+  - aviser: maks 3 numre per tittel per celle i hvert lag;
+  - dhlabid sammenlignes som tekst.
+  - Eksempelet «liten prøve» i dokumentasjonen er rettet (`--totalt 2400000`). Med 240 000 ord blir maksgrensen per dokument (35 % av cellemålet) lavere enn `MIN_ORD_BOK`, så ingen bøker kan velges.
+- Kjørt: `python -m sqlite.korpusutvalg --utvid korpus/korpusoversikt.tsv --nye-lag 4 --ut korpus/korpusoversikt.tsv` (via en midlertidig fil, kontrollert før den erstattet oversikten).
+- Fulltekstene er hentet med `hent_fulltekster.py` (utenfor repoet) til samme mappe som før, utenfor repoet og OneDrive.
+
+**Funn**
+- `korpus/korpusoversikt.tsv`: 1 097 dokumenter, 53 588 547 ord.
+
+  | lag | dokumenter | ord |
+  |---|---|---|
+  | 1 | 224 | 10 724 916 |
+  | 2 | 219 | 10 655 322 |
+  | 3 | 222 | 10 686 218 |
+  | 4 | 211 | 10 698 299 |
+  | 5 | 221 | 10 823 792 |
+
+- Kontroller:
+  - alle 120 celler (lag × teksttype × tiår) har nådd ordmålet (minst 416 686 ord);
+  - lag 1 er uendret felt for felt;
+  - ingen duplikater (dhlabid, URN);
+  - ingen forfatter mer enn én gang per celle;
+  - maks 2 numre per avistittel per celle og lag (4 totalt);
+  - bokmålsandel ≥ 0,95 for alle med nok markørord (6 bøker uten nok markørord, som i det opprinnelige utvalget).
+- Per celle over alle lag: 32–39 skjønnlitterære bøker, 35–47 faglitterære bøker og 40–88 avisnumre.
+- Fulltekster: 1 097/1 097 hentet, 267 MB. Antall ord er identisk med `n_ord` for alle.
+
+**Neste steg**
+- Marie kopierer de nye tekstene til Linux-maskinen.
+- Tagging venter på avklaring med kollegaen: for eksempel lag 2 for et dobbelt så stort korpus, eller alle lag.
+  - Med `tagg` hoppes allerede taggede dokumenter over.
+  - Databasen blir ca. 1,5 GB ved alle lag, noe som påvirker deling via Git LFS.
