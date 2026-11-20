@@ -1163,6 +1163,8 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Wilson-intervallene er regnet per forekomst og er for smale, fordi forekomster i samme bok ikke er uavhengige.
 - **Decomposer** gjentar feilene fra valideringen (del 42): *svart* og *svarte* gis 100 % til *svare* (adjektivet mangler), *kroner* bare 60–64 % til *krone*, og *fisker* 47–61 % til *fisk*.
 
+**Vurdering (Marie og Claude):** Med dagens korpus (6–10 bøker per teksttype og tiår) er fordelingen av flertydige former per tiår for avhengig av enkeltbøker til å gi en god analyse av stabilitet over tid, unntatt for former der ett leksem dominerer. Analysen legges til side inntil videre. Oppsettet kan kjøres på nytt med et større korpus.
+
 **Neste steg** (ikke avtalt)
 - Usikkerhet med bootstrap over dokumenter (boka som enhet), for å skille ekte endring fra utvalgsstøy i andeler og profiler.
 - Alternativt bredere tidsvinduer (f.eks. 20 år) eller et større tagget korpus for formene der flere leksemer har store andeler.
