@@ -56,7 +56,7 @@ _EDGE_RE = re.compile(r"^[\W_]+|[\W_]+$")
 
 def clean_form(s: str) -> str:
     """Fjerner tegn som ikke er bokstaver/tall i starten og slutten (f.eks. «er.», «er|», «_vært»,
-    «var-», «kl.»). Ca. 2 % av tokens har slike rester fra tokenisering/OCR (logg del 33)."""
+    «var-», «kl.»). Ca. 2 % av tokens har slike rester fra tokenisering/OCR (logg del 39)."""
     return _EDGE_RE.sub("", s)
 
 

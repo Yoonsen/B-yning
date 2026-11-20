@@ -4,7 +4,7 @@
 20220201_norsk_ordbank_nob_2005/
 *.db
 !sqlite/ordbank.db
-# Delt kopi av telletallene fra OBT-taggingen (kun frekvenser, ingen tekst; Git LFS, logg del 32)
+# Delt kopi av telletallene fra OBT-taggingen (kun frekvenser, ingen tekst; Git LFS, logg del 38)
 !korpus/obt_frekvenser.db
 *.sqlite
 *.sqlite3

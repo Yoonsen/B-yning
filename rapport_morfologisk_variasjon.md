@@ -2,7 +2,7 @@
 
 *2026-11-19. Grunnlag: det OBT-taggede bokmålskorpuset (`korpus/obt_frekvenser.db`, 222 dokumenter,
 1950–2026). Tallene er laget med `python -m sqlite.morfologisk_variasjon`. Bakgrunn og arbeidslogg:
-`logg.md`, del 28–33.*
+`logg.md`, del 34–39.*
 
 ## Spørsmål
 
@@ -127,7 +127,7 @@ undersøkt nærmere.
 - **Taggerfeil.** Lemmatiseringen kommer fra OBT og er ikke kontrollert manuelt. Ord taggeren ikke
   kjenner (2 % av tokens), regnes som egne lemmaer med én form.
 - **OCR.** Eldre tekster har OCR-feil som gir ekstra formtyper. Et eksempel er *seiv* for *selv*
-  (logg del 25).
+  (logg del 31).
 - **Lite utvalg per celle.** Hvert tiår × teksttype har 5–20 dokumenter, så enkeltdokumenter kan
   påvirke tallene. Det er ikke regnet usikkerhet.
 - **Skrivevarianter.** Former som *ble/blei* eller *boka/boken* telles som ulike former av samme

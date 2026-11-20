@@ -22,7 +22,7 @@ Bruk fra Python / notebook:
 
 Kommandolinje (fra repo-roten), se `python -m sqlite.korpus_profiler -h`.
 
-Status: brukt på det OBT-taggede korpuset (222 dokumenter, logg del 28).
+Status: brukt på det OBT-taggede korpuset (222 dokumenter, logg del 34).
 """
 
 import argparse
@@ -409,7 +409,7 @@ def paradigm_profile(
     sammen (`merge_homographs=True`): frekvensene summeres per `boy_nummer` over alle lemma_id-ene,
     og cellene er unionen av paradigmene. Grunnen er at OBT ikke skiller homografer i Ordbanken
     (f.eks. *bli* 7528/7530, *la* 81665/82098); koblingen deler da vekten likt mellom dem, og ett
-    enkelt lemma_id gir halverte tall eller en skjev profil når paradigmene er ulike (logg del 28).
+    enkelt lemma_id gir halverte tall eller en skjev profil når paradigmene er ulike (logg del 34).
     Uten `pos` og med kandidater i flere ordklasser velges ordklassen med flest forekomster.
     `merge_homographs=False` gir den gamle oppførselen: lemma_id-et med flest forekomster.
     Gis `lemma_id`, brukes bare det.
@@ -604,31 +604,80 @@ def form_split(conn: sqlite3.Connection, form: str, doc_id: str | None = None) -
     return rows
 
 
+_CORPUS_GOLD: dict[tuple[str, str], list[dict[int, float]]] = {}
+
+
+def _corpus_gold_profiles(dconn: sqlite3.Connection, ordbank_path: str | Path) -> dict[tuple[str, str], list]:
+    """
+    Gullstandardprofiler for decomposerens log-regresjon, med frekvenser fra KORPUSET.
+    Utvalget av gullstandardlemmaer (substantiv- og verbgullstandarden, Sett A) gjøres som i
+    decomposer.py med Ordbankens ekte nb_totals (terskelen på 100 000 kan ikke brukes på et korpus på
+    8 mill. ord), mens kategorifrekvensene hentes fra korpuset via `dconn` (der nb_totals er
+    korpus-viewet). Bare lemmaer med alle fire kategorier > 0 i korpuset brukes, som i decomposer.py.
+    """
+    from sqlite.decomposer import GOLD_SLOTS, corpus_freqs
+    from sqlite.substantivtyper import load_noun_forms, select_gold
+    from sqlite.verbtyper import load_verbs, select_sets
+
+    key_db = str(dconn.execute("PRAGMA database_list").fetchall()[-1][2])
+    if key_db in _CORPUS_GOLD:
+        return _CORPUS_GOLD[key_db]
+    oconn = sqlite3.connect(_ro_uri(ordbank_path), uri=True)
+    oconn.row_factory = sqlite3.Row
+    try:
+        gold = {"substantiv": select_gold(load_noun_forms(oconn))[0],
+                "verb, normal": select_sets(load_verbs(oconn))[0]["580"]}
+    finally:
+        oconn.close()
+    out = {}
+    for bg, lemmas in gold.items():
+        slots = GOLD_SLOTS[bg]
+        forms = [{sl: list(d["forms"][sl]) for sl in slots} for d in lemmas]
+        freqs = corpus_freqs([w for f in forms for sl in slots for w in f[sl]], "nb_totals", dconn)
+        profiles = [{sl: sum(freqs[w] for w in f[sl]) for sl in slots} for f in forms]
+        out[(bg, "nb_totals")] = [pr for pr in profiles if all(pr[sl] > 0 for sl in slots)]
+    _CORPUS_GOLD[key_db] = out
+    return out
+
+
 def compare_with_decomposer(
     conn: sqlite3.Connection,
     form: str,
     ordbank_path: str | Path = ORDBANK_DB_PATH,
+    method: str = "logreg",
 ) -> list[dict[str, Any]]:
     """
     Sammenligner OBT-fordelingen av `form` per lemma_id med `decomposer.estimate_wordform_shares`
     kjørt på de SAMME korpustallene: en midlertidig view `nb_totals` (formfrekvenser i korpuset)
     skygger for Ordbankens `nb_totals` i en egen tilkobling, så decomposer.py brukes uendret.
     Merk: korpustallene teller alle forekomster av formen (alle ordklasser), som nb_totals.
+
+    `method`: 'logreg' (standard i decomposer.py fra 2026-11-20) eller 'regler' (de faste
+    forholdstallene). For 'logreg' læres regresjonen på gullstandardprofiler med korpusfrekvenser
+    (se `_corpus_gold_profiles`); decomposerens egne modellbuffere byttes ut midlertidig og settes
+    tilbake etterpå, så andre kall i samme prosess ikke påvirkes.
     """
-    from sqlite.decomposer import estimate_wordform_shares
+    import sqlite.decomposer as dec
 
     dbs = conn.execute("PRAGMA database_list").fetchall()
     korpus_file = next(r["file"] for r in dbs if r["name"] == "main")
 
     dconn = sqlite3.connect(_ro_uri(ordbank_path), uri=True)
     dconn.row_factory = sqlite3.Row
+    saved = (dict(dec._GOLD_CACHE), dict(dec._MODEL_CACHE))
     try:
         dconn.execute("ATTACH DATABASE ? AS k", (_ro_uri(korpus_file),))
         dconn.execute(
             "CREATE TEMP VIEW nb_totals AS SELECT form AS oppslag, SUM(n) AS freq FROM k.obt_typer GROUP BY form"
         )
-        est = estimate_wordform_shares(form, conn=dconn)
+        dec._GOLD_CACHE.clear()
+        dec._MODEL_CACHE.clear()
+        if method == "logreg":
+            dec._GOLD_CACHE.update(_corpus_gold_profiles(dconn, ordbank_path))
+        est = dec.estimate_wordform_shares(form, conn=dconn, corpus="nb_totals", method=method)
     finally:
+        dec._GOLD_CACHE.clear(); dec._GOLD_CACHE.update(saved[0])
+        dec._MODEL_CACHE.clear(); dec._MODEL_CACHE.update(saved[1])
         dconn.close()
 
     actual: dict[int | None, float] = {}

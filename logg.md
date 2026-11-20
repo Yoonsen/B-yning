@@ -389,7 +389,147 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-14 (del 15) — Oppstart av OBT-tagging: ny gren, testtekst og miljø på Linux-maskin
+## 2026-11-17 (del 15) — Substantivprofiler: gullstandard, typer og stabilitet (`rapport_substantivtyper.md`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Nytt skript `sqlite/substantivtyper.py` (`python3 -m sqlite.substantivtyper`, `--offline` for bare `nb_totals`). Det bygger gullstandarden, henter n-gram for bokkorpuset 1950–2020 (ca. 26 000 ordformer; lokal cache i `ngram_cache.db`, som ikke er i git — første kjøring på en ny maskin tar noen minutter), og regner hovedtyper, full rangering og årlig rang-stabilitet. Per-lemma-resultater: `resultater/substantivtyper.tsv`.
+- Gullstandard (Sett A, substantiv): alle fire kjerneformer entydige i hele Ordbanken, internt distinkte kategorier, ≥ 100 000 treff i `nb_totals`, alle fire belagt i bokkorpuset → **N = 5 799**. Bokstavnavn, forkortelser og 25 håndplukkede falske venner (*nogen, vor, jan, used, forst* …) er filtrert bort (`FALSKE_VENNER`).
+- Skrev `rapport_substantivtyper.md`. Oppdaterte lysbilde 2 og 8 i `tekst/mons_presentasjon.pptx` (via `tekst/deck/build_deck.js`) og planen.
+
+### Viktige funn
+- Hovedtyper: `ent_ub` 67,1 %, `ent_be` 16,5 %, `fl_ub` 14,5 %, `fl_be` 1,9 %. Alle 24 rekkefølger er belagt; tre dekker 74 %.
+- **Tall før bestemthet:** 2. plass er nesten alltid samme tall (`ent_be` på topp → `ent_ub` 91 %; `ent_ub` → `ent_be` 72 %; `fl_be` → `fl_ub` 82 %). Unntak: `fl_ub` på topp → `ent_ub` 71,5 % (*en person / tre personer*).
+- Stabilitet (N = 4 355 med nok data): samme topp i alle 71 år for 53,1 %; hele firerangeringen uendret i 71/71 år for 7,9 % (*tid, utvikling, sommer, seng, medlem, utgift*), median 78,9 %.
+- **Abstractet stemmer ikke for *eple*:** epler 45 % > eple 30 % > eplet 11 % i bokkorpuset; `nb_totals` samme vei. *buss* stemmer (bussen på topp), men alle formene er formelt flertydige.
+- `nb_totals` mangler sjeldne ordformer; krav om alle former der halverer utvalget. Kravet ble derfor lagt på bokkorpuset.
+
+### Neste steg
+- Samkjøre abstract og foredrag for *eple* og *vite*.
+- Teste semantiske forklaringer (genus, tellbarhet, animathet) og skille simplex fra sammensetninger (`leddanalyse`).
+- Figurer: tidsserier for noen stabile substantiv, ev. sammen med verbene på lysbilde 7.
+
+---
+
+## 2026-11-19 (del 16) — Skript som gjenskaper verbtallene (`sqlite/verbtyper.py`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Nytt skript `sqlite/verbtyper.py` (`python3 -m sqlite.verbtyper`, `--offline` for bare `nb_totals`). Det bygger Sett A, regner de seks typene, snittprofiler, 2.-plass-fordeling og stabilitet, og skriver `resultater/verbtyper.tsv`.
+- **Alle tall i `rapport_verbtyper.md` §2–4 gjenskapes nøyaktig:** N = 606 / 580 / 533, typefordelingen for alle tre utvalg, snittprofilene og hele §4-tabellen (profiler, topp- og full-rang-stabilitet for alle 41 verb).
+- Presise kriterier (rapporten var uklar på dette): 100 000-grensen gjelder **inf + pres + pret** i `nb_totals`; «internt distinkt» betyr at ingen form står i to av de fire kategoriene. Skrevet inn i rapporten §2.
+- Rapporten §3 og §4 fikk tillegg (se under); lysbilde 5–7 i decket oppdatert; planen oppdatert (hull 3 løst).
+
+### Viktige funn
+- **Typefordelingen i §3 er regnet på `nb_totals` (hele NB), ikke på bokkorpuset 1950–2020 som resten av rapporten.** I bokkorpuset: 1A 26,9 / 1B 27,1 / 2A 20,2 / 2B 7,4 / 3A 12,2 / 3B 6,2 %. Inf-på-2.-plass-funnet holder (73,1 % / 66,4 %), men 1A/1B deler seg nesten likt (49,8 / 50,2 %) i stedet for 58,4 / 41,6 %.
+- **Stabilitet for hele Sett A:** av 569 verb belagt alle 71 år har 260 (45,7 %) samme topp hvert år og 80 (14,1 %) samme fullstendige rekkefølge. Verbene med 100 % i §4 er utvalgte, ikke typiske.
+- Sett A inneholder noen ikke-standard former (*tilstede, sæte, meine*); marginal effekt, men ikke bruk dem som eksempler.
+- *forlate* er formelt ikke i Sett A (580) fordi *forlatt* også er adjektiv; rapporten merker den allerede «Sett A\*».
+
+### Neste steg
+- Bestemme korpus for foredraget (bokkorpuset 1950–2020 anbefales, siden stabilitet og eksempler bruker det) og oppdatere lysbilde 6 og §3 deretter.
+- Figurer (hull 2), validering av dekomponereren (hull 4), referanser (hull 6).
+
+---
+
+## 2026-11-19 (del 17) — Bokkorpuset 1950–2020 som felles korpus for foredraget
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Beslutning
+- Det ble besluttet å bruke bokkorpuset 1950–2020 (`dhlab ngram_book`) for alle verb- og substantivtall i foredraget. `nb_totals` brukes fortsatt til å velge ut verb og substantiv (100 000-grensen), men ikke til profilene.
+
+### Hva ble gjort
+- `sqlite/verbtyper.py`: henter bokprofiler for alle 606 verb og skriver ut typefordelingen i bokkorpuset for N = 606 / 580 / 533; `nb_totals` vises etterpå til sammenligning (`--offline` gir bare `nb_totals`).
+- `rapport_verbtyper.md` §3 skrevet om på bokkorpuset: hovedtyper inf 54,0 / pret 27,6 / pres 18,4 %; 1A 26,9 / 1B 27,1 / 2A 20,2 / 2B 7,4 / 3A 12,2 / 3B 6,2 %; nye snittprofiler og eksempler; sammenligningstabell med `nb_totals`.
+- Lysbilde 6 i decket oppdatert (diagram, tittel, 73 % / 66 %, talenotat). Planen oppdatert.
+
+### Merk
+- Når `inf` er på topp, deler verbene seg likt mellom 1A og 1B (49,8 / 50,2 %) i bokkorpuset. Påstander om at 1A er klart vanligere enn 1B gjelder bare `nb_totals`.
+- Eldre loggoppføringer (del 9, 12) har `nb_totals`-tallene; de er historikk og er ikke endret.
+- §5 i rapporten (perf-part og -ende) er ikke regnet om; korpuset der er ikke dokumentert.
+
+---
+
+## 2026-11-20 (del 18) — Figurer til decket
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Nytt skript `sqlite/figurer.py` (`python3 -m sqlite.figurer`, krever matplotlib og numpy) lager tre PNG-er i `tekst/figurer/`, alle på bokkorpuset 1950–2020:
+  - `verb_ternaer.png`: de 580 verbene i Sett A som punkter i trekanten inf/pres/pret, farget etter formen på topp, med utvalgte verb merket.
+  - `verb_stabilitet.png`: andel per form per år for *vurdere, undersøke, forsvinne, trenge*.
+  - `fisker_over_tid.png`: «fisker» fordelt på *en fisker*, *fisk* (flertall) og *å fiske* (presens) per år, med 5 års glidende snitt.
+- `sqlite/decompose_fisker.py` returnerer nå forholdstallene sine, slik at figurskriptet kan bruke dem år for år. Utskriften er uendret.
+- Decket: nytt lysbilde 7 med trekanten (15 lysbilder totalt); figurer på stabilitetslysbildet (8) og *fisker*-lysbildet (12); søylene på lysbilde 6 bruker samme formfarger. Formfargene er inf `B5482F`, pres `3D5A98`, pret `2A9D8F` (sjekket for fargeblindhet; temaets `4A4E69`/`4F7C7A` var for like).
+- Planen er oppdatert (hull 2 stort sett løst, hull 7 delvis).
+
+### Funn
+- *fisker* 1950 / 1985 / 2020: en fisker 57 / 55 / 51 %, fisk (fl) 33 / 33 / 42 %, å fiske 11 / 12 / 7 %.
+- **Advarsel:** summen av de ukappede anslagene er median 2,0 × observert «fisker» i bokkorpuset (spenn 0,8–3,0). Forholdstallene er anslått på `nb_totals` og overført til bokkorpuset. Andelene er normalisert, men nivået er uvalidert. Dette er markert på lysbildet og styrker behovet for hull 4.
+- Stabil rangering betyr ikke stabile andeler: *vurdere* går fra ca. 80 til 63 % infinitiv og *trenger* fra ca. 50 til 70 % presens, mens rekkefølgen er den samme i alle 71 år. Det er et poeng for foredraget.
+
+### Neste steg
+- Valider dekomponereren (hull 4, lysbilde 13). Se særlig hvorfor anslagene for *fisker* blir for høye.
+- Figur for paradigmegrafen (lysbilde 4), referanser (hull 6).
+
+---
+
+## 2026-11-20 (del 19) — Validering av dekomponereren
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/decomposer.py`: anslagsregelen er skilt ut som den rene funksjonen `estimate_from_slots`. Utskriften fra `python3 -m sqlite.decomposer` er identisk med før.
+- Nytt skript `sqlite/valider_dekomponering.py` validerer på gullstandardene i `nb_totals` (2 772 substantiv, 533 verb):
+  - Test 1 holder én kategori ute og anslår den fra resten av paradigmet.
+  - Test 2 lager 3 000 kunstige homografer per type (fl ub + pres, ent be + pret, ent ub + inf, ent ub + pres).
+  - Tre metoder sammenlignes: dagens faste regler, lært medianforhold og log-regresjon, de to siste med 5-delt kryssvalidering.
+  - Resultatene skrives til `resultater/dekomponering_validering.tsv`.
+- `sqlite/decompose_fisker.py`: ny `book_decomposition()` som lærer forholdstallene i bokkorpuset. `fisker_over_tid.png` viser nå begge variantene.
+- Ny rapport `rapport_dekomponering_validering.md`. I decket er lysbilde 13 fylt ut (diagram og tall), lysbilde 12 har ny figur og ny merknad, og talenotatet på lysbilde 10 er oppdatert. Planen er oppdatert (hull 4 løst).
+
+### Funn
+- Én form anslått fra resten av paradigmet bommer typisk med en faktor på 1,6–2 med log-regresjon og 1,7–2,7 med reglene.
+- Kunstige homografer: med log-regresjon er leksemet i flertall riktig i 78–80 % av tilfellene, med median feil 10–11 pp og 90-persentil rundt 30 pp. Reglene gir 66–76 % og 13–17 pp.
+- Reglene er skjeve: `ent be` og `pret` overvurderes med omtrent en faktor 2, mens `ent ub` (×0,6) og `perf-part` (×0,5) undervurderes. For dør-typen (ent ub + pres) blir substantivandelen 13 pp for lav, så 71 % substantiv for «dør» er trolig et lavt anslag.
+- *fisker*: forholdstall lært i `nb_totals` passer ikke for bøker, der *fiskene* er relativt nesten dobbelt så vanlig. Med tall lært i bokkorpuset er *en fisker* 14–21 %, mot ca. 50 % med de overførte tallene. Valget av referansegruppe flytter anslaget for *en fisker* mellom 39 000 og 322 000, mens det er observert 224 000 «fisker». Bare økningen for *fisk* (flertall) er robust.
+
+### Neste steg
+- Bytte reglene i `decomposer.py` ut med log-regresjon lært i samme korpus, og regne *dør* på nytt (lysbilde 10 og rapport §7.2).
+- Adjektivandelen av «døde» (hull 5), referanser (hull 6) og figur for paradigmegrafen.
+
+---
+
+## 2026-11-20 (del 20) — Log-regresjon som standard i dekomponereren; *dør* regnet om
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/decomposer.py`:
+  - `estimate_wordform_shares(oppslag, corpus="nb_totals"|"book", method="logreg"|"regler")` bruker nå log-regresjon som standard. Regresjonen er lært på gullstandarden (substantiv; Sett A for verb) i samme korpus som frekvensene.
+  - Nye hjelpefunksjoner: `corpus_freqs`, `gold_profiles`, `fit_logreg` og `estimate_logreg`.
+  - De gamle reglene brukes som reserve når det finnes færre enn to helt entydige ankerkategorier, eller når mål-kategorien ligger utenfor gullstandarden. Forklaringsteksten sier da «regler (reserve)».
+  - `--metode regler` gir nøyaktig samme andeler som før omleggingen (sjekket med diff).
+  - Ny kommandolinje: `python3 -m sqlite.decomposer [ord ...] --korpus book --metode logreg`.
+- `rapport_verbtyper.md` §7.2 punkt 3–5, lysbilde 10, `rapport_dekomponering_validering.md` (ny §6) og planen er oppdatert.
+
+### Funn
+- *dør* i bokkorpuset: **63,5 % substantiv / 36,5 % verb**. Før var det 71,4 / 28,6 %, med faste regler lært på `nb_totals`. Summen av de ukappede anslagene er 1,05 × observert.
+- Profilen til *dø* etter dekomponering er nå pret 74,0 / inf 17,4 / pres 8,7 % (2A). Med adjektivkorreksjon på 13–38 % av «døde» blir den 64–71 / 19–24 / 10–12 %. For at pres skal komme over inf, måtte anslaget for verbandelen bomme med 36 pp.
+- **Rettelse til del 19:** der står det at 71 % substantiv for «dør» trolig er for lavt, fordi reglene i snitt undervurderer substantivet med 13 pp for denne typen. For «dør» gikk anslaget likevel *ned*. Skjevheten gjelder typen i snitt, ikke hvert enkelt ord.
+- Delvis entydige ankre og bare én ankerkategori ga åpenbart gale svar («landet» 63 % verb, «ønsker» 67 % substantiv). Derfor kreves minst to helt entydige kategorier.
+- *fisker* i bøker med den nye dekomponereren: *fisk* (fl) 64 / *fiske* (pres) 20 / *en fisker* 15 %. Det stemmer med `book_decomposition()`. Bare *en fisker* bruker log-regresjon; de to andre bruker reserveregler.
+
+### Neste steg
+- Adjektivandelen av «døde» (hull 5): bigrammer eller adjektivankre.
+- Referanser (hull 6) og figur for paradigmegrafen.
+
+---
+
+## 2026-11-14 (del 21) — Oppstart av OBT-tagging: ny gren, testtekst og miljø på Linux-maskin
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -411,7 +551,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-14 (del 16) — OBT installert på Linux-maskin og Python-modul `sqlite/obt_tagger.py`
+## 2026-11-14 (del 22) — OBT installert på Linux-maskin og Python-modul `sqlite/obt_tagger.py`
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -442,7 +582,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-14 (del 17) — Hele OBT-kjeden testet fra Python; rettelse av taggsortering i `sqlite/obt_tagger.py`
+## 2026-11-14 (del 23) — Hele OBT-kjeden testet fra Python; rettelse av taggsortering i `sqlite/obt_tagger.py`
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -459,11 +599,11 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Ord som ikke finnes i Norsk Ordbank får ordklassen `ukjent`, f.eks. eldre rettskrivning *aar* (= *år*) i testteksten. Det er relevant for eldre tekster: de vil få flere `ukjent`.
 
 ### Neste steg
-- Som i del 16: testtekst med de aktuelle flertydighetene, og kobling av OBT-analyser til `lemma_id`/`boy_nummer` i `ordbank.db`.
+- Som i del 22: testtekst med de aktuelle flertydighetene, og kobling av OBT-analyser til `lemma_id`/`boy_nummer` i `ordbank.db`.
 
 ---
 
-## 2026-11-14 (del 18) — Forslag til analysekode for OBT-tagget korpus: `sqlite/korpus_profiler.py`
+## 2026-11-14 (del 24) — Forslag til analysekode for OBT-tagget korpus: `sqlite/korpus_profiler.py`
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -491,7 +631,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-14 (del 19) — `*.log` i `.gitignore` (mtag.py.log)
+## 2026-11-14 (del 25) — `*.log` i `.gitignore` (mtag.py.log)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -502,29 +642,29 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - OBT-multitaggeren (`mtag.py`) skriver en loggfil `mtag.py.log` i *arbeidsmappen* ved hver kjøring, så den dukker opp i repo-roten når OBT kjøres derfra (f.eks. via `sqlite/obt_tagger.py`). Fila kan inneholde ord fra den taggede teksten og skal ikke deles, særlig ikke ved tagging av rettighetsbelagte bøker. Den lages på nytt ved hver kjøring og kan slettes.
 
 ### Neste steg
-- Uendret fra del 18.
+- Uendret fra del 24.
 
 ---
 
-## 2026-11-17 (del 20) — `main` flettet inn i `multitagger-oppsett`; OBT-oppføringene omnummerert
+## 2026-11-17 (del 26) — `main` flettet inn i `multitagger-oppsett`; OBT-oppføringene omnummerert
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
 ### Hva ble gjort
 - Flettet `main` (PR #4: MONS-plan, presentasjonsskjelett, forbehold om *døde*) inn i `multitagger-oppsett`. Eneste konflikt var `logg.md`, fordi begge grenene hadde lagt til oppføringer på slutten.
-- **Omnummerering:** OBT-oppføringene som ble skrevet på `multitagger-oppsett` 2026-11-14 som del 13–17, heter nå **del 15–19** og står etter del 13–14 fra `main` (2026-11-17). Oppføringene fra `main` er ikke endret, siden de allerede er delt. Datoene er beholdt, så rekkefølgen i loggen er her ikke kronologisk.
-- Oppdaterte henvisninger til delnumre i de omnummererte oppføringene og i `sqlite/obt_tagger.py` (docstring: «del 15–16»).
+- **Omnummerering:** OBT-oppføringene som ble skrevet på `multitagger-oppsett` 2026-11-14 som del 13–17, heter nå **del 21–25** og står etter del 13–14 fra `main` (2026-11-17). Oppføringene fra `main` er ikke endret, siden de allerede er delt. Datoene er beholdt, så rekkefølgen i loggen er her ikke kronologisk.
+- Oppdaterte henvisninger til delnumre i de omnummererte oppføringene og i `sqlite/obt_tagger.py` (docstring: «del 21–22»).
 - Normaliserte linjeskift i `logg.md` til LF (slik fila er lagret i Git).
 
 ### Tekniske observasjoner
 - Når flere jobber på hver sin gren, kolliderer nummereringen i `logg.md` lett. Et alternativ er å bruke dato + kort tittel som nøkkel i stedet for løpenummer, eller å avtale at nummereringen fastsettes ved fletting til `main`.
 
 ### Neste steg
-- OBT-arbeidet: se del 18. Grenen kan flettes til `main` via pull request når dere har testet `korpus_profiler.py` på ekte OBT-utdata, eller tidligere hvis dere vil dele oppsettet.
+- OBT-arbeidet: se del 24. Grenen kan flettes til `main` via pull request når dere har testet `korpus_profiler.py` på ekte OBT-utdata, eller tidligere hvis dere vil dele oppsettet.
 
 ---
 
-## 2026-11-17 (del 21) — Renskrevne notater fra samarbeidsøkt
+## 2026-11-17 (del 27) — Renskrevne notater fra samarbeidsøkt
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -545,7 +685,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-18 (del 22) — Korpusutvalg: balansert bokmålskorpus 1950–2026 (`sqlite/korpusutvalg.py`, `korpus/korpusoversikt.tsv`)
+## 2026-11-18 (del 28) — Korpusutvalg: balansert bokmålskorpus 1950–2026 (`sqlite/korpusutvalg.py`, `korpus/korpusoversikt.tsv`)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -568,7 +708,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-18 (del 23) — Fulltekster hentet for korpusoversikten (utenfor repoet)
+## 2026-11-18 (del 29) — Fulltekster hentet for korpusoversikten (utenfor repoet)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -588,7 +728,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-18 (del 24) — Pilot: 10 korpusdokumenter tagget med OBT; rettelser i koblingen
+## 2026-11-18 (del 30) — Pilot: 10 korpusdokumenter tagget med OBT; rettelser i koblingen
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -611,7 +751,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-18 (del 25) — Pilotresultater etter rettelsen; klargjøring for tagging av hele korpuset
+## 2026-11-18 (del 31) — Pilotresultater etter rettelsen; klargjøring for tagging av hele korpuset
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -639,7 +779,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-18 (del 26) — Tagging av hele korpuset startet
+## 2026-11-18 (del 32) — Tagging av hele korpuset startet
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -655,7 +795,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 27) — Taggingen hang på dokument 5; tidsgrense per dokument i OBT-kjøringen
+## 2026-11-19 (del 33) — Taggingen hang på dokument 5; tidsgrense per dokument i OBT-kjøringen
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -675,7 +815,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 28) — Hele korpuset tagget; kobling mot Ordbanken
+## 2026-11-19 (del 34) — Hele korpuset tagget; kobling mot Ordbanken
 
 **Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
 
@@ -706,7 +846,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 29) — Homografe lemmaer slås sammen i paradigmeprofilene
+## 2026-11-19 (del 35) — Homografe lemmaer slås sammen i paradigmeprofilene
 
 **Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
 
@@ -738,7 +878,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 30) — Første korpusprofil (*bli*) og profiler per tiår/teksttype
+## 2026-11-19 (del 36) — Første korpusprofil (*bli*) og profiler per tiår/teksttype
 
 **Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
 
@@ -773,7 +913,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 31) — Profilen for *bli* per tiår og teksttype
+## 2026-11-19 (del 37) — Profilen for *bli* per tiår og teksttype
 
 **Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
 
@@ -802,7 +942,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 32) — Telletallene fra OBT-taggingen deles i repoet (Git LFS)
+## 2026-11-19 (del 38) — Telletallene fra OBT-taggingen deles i repoet (Git LFS)
 
 **Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
 
@@ -814,9 +954,9 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Innholdet i `korpus/obt_frekvenser.db`** (ingen tekst; teksten kan ikke gjenskapes)
 - `obt_typer`: (doc_id, form, lemma, pos, trekk, partisipp, n) per dokument, der n er vektet antall.
-- `type_kobling`: koblingen av hver analysetype til Ordbank-celler (lemma_id, boy_nummer, vekt, status). Homografe lemmaer ligger som egne rader med status `flertydig` (se del 29).
+- `type_kobling`: koblingen av hver analysetype til Ordbank-celler (lemma_id, boy_nummer, vekt, status). Homografe lemmaer ligger som egne rader med status `flertydig` (se del 35).
 - `dokumenter`: doc_id (= dhlabid i `korpus/korpusoversikt.tsv`), filnavn og antall tokens.
-- `tagging_feil`: de to dokumentene som fikk tidsavbrudd (del 28).
+- `tagging_feil`: de to dokumentene som fikk tidsavbrudd (del 34).
 
 **Bruk**
 - Alle kommandoene tar `--db korpus/obt_frekvenser.db`, f.eks.:
@@ -832,12 +972,12 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 33) — Ordformer vs. lemmaer: morfologisk variasjon i korpuset
+## 2026-11-19 (del 39) — Ordformer vs. lemmaer: morfologisk variasjon i korpuset
 
 **Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
 
 **Hva ble gjort**
-- Marie lastet opp `korpus/obt_frekvenser.db` (LFS, se del 32). Den er hentet lokalt på Windows-maskinen.
+- Marie lastet opp `korpus/obt_frekvenser.db` (LFS, se del 38). Den er hentet lokalt på Windows-maskinen.
 - Overordnede oppgaver avklart med Marie:
   1. validere decomposer mot den taggede fordelingen;
   2. undersøke om bøyningsprofilene er stabile over tid, for utvalgte eksempelparadigmer.
@@ -861,7 +1001,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-19 (del 34) — Første sammenligning av decomposer med OBT-fordelingen
+## 2026-11-19 (del 40) — Første sammenligning av decomposer med OBT-fordelingen
 
 **Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
 
@@ -897,3 +1037,30 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Liten modul som slår sammen homografer på begge sider og gir et avviksmål per form.
 - Stikkprøver av OBT-analyser for mistenkelige tilfeller.
 - Rapport `rapport_decomposer_validering.md`.
+
+---
+
+## 2026-11-20 (del 41) — `figurer-deck` flettet inn i `multitagger-oppsett`; lognumre ordnet; sammenligningen tilpasset ny decomposer
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Flettet `origin/figurer-deck` (som inneholder `rapport-verbtyper`) inn i `multitagger-oppsett`, fordi kollegaens arbeid med decomposer hører sammen med valideringen mot OBT. Med i flettingen:
+  - substantivprofiler, `sqlite/verbtyper.py` og figurer til decket;
+  - `sqlite/valider_dekomponering.py` og `rapport_dekomponering_validering.md`;
+  - log-regresjon som standard i `sqlite/decomposer.py`.
+- **Omnummerering av loggen:** Kollegaens oppføringer (del 15–20, 2026-11-17–20) er ikke endret og står etter del 14. Oppføringene fra `multitagger-oppsett` (tidligere del 15–34) heter nå **del 21–40**. Henvisninger til lognumre i `.gitignore`, `rapport_morfologisk_variasjon.md`, `sqlite/korpus_profiler.py`, `sqlite/morfologisk_variasjon.py` og `sqlite/obt_tagger.py` er oppdatert tilsvarende. Datoene er beholdt, så rekkefølgen er ikke helt kronologisk.
+- **`compare_with_decomposer`** i `sqlite/korpus_profiler.py` er tilpasset den nye decomposer:
+  - Ny parameter `method` med `logreg` (standard) eller `regler`.
+  - Problemet: Log-regresjonen lærer på gullstandarden, som velges med terskelen 100 000 i `nb_totals`. Med korpustallene (8,4 mill. ord) ble gullstandarden tom, og `numpy.linalg.lstsq` feilet.
+  - Løsningen: Gullstandardlemmaene velges med Ordbankens ekte `nb_totals`, mens kategorifrekvensene hentes fra korpuset (`_corpus_gold_profiles`). Det gir 1 916 substantiv og 459 verb med alle fire kategorier > 0.
+  - Decomposerens modellbuffere byttes ut midlertidig og settes tilbake etterpå. `decomposer.py` er ikke endret.
+
+**Funn**
+- Med `method="regler"` blir resultatene identiske med del 40. Med `logreg` endres lite for formene som er testet så langt:
+  - *hatt*: ha 92 % (regler 95 %, OBT 95 %);
+  - *dør*: subst 71 % (regler 67 %, OBT 47 %);
+  - *fisker* og *kroner*: praktisk talt uendret.
+
+**Neste steg**
+- Fast ordliste og valideringsmodul (del 40, neste steg), og kjøre begge metodene.

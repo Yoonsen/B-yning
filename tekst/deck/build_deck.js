@@ -32,6 +32,9 @@ const THEME = {
   },
 };
 const HEX = THEME.colors;
+// Formfarger i figurene (sqlite/figurer.py); validert som kategorisk palett.
+const FORM = { inf: "B5482F", pres: "3D5A98", pret: "2A9D8F" };
+const FIG = (f) => path.join(__dirname, "..", "figurer", f);
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.33 x 7.5
@@ -162,11 +165,11 @@ chipRow(s, ["gikk 38 %", "går 34 %", "gå 28 %"], MX, 2.05);
 chipRow(s, ["vet 55 %", "visste 26 %", "vite 19 %"], MX, 2.75);
 body(s, [{ text: "Bokkorpuset 1950–2020. «går» inkluderer «i går».", options: {} }], MX, 3.4, 6, 0.4, 12);
 s.addText("Substantiv: ent ub / ent be / fl ub", { x: MX, y: 3.95, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-chipRow(s, ["eple", "eplet", "epler"], MX, 4.5);
-chipRow(s, ["bussen", "buss", "busser"], MX, 5.2);
-missing(s, "Andeler for substantivene", 7.2, 4.5, 5.5, 1.25);
+chipRow(s, ["epler 45 %", "eple 30 %", "eplet 11 %"], MX, 4.5);
+chipRow(s, ["bussen 42 %", "buss 37 %", "busser 15 %"], MX, 5.2);
+body(s, [{ text: "Andeler av alle fire former; bestemt flertall er ikke vist.", options: {} }], MX, 5.85, 6, 0.4, 12);
 body(s, [{ text: "Spørsmål: Hvor mye av fordelingen skyldes leksemet selv — og er den stabil over tid?", options: { bold: true, color: C.text1 } }], 7.2, 2.05, 5.5, 1.3, 20);
-s.addNotes("Verbtall fra rapport_verbtyper.md §4 (Sett B). OBS: abstractet sier at infinitiv «vite» dominerer, men dataene viser vet 55 % > visste 26 % > vite 19 %. Abstract og lysbilde må samkjøres. Substantivtallene finnes ikke ennå.");
+s.addNotes("Verbtall fra rapport_verbtyper.md §4 (Sett B), substantivtall fra rapport_substantivtyper.md §5. OBS: abstractet sier at infinitiv «vite» dominerer (dataene: vet 55 % > visste 26 % > vite 19 %) og at «eple» dominerer (dataene: epler 45 % > eple 30 %; epla/eplene 14 % > eplet 11 %). Abstract og lysbilde må samkjøres. Alle formene til «buss» kolliderer med subst./verb «busse» i Ordbanken.");
 
 // 3 Data
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Innledning" });
@@ -200,7 +203,6 @@ s.addNotes("Linjene fra «fisker» kan trenge justering. Tall fra rapport_verbty
 // 5 Gullstandard
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
 s.addText("Gullstandard: verb uten konkurrenter", { placeholder: "title" });
-status(s, "UTKAST");
 const funnel = [["606", "verb der inf, pres og pret ikke deler form med noe annet lemma"], ["580", "også perf-part entydig (Sett A)"], ["533", "alle fire former belagt i korpuset"]];
 funnel.forEach(([n, t], i) => {
   const x = MX + i * 4.1;
@@ -211,42 +213,56 @@ funnel.forEach(([n, t], i) => {
 body(s, [
   { text: "Sett B: ", options: { bold: true, color: C.text1 } },
   { text: "høyfrekvente kjerneverb med én kjent kollisjon (gå/går ~ i går, ha ~ ha!), tatt med og flagget.", options: { breakLine: true } },
-  { text: "Krav: ≥ 100 000 treff, pret ≠ perf-part.", options: {} },
+  { text: "Krav: inf + pres + pret ≥ 100 000 treff; ingen form står i to kategorier (pret ≠ perf-part).", options: {} },
 ], MX, 4.7, W - 2 * MX, 1.0, 16);
-missing(s, "Skript som gjenskaper tallene (sqlite/verbtyper.py)", MX, 5.85, 6.0, 0.9);
-s.addNotes("Tallene er regnet ad hoc og kan ikke gjenskapes fra kode ennå (hull 3 i planen). Ikke vis dem før skriptet finnes.");
+s.addNotes("Gjenskapes med python3 -m sqlite.verbtyper (resultater/verbtyper.tsv). 100 000-grensen gjelder inf + pres + pret i nb_totals. «Internt distinkt» betyr at ingen form står i to av de fire kategoriene.");
 
 // 6 Seks verbtyper
 pres.addSection({ title: "Verb" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Verb" });
 s.addText("Seks verbtyper, ikke tre", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [{ name: "Andel av Sett A", labels: ["1A inf>pres>pret", "1B inf>pret>pres", "2A pret>inf>pres", "2B pret>pres>inf", "3A pres>inf>pret", "3B pres>pret>inf"], values: [29.8, 21.2, 17.9, 7.2, 14.8, 9.0] }],
-  chartOpts({ x: MX, y: 1.5, w: 7.4, h: 5.2, barDir: "bar", catAxisOrientation: "maxMin", chartColors: [HEX.accent1, HEX.accent1, HEX.accent2, HEX.accent2, HEX.dk2, HEX.dk2], showLegend: false, showTitle: true, title: "Andel av verbene i Sett A (N = 580)", valAxisMaxVal: 35, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addChart(pres.charts.BAR, [{ name: "Andel av Sett A", labels: ["1A inf>pres>pret", "1B inf>pret>pres", "2A pret>inf>pres", "2B pret>pres>inf", "3A pres>inf>pret", "3B pres>pret>inf"], values: [26.9, 27.1, 20.2, 7.4, 12.2, 6.2] }],
+  chartOpts({ x: MX, y: 1.5, w: 7.4, h: 5.2, barDir: "bar", catAxisOrientation: "maxMin", chartColors: [FORM.inf, FORM.inf, FORM.pret, FORM.pret, FORM.pres, FORM.pres], showLegend: false, showTitle: true, title: "Andel av verbene i Sett A (N = 580), bøker 1950–2020", valAxisMaxVal: 35, valAxisHidden: true, valGridLine: { style: "none" } }));
 s.addText("Infinitiv vil helst stå på 2. plass", { x: 8.4, y: 1.7, w: 4.3, h: 0.9, fontSize: 20, bold: true, color: C.text1, margin: 0, valign: "top", isTextBox: true });
-body(s, bullets(["pret på topp: 71 % har inf på 2. plass", "pres på topp: 62 % har inf på 2. plass", "Unntakene er ikke-viljestyrte overganger (forsvinne, ankomme) og tilstander (trenge, bestå)"]), 8.4, 2.7, 4.3, 2.6, 16);
-missing(s, "Ternærplott inf/pres/pret for alle 580 verb", 8.4, 5.4, 4.3, 1.1);
-s.addNotes("Tall fra rapport_verbtyper.md §3. Hver farge er én hovedtype (inf/pret/pres på topp). Søylediagrammet kan byttes ut med ternærplottet når det finnes.");
+body(s, bullets(["pret på topp: 73 % har inf på 2. plass", "pres på topp: 66 % har inf på 2. plass", "Unntakene er ikke-viljestyrte overganger (forsvinne, ankomme) og tilstander (trenge, bestå)"]), 8.4, 2.7, 4.3, 2.6, 16);
+s.addNotes("Tall fra rapport_verbtyper.md §3, bokkorpuset 1950–2020 (python3 -m sqlite.verbtyper). Når inf er på topp, deler verbene seg likt mellom 1A og 1B (49,8 / 50,2 %). I hele NB-korpuset (nb_totals) er fordelingen 1A 29,8 / 1B 21,2 / 2A 17,9 / 2B 7,2 / 3A 14,8 / 3B 9,0 %; inf på 2. plass holder der også (71 % og 62 %). Hver farge er én hovedtype. Fargene følger formen på topp, som i trekanten på neste lysbilde.");
+
+// 6b Trekanten
+s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Verb" });
+s.addText("Hvert verb er et punkt i trekanten", { placeholder: "title" });
+s.addImage({ path: FIG("verb_ternaer.png"), x: MX, y: 1.35, w: 7.09, h: 5.3, altText: "Trekantplott: andel infinitiv, presens og preteritum for 580 verb, farget etter formen på topp" });
+body(s, bullets(["Hjørnene er 100 % av én form; midten er en jevn fordeling", "Skillelinjene viser hvilken form som er på topp", "Få verb ligger nær hjørnene: nesten alle bruker hele paradigmet", "Punktene samler seg mot infinitiv-hjørnet og langs aksen fra infinitiv til preteritum"]), 8.0, 1.7, 4.7, 4.6, 16);
+s.addNotes("580 verb i Sett A, bokkorpuset 1950–2020 (python3 -m sqlite.figurer). Hver prikk er ett verb, plassert etter andelen inf/pres/pret; fargen er formen på topp (inf 54 %, pret 28 %, pres 18 %). Utvalgte verb er merket. Prikker nær en skillelinje har to nesten like store former.");
 
 // 7 Stabilitet
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Verb" });
 s.addText("Rangeringen står stille i 70 år", { placeholder: "title" });
-status(s, "UTKAST");
 stat(s, "71 av 71", "år (1950–2020) med nøyaktig samme rekkefølge av alle tre formene", MX, 1.6, 4.2);
 const stable = ["vurdere", "undersøke", "overta", "forsvinne", "ankomme", "rope", "trenge", "bestå"];
 stable.forEach((v, i) => chip(s, v, MX + (i % 2) * 2.1, 3.6 + Math.floor(i / 2) * 0.7, { w: 1.95, h: 0.55, fontSize: 16 }));
-missing(s, "Tidsserier for 4–6 av disse verbene, 1950–2020", 5.4, 1.6, 7.3, 4.8);
-s.addNotes("Alle åtte er Sett A-verb (rapport_verbtyper.md §4). Figur: andel per form per år, ett panel per verb.");
+s.addImage({ path: FIG("verb_stabilitet.png"), x: 5.85, y: 1.45, w: 6.84, h: 4.9, altText: "Andel infinitiv, presens og preteritum per år 1950–2020 for vurdere, undersøke, forsvinne og trenge" });
+s.addNotes("Alle åtte er Sett A-verb (rapport_verbtyper.md §4). De er utvalgte eksempler: for hele Sett A har 46 % samme topp alle 71 år og 14 % samme hele rangering (80 av 569 verb). Figuren viser fire av dem (python3 -m sqlite.figurer). Merk: rekkefølgen står stille, men andelene glir: vurdere går fra ca. 80 til 63 % infinitiv, trenger stiger fra 50 til 70 %.");
 
 // 8 Substantiv
 pres.addSection({ title: "Substantiv" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Substantiv" });
-s.addText("Substantiv: bestemthet og tall", { placeholder: "title" });
-status(s, "MANGLER");
-chipRow(s, ["eple", "eplet", "epler"], MX, 1.7);
-chipRow(s, ["bussen", "buss", "busser"], MX, 2.5);
-chipRow(s, ["politiet", "politi", "…"], MX, 3.3);
-missing(s, "Typefordeling (ent ub / ent be / fl ub på topp), gullstandard og stabilitet 1950–2020 — tilsvarende verbanalysen", 6.6, 1.7, 6.1, 4.6);
-s.addNotes("Største faglige hull (hull 1 i planen). «politiet» er hentet fra enkeltbokanalysen (80 % ved bare én form); ikke en global profil ennå.");
+s.addText("Substantiv velger tall før bestemthet", { placeholder: "title" });
+s.addChart(pres.charts.BAR, [{ name: "Andel", labels: ["ent ub", "ent be", "fl ub", "fl be"], values: [67.1, 16.5, 14.5, 1.9] }],
+  chartOpts({ x: MX, y: 1.5, w: 5.4, h: 4.6, chartColors: [HEX.accent2], showLegend: false, showTitle: true, title: "Formen på 1. plass, Sett A (N = 5 799)", valAxisMaxVal: 80, valAxisHidden: true, valGridLine: { style: "none" } }));
+const ntypes = [
+  ["ent ub", "tid, utvikling, kvalitet, kirke"],
+  ["ent be", "regjeringen, sommeren, hodet, senga"],
+  ["fl ub", "medlemmer, millioner, personer, uker"],
+  ["fl be", "amerikanerne, britene, bøndene"],
+];
+ntypes.forEach(([t, ex], i) => {
+  const y = 1.6 + i * 0.68;
+  chip(s, t, 6.5, y, { w: 1.3, h: 0.5, fontSize: 14, italic: false, bold: true, fill: C.accent2, color: C.background1 });
+  s.addText(ex, { x: 8.0, y, w: 4.7, h: 0.5, fontSize: 15, italic: true, color: C.text2, valign: "middle", margin: 0, isTextBox: true });
+});
+stat(s, "91 %", "av substantivene med ent be på topp har ent ub på 2. plass (fl be → fl ub: 82 %)", 6.5, 4.4, 3.0);
+stat(s, "53 %", "har samme form på topp i alle 71 år (1950–2020)", 9.8, 4.4, 2.9, C.accent2);
+s.addNotes("Fra rapport_substantivtyper.md (python3 -m sqlite.substantivtyper). Gullstandard: alle fire former entydige i Ordbanken, internt distinkte, ≥ 100 000 treff, alle former belagt i bokkorpuset. Unntak fra «tall først»: fl ub på topp har ent ub på 2. plass i 71,5 % (en person / tre personer). Full rangering av alle fire former er stabil i 71 av 71 år for 7,9 % (343 lemmaer), median 78,9 % av årene.");
 
 // 9 Enkeltbøker
 pres.addSection({ title: "Enkeltbøker" });
@@ -266,30 +282,34 @@ s.addText("«dør» er mest et substantiv", { placeholder: "title" });
 status(s, "UTKAST");
 s.addChart(pres.charts.BAR, [
   { name: "Råtall", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [15.1, 20.6, 64.3] },
-  { name: "Etter dekomponering", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [17.7, 6.9, 75.4] },
+  { name: "Etter dekomponering", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [17.4, 8.7, 74.0] },
 ], chartOpts({ x: MX, y: 1.5, w: 7.2, h: 4.6, barGrouping: "clustered", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Profilen til verbet dø, bokkorpuset 1950–2020", valAxisMaxVal: 85, valAxisHidden: true, valGridLine: { style: "none" } }));
-stat(s, "71 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene", 8.3, 1.5, 4.4);
+stat(s, "64 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene (±10–15 pp)", 8.3, 1.5, 4.4);
 body(s, [{ text: "dø flytter fra type 2B (pret > pres > inf) til 2A (pret > inf > pres).", options: { bold: true, color: C.text1 } }], 8.3, 3.6, 4.4, 1.0, 16);
-missing(s, "«døde» er også adjektivet død. pret er derfor et øvre anslag (69–76 %).", 8.3, 4.8, 4.4, 1.3);
-s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5. Rangeringen 2A holder i sensitivitetsoverslaget, men prosentene må regnes på nytt når adjektivandelen av «døde» er beregnet.");
+missing(s, "«døde» er også adjektivet død. pret er derfor et øvre anslag (64–74 %).", 8.3, 4.8, 4.4, 1.3);
+s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5, regnet om 2026-11-20 med log-regresjon lært i bokkorpuset: estimate_wordform_shares(\"dør\", corpus=\"book\") gir 63,5 % substantiv / 36,5 % verb; summen av de ukappede anslagene er 1,05 × observert. Tidligere tall (faste regler fra nb_totals) var 71 / 29 %. For at pres skulle komme over inf, måtte verbandelen være over 73 %, altså 36 pp feil, mer enn 90-persentilen i valideringen. Med adjektivkorreksjon på 13–38 % av «døde» blir profilen pret 64–71 / inf 19–24 / pres 10–12 %; 2A holder.");
 
 // 11 fisker over tid
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("«fisker» fordelt på leksemer over tid", { placeholder: "title" });
-status(s, "MANGLER");
+status(s, "UTKAST");
 chip(s, "fisker", MX, 1.7, { w: 1.8, h: 0.7, fontSize: 22, bold: true, fill: C.accent1, color: C.background1 });
-body(s, bullets(["Ankre: fiskeren, fiskere, fiskerne (en fisker)", "fisken, fiskene (en fisk)", "fiske, fisket/fiska, fiskes (å fiske)"]), MX, 2.7, 4.4, 3.0, 16);
-missing(s, "Figur: andel per leksem per år, 1950–2020 (sqlite/decompose_fisker.py)", 5.4, 1.6, 7.3, 4.8);
-s.addNotes("Abstractet lover dekomponering over tid; dette er eksempelet som er nærmest ferdig.");
+body(s, bullets(["Ankre: fiskeren, fiskere, fiskerne (en fisker)", "fisken, fiskene (en fisk)", "fiske, fisket/fiska, fiskes (å fiske)"]), MX, 2.7, 4.4, 2.4, 16);
+s.addImage({ path: FIG("fisker_over_tid.png"), x: 5.4, y: 1.5, w: 7.3, h: 4.33, altText: "Ordformen fisker fordelt på en fisker, fisk i flertall og å fiske i presens, andel per år 1950–2020" });
+missing(s, "Nivået avhenger av hvor forholdstallene er lært: en fisker 14–21 % eller ca. 50 %. Bare økningen for fisk (flertall) er robust.", MX, 5.0, 4.4, 1.5);
+s.addNotes("python3 -m sqlite.figurer. Heltrukket: forholdstall lært i bokkorpuset (log-regresjon på 5 799 gullstandard-substantiv; pres / s-passiv for aktivitetsverb), sqlite/decompose_fisker.py book_decomposition. Stiplet: forholdstallene fra nb_totals (mest aviser) overført til bøker. «fiskene» er relativt nesten dobbelt så vanlig i bøker som i nb_totals, så tall lært i ett korpus passer dårlig i et annet. Andeler 1950 / 2020, bok: en fisker 21 / 14 %, fisk (fl) 57 / 74 %, å fiske 22 / 12 %. Sum av ukappede anslag / observert: 1,3 (bok) mot 2,0 (overført). 5 års glidende snitt.");
 
 // 12 Validering
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Hvor godt treffer metoden?", { placeholder: "title" });
-status(s, "MANGLER");
-s.addText("Forslag til test", { x: MX, y: 1.7, w: 5.0, h: 0.5, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-body(s, bullets(["Velg entydige lemmaer med kjent fasit", "Lat som én form er flertydig", "Estimer den fra resten av paradigmet", "Mål feilen, per ordklasse og bøyningskategori"]), MX, 2.4, 5.0, 3.0, 16);
-missing(s, "Feilfordeling for estimatene (f.eks. median og spredning i prosentpoeng)", 6.2, 1.6, 6.5, 4.8);
-s.addNotes("Hull 4 i planen. For «dør» summerer de ukappede estimatene til 4,7 M mot 3,4 M observert før normalisering, så valideringen trengs før vi kan si noe om presisjon.");
+s.addChart(pres.charts.BAR, [
+  { name: "Faste regler (i dag)", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [13.3, 14.6, 14.4, 16.8] },
+  { name: "Log-regresjon", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [11.0, 11.5, 10.5, 10.1] },
+], chartOpts({ x: MX, y: 1.5, w: 7.4, h: 4.7, barDir: "bar", barGrouping: "clustered", catAxisOrientation: "maxMin", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Median feil i substantivandel (prosentpoeng), 3 000 kunstige homografer per type", valAxisMaxVal: 20, valAxisHidden: true, valGridLine: { style: "none" } }));
+stat(s, "78–80 %", "av de kunstige homografene får riktig leksem i flertall (log-regresjon; faste regler 66–76 %)", 8.4, 1.5, 4.3);
+stat(s, "× 1,6–2", "typisk avvik når én form anslås fra resten av paradigmet (log-regresjon)", 8.4, 3.55, 4.3, C.accent2);
+body(s, [{ text: "Retning: ja. Presise andeler: ±10–15 pp.", options: { bold: true, color: C.text1 } }], 8.4, 5.55, 4.3, 0.7, 16);
+s.addNotes("python3 -m sqlite.valider_dekomponering. Gullstandarden (2 772 substantiv og 533 verb med alle kategorier i nb_totals) har kjent fasit. Test 1: én kategori holdes ute og anslås fra de andre; typisk avvik ×1,55–2,0 med log-regresjon, ×1,7–2,7 med de faste reglene i decomposer.py. Test 2: en substantivform og en verbform slås sammen til en kunstig homograf; 90-persentilen for feilen er fortsatt ca. 30 pp. De faste reglene er skjeve (for ent ub + pres undervurderer de substantivandelen med 13 pp i median). Dekomponereren bruker derfor nå log-regresjon lært i samme korpus; for «dør» i bøker gir det 64 % substantiv, mot 71 % før. Det enkelte ordet kan altså avvike fra den typiske skjevheten. Log-regresjonen er lært med 5-delt kryssvalidering.");
 
 // 13 Litteratur
 pres.addSection({ title: "Avslutning" });

@@ -27,36 +27,61 @@ Vi gjennomfører derfor en eksplisitt **to-trinns vask**:
   - Utvides kravet til også å gjelde 4. form (`perf-part`, slik at også leksikaliserte partisipp-adjektiver som *forlatt, opptatt, forbudt, betjent* lukes ut), gjenstår **$N = 580$ verb** (og **$N = 533$ verb** dersom vi i tillegg krever at hver eneste av de 4 kjerneformene alene ligger inne blant topp 500 000 ordformer i `nb_totals`, noe som fjerner arkaiske riksmålsformer som *tilstede*).
 - **Sett B — Praktisk rene kjerneverb (med eksplisitt flagget ordbokskollisjon):** Sentrale norske kjerneverb (*gå, komme, si, gjøre, lese, spise, kjøpe, ha, vite, ligge*) som har en teknisk ordbokskollisjon i én form (f.eks. *går* mot *i går* / imp. *gåre*, eller *ha* mot interjeksjon *ha!* og *hektar*), men der verbformen dominerer i korpuset. Åpenbare støykandidater der kollisjonen forrykker profilen (*dø, stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape*) er luket ut av gullstandard-tabellen, og *dø / dør* analyseres i stedet med dekomponeringsmetoden i **seksjon 7.2**.
 
+**Reproduserbarhet (lagt til 2026-11-19):** Alle tall i §2–4 gjenskapes nøyaktig med `python3 -m sqlite.verbtyper` (per-verb-resultater i `resultater/verbtyper.tsv`). Presise kriterier, slik skriptet bruker dem:
+1. Alle fire kjerneformer finnes (`boy_nummer` 1, 2, 4, 5).
+2. Internt distinkte: ingen ordform står i to av de fire kategoriene. Det utelukker `-et/-a`-verbene der `pret = perf-part`.
+3. **`inf + pres + pret` ≥ 100 000** i `nb_totals` (perf-part teller ikke med i grensen).
+4. `inf`, `pres` og `pret` har `antall_lemma_id = 1` → **606**; også `perf-part` → **580** (Sett A); alle fire kategorier har minst én form i `nb_totals` → **533**.
+
+Sett A inneholder noen ikke-standard former som har sneket seg gjennom (*tilstede, sæte, meine*). De påvirker typefordelingen marginalt, men bør ikke brukes som eksempler.
+
 ---
 
 ## 3. De 6 verbtypene i den strenge gullstandarden (Sett A)
 
-Sammenligningen mellom $N = 606$ (3 former globalt POS-isolerte), **$N = 580$ (Sett A: alle 4 former globalt POS-isolerte)** og **$N = 533$ (Sett A med alle 4 former belagt i `nb_totals`)** viser at fordelingen mellom de 6 undertypene (`1A–3B`) er ekstremt robust (avviket er kun $0{,}1\text{–}0{,}8$ prosentpoeng):
+*Revidert 2026-11-19: tallene er nå fra bokkorpuset 1950–2020 (`dhlab ngram_book`), samme korpus som §4 og foredraget. Tidligere versjoner brukte `nb_totals` (hele NB-korpuset); se sammenligningen nederst i seksjonen. Gjenskapes med `python3 -m sqlite.verbtyper`.*
 
-1. **1. plassen bestemmer *ikke* alene rekkefølgen av de andre formene** — alle $3! = 6$ permutasjoner er godt belagt og speiler verbets aksjonsart/aspekt.
-2. **Men det er en sterk strukturell asymmetri i favør av infinitiv på 2. plass:**
-   - Når **`pret` er på topp**, har **71,2 %** av verbene i Sett A ($N=580$) **`inf` på 2. plass** (`pret > inf > pres`), mens kun **28,8 %** har `pres` på 2. plass (`pret > pres > inf`).
-   - Når **`pres` er på topp**, har **62,3 %** av verbene **`inf` på 2. plass** (`pres > inf > pret`), mens **37,7 %** har `pret` på 2. plass (`pres > pret > inf`).
-   - Når **`inf` er på topp**, deler verbene seg **58,4 % vs. 41,6 %** mellom `inf > pres > pret` og `inf > pret > pres`.
+Sammenligningen mellom $N = 606$ (3 former globalt POS-isolerte), **$N = 580$ (Sett A: alle 4 former globalt POS-isolerte)** og $N = 533$ (Sett A med alle 4 former belagt i `nb_totals`) viser at fordelingen mellom de 6 undertypene er robust for utvalget (avvik på høyst 2 prosentpoeng):
 
-### Oversiktstabell over de 6 rangeringstypene i Sett A ($N = 580$ globalt POS-isolerte verb, med $N = 606$ og $N = 533$ i parentes)
+1. **1. plassen bestemmer *ikke* alene rekkefølgen av de andre formene.** Alle $3! = 6$ rekkefølger er godt belagt.
+2. **Infinitiv vil helst stå på 2. plass når den ikke står på 1.:**
+   - Når **`pret` er på topp**, har **73,1 %** av verbene **`inf` på 2. plass** (`pret > inf > pres`), og 26,9 % har `pres` på 2. plass.
+   - Når **`pres` er på topp**, har **66,4 %** **`inf` på 2. plass** (`pres > inf > pret`), og 33,6 % har `pret` på 2. plass.
+   - Når **`inf` er på topp**, deler verbene seg likt: **49,8 %** `inf > pres > pret` og **50,2 %** `inf > pret > pres`.
 
-| Hovedtype (1. plass) | Sekundær rangering (`1. > 2. > 3.`) | Andel av hovedtypen (Sett A) | Andel av alle verb<br>Sett A $N=580$<br>*(jf. $N=606$ / $N=533$)* | Gj.snittsprofil i Sett A (`inf / pres / pret`) | Semantisk / grammatisk karakteristikk | 100 % globalt POS-isolerte eksempler (Sett A) |
+### Oversiktstabell over de 6 rangeringstypene i Sett A ($N = 580$, bokkorpuset 1950–2020)
+
+| Hovedtype (1. plass) | Sekundær rangering (`1. > 2. > 3.`) | Andel av hovedtypen | Andel av alle verb<br>$N=580$<br>*(jf. $N=606$ / $N=533$)* | Snittprofil (`inf / pres / pret`) | Semantisk / grammatisk karakteristikk | Eksempler (Sett A) |
 | :--- | :--- | :---: | :---: | :---: | :--- | :--- |
-| **1. Infinitiv på topp**<br>*(51,0 % av verbene)* | **1A: `inf > pres > pret`** | **58,4 %** | **29,8 %**<br>*(30,0 % / 29,8 %)* | `61,7 % / 25,4 % / 12,9 %` | **Prosessuelle / diskursive aktivitetsverb:** Brukes mye etter modalverb/*å* og i pågående nåtid, sjeldnere som avsluttet fortidshendelse. | *forstå, vurdere, oppnå, utføre, foreta, bidra, diskutere, forklare, tilby, unngå, produsere, konstatere* |
-| | **1B: `inf > pret > pres`** | **41,6 %** | **21,2 %**<br>*(21,3 % / 22,7 %)* | `56,8 % / 15,9 % / 27,3 %` | **Teliske / resultative handlingsverb:** Brukes enten som mål/formål i infinitiv (*skal ta, for å undersøke*) eller som fullført hendelse i preteritum (*tok, innførte*), sjelden i pågående presens. | *ta, undersøke, innføre, redusere, studere, dømme, henvende, engasjere, etablere* |
-| **2. Preteritum på topp**<br>*(25,2 % av verbene)* | **2A: `pret > inf > pres`** | **71,2 %** | **17,9 %**<br>*(17,5 % / 17,3 %)* | `27,7 % / 13,8 % / 58,4 %` | **Intensjonale / punktuelle hendelsesverb:** Domineres av narrativ fortid (*overtok, vedtok, forsøkte*), men brukes også ofte etter modalverb (*vil overta, må gjenta*), mens presens er lav. | *overta, vedta, gjenta, forsøke, skjule, registrere, organisere, protestere, resultere, notere* |
-| | **2B: `pret > pres > inf`** | **28,8 %** | **7,2 %**<br>*(7,3 % / 6,8 %)* | `15,1 % / 26,3 % / 58,6 %` | **Ikke-intensjonale overgangsverb og narrative regiverb:** Rapporteres direkte når det skjedde (*forsvant, ankom, smilte, ropte, omkom*) eller skjer (*forsvinner, ankommer*), sjelden som planlagt infinitiv (*\*for å omkomme*). | *forsvinne, ankomme, smile, rope, omkomme, berøre, inntreffe, referere, lansere, debutere* |
-| **3. Presens på topp**<br>*(23,8 % av verbene)* | **3A: `pres > inf > pret`** | **62,3 %** | **14,8 %**<br>*(14,9 % / 14,6 %)* | `29,7 % / 54,6 % / 15,7 %` | **Relasjonelle og ekspositoriske verb:** Konstaterer sammenhenger i nåtid (*betyr, fungerer, innebærer*) eller drøftes modalt (*kan bety, skal fungere*), sjelden i preteritum. | *bety, fungere, innebære, oppleve, anbefale, arrangere, representere, motta, meddele* |
-| | **3B: `pres > pret > inf`** | **37,7 %** | **9,0 %**<br>*(9,1 % / 8,8 %)* | `15,6 % / 58,2 % / 26,2 %` | **Stative tilstandsverb:** Beskriver en tilstand som gjelder nå (*trenger, består, foregår, foreligger*) eller gjaldt i fortid (*trengte, bestod, foregikk*), men sjelden som viljestyrt infinitiv (*å foreligge*). | *trenge, bestå, foregå, foreligge, foreslå, oppstå, befinne, behøve, invitere* |
+| **1. Infinitiv på topp**<br>*(54,0 % av verbene)* | **1A: `inf > pres > pret`** | **49,8 %** | **26,9 %**<br>*(27,2 % / 26,8 %)* | `61,6 % / 25,3 % / 13,1 %` | **Prosessuelle / diskursive aktivitetsverb:** Brukes mye etter modalverb/*å* og i pågående nåtid, sjeldnere som avsluttet fortidshendelse. | *forstå, bidra, vurdere, forklare, oppnå, foreta, utføre, unngå, produsere* |
+| | **1B: `inf > pret > pres`** | **50,2 %** | **27,1 %**<br>*(27,1 % / 29,1 %)* | `55,4 % / 16,5 % / 28,1 %` | **Teliske / resultative handlingsverb:** Brukes som mål/formål i infinitiv (*skal ta, for å undersøke*) eller som fullført hendelse i preteritum (*tok, innførte*), sjelden i pågående presens. | *ta, studere, undersøke, organisere, innføre, observere, dømme, engasjere* |
+| **2. Preteritum på topp**<br>*(27,6 % av verbene)* | **2A: `pret > inf > pres`** | **73,1 %** | **20,2 %**<br>*(19,8 % / 19,9 %)* | `29,9 % / 15,5 % / 54,6 %` | **Intensjonale / punktuelle hendelsesverb:** Domineres av narrativ fortid (*overtok, vedtok, forsøkte*), men brukes også etter modalverb (*vil overta, må gjenta*), mens presens er lav. | *forsøke, overta, registrere, skjule, gjenta, vedta, forlange, resultere* |
+| | **2B: `pret > pres > inf`** | **26,9 %** | **7,4 %**<br>*(7,6 % / 6,4 %)* | `14,9 % / 25,3 % / 59,8 %` | **Ikke-intensjonale overgangsverb og narrative regiverb:** Rapporteres når det skjedde (*forsvant, ankom, smilte, ropte, omkom*) eller skjer (*forsvinner, ankommer*), sjelden som planlagt infinitiv (*\*for å omkomme*). | *smile, rope, forsvinne, berøre, påstå, ankomme, omkomme, mistenke* |
+| **3. Presens på topp**<br>*(18,4 % av verbene)* | **3A: `pres > inf > pret`** | **66,4 %** | **12,2 %**<br>*(12,2 % / 11,8 %)* | `28,8 % / 54,7 % / 16,5 %` | **Relasjonelle og ekspositoriske verb:** Konstaterer sammenhenger i nåtid (*betyr, fungerer, innebærer*) eller drøftes modalt (*kan bety, skal fungere*), sjelden i preteritum. | *bety, innebære, oppleve, oppstå, fungere, medføre, variere, beskrive* |
+| | **3B: `pres > pret > inf`** | **33,6 %** | **6,2 %**<br>*(6,1 % / 6,0 %)* | `14,7 % / 59,0 % / 26,3 %` | **Stative tilstandsverb:** Beskriver en tilstand som gjelder nå (*trenger, består, foregår, foreligger*) eller gjaldt (*trengte, bestod*), men sjelden som viljestyrt infinitiv (*å foreligge*). | *trenge, bestå, foregå, foreligge, representere, befinne, eksistere, behøve* |
 
-*(Merk: `oppnå`, `foreta` og `overta` skifter mellom `nb_totals` (1810–2020) og `ngram_book` (1950–2020) avhengig av om hele NB-korpuset eller kun etterkrigsbøker legges til grunn; i seksjon 4 vises tallene for bokkorpuset 1950–2020.)*
+### Sammenligning med hele NB-korpuset (`nb_totals`)
+
+Samme 580 verb, regnet på `nb_totals` (hele NB-korpuset), som var grunnlaget i tidligere versjoner av denne seksjonen:
+
+| Type | Bokkorpuset 1950–2020 | `nb_totals` |
+| :--- | ---: | ---: |
+| 1A `inf > pres > pret` | 26,9 % | 29,8 % |
+| 1B `inf > pret > pres` | 27,1 % | 21,2 % |
+| 2A `pret > inf > pres` | 20,2 % | 17,9 % |
+| 2B `pret > pres > inf` | 7,4 % | 7,2 % |
+| 3A `pres > inf > pret` | 12,2 % | 14,8 % |
+| 3B `pres > pret > inf` | 6,2 % | 9,0 % |
+
+Inf-på-2.-plass-funnet holder i begge korpusene (`nb_totals`: 71,2 % og 62,3 %). Forskjellen ligger i at etterkrigsbøkene har relativt mer preteritum og mindre presens enn hele NB-korpuset. Derfor deler `inf`-på-topp-verbene seg likt mellom 1A og 1B i bokkorpuset (49,8 / 50,2 %), mot 58,4 / 41,6 % i `nb_totals`. Enkeltverb kan også bytte type mellom korpusene (f.eks. *forklare*: 3A i `nb_totals`, 1A i bokkorpuset; *oppnå* og *foreta*: 1B → 1A; *overta*: 1B → 2A).
 
 ---
 
 ## 4. Detaljerte profiler og rang-stabilitet (1950–2020) for rensede kjerneverb (Sett A og Sett B)
 
 Tabellen under viser profilene i bokkorpuset (1950–2020, 71 enkeltår) etter at støy-homografer (*dø, stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape*) er luket ut og erstattet med **100 % globalt POS-isolerte verb (Sett A)**. For sentrale høyfrekvente kjerneverb i **Sett B** er den tekniske ordbokskollisjonen eksplisitt angitt.
+
+**Hele Sett A (lagt til 2026-11-19):** Av de 569 Sett A-verbene som er belagt alle 71 år i bokkorpuset, har **260 (45,7 %)** samme form på 1. plass hvert år, og **80 (14,1 %)** har nøyaktig samme rekkefølge av alle tre formene hvert år. Verbene i tabellen under er altså utvalgte eksempler, ikke typiske. Det typiske verbet har stabil topp, mens 2. og 3. plass kan bytte i enkelte år.
 
 | Undertype (`1. > 2. > 3.`) | Verb | Sett | `inf` | `pres` | `pret` | Topp-stabilitet (1. plass) | Full-rang-stabilitet (`1. > 2. > 3.`) | Ev. teknisk kollisjon i Ordbanken (for Sett B) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -159,17 +184,20 @@ Et perfekt demonstrasjonseksempel er verbet **`dø`** (`lemma_id = 13385`) vs. s
      - `fl_ub` (**dører**): $192\,902$ i bøker ($1\,838\,925$ i `nb_totals`)
      - `fl_be` (**dørene**): $133\,837$ i bøker ($1\,255\,788$ i `nb_totals`)
      - Sum entydige substantiv-ankere: **$1\,977\,418$** i bøker ($10\,116\,223$ i `nb_totals`).
-   - Når vi kjører dekomponeringsmodellen vår (`estimate_wordform_shares("dør")` i `sqlite/decomposer.py`, eller bruker forholdstallet `ent_ub / ent_be` fra sammenlignbare rom-/bygnings-substantiv som *seng, port, trapp, vegg, vindu*), estimeres fordelingen av råfrekvensen for **`«dør»`** til:
-     - **Substantivet `en/ei dør` (`ent_ub`):** **71,4 %** ($\approx 481\,600$ i bøker 1950–2020; $2\,413\,878$ i `nb_totals`)
-     - **Verbet `å dø` (`pres`):** **28,6 %** ($\approx 192\,900$ i bøker 1950–2020; $967\,995$ i `nb_totals`)
-4. **Resultat — `dø` bytter verbtype fra 2B til 2A!**
-   - Så snart vi trekker fra substantivet *en/ei dør* fra strengen *«dør»*, faller presensandelen til verbet *dø* fra kunstig oppblåste **20,6 %** ned til **6,9 %** ($\approx 192\,900$ treff mot $492\,694$ for infinitiv *dø*):
-     - **Før dekomponering (råtall):** `pret` (64,3 %) > `pres` (20,6 %) > `inf` (15,1 %) $\rightarrow$ feilaktig klassifisert som **2B (`pret > pres > inf`)**.
-     - **Etter dekomponering (renset):** `pret` (**75,4 %**) > `inf` (**17,7 %**) > `pres` (**6,9 %**) $\rightarrow$ flytter seg klart over i **2A (`pret > inf > pres`)**!
+   - **Oppdatert 2026-11-20:** Dekomponereren bruker nå log-regresjon på de entydige ankerkategoriene, lært på gullstandarden i samme korpus som den brukes på (se `rapport_dekomponering_validering.md`). De tidligere faste reglene var skjeve. I bokkorpuset kjøres den med `estimate_wordform_shares("dør", corpus="book")`. Substantivet anslås fra `ent_be + fl_ub + fl_be`, verbet fra `inf` (*dø*) og `perf-part` (*dødd*). Strengen **`«dør»`** fordeles da slik:
+     - **Substantivet `en/ei dør` (`ent_ub`):** **63,5 %** ($\approx 428\,300$ i bøker 1950–2020)
+     - **Verbet `å dø` (`pres`):** **36,5 %** ($\approx 246\,300$ i bøker 1950–2020)
+     - Summen av de ukappede anslagene er 1,05 × observert, så anslagene er godt kalibrert i bokkorpuset.
+     - Til sammenligning gir `nb_totals` 69,8 / 30,2 %. Den tidligere versjonen (faste regler fra `nb_totals` brukt på bøker) ga 71,4 / 28,6 %. Valideringen gir en usikkerhet på ±10–15 pp for andeler av denne typen.
+4. **Resultat — `dø` bytter verbtype fra 2B til 2A:**
+   - Når substantivet *en/ei dør* trekkes fra strengen *«dør»*, faller presensandelen til verbet *dø* fra **20,6 %** til **8,7 %** ($\approx 246\,300$ treff mot $492\,694$ for infinitiv *dø*):
+     - **Før dekomponering (råtall):** `pret` (64,3 %) > `pres` (20,6 %) > `inf` (15,1 %), som gir **2B (`pret > pres > inf`)**.
+     - **Etter dekomponering:** `pret` (**74,0 %**) > `inf` (**17,4 %**) > `pres` (**8,7 %**), som gir **2A (`pret > inf > pres`)**.
+   - **Hvor robust er det?** For at `pres` skal komme over `inf`, måtte verbet stå for over 73 % av «dør», altså 36 pp mer enn anslaget. Det er større enn 90-persentilen for feilen i valideringen (ca. 30 pp).
 5. **Forbehold (lagt til 2026-11-17): også `«døde»` er flertydig — og adjektivet er ikke trukket fra ennå.**
    - `ordform_flertydighet` gir `døde` **`antall_lemma_id = 3`**: preteritum av *å dø* (13385), bestemt/flertall av adjektivet **`død`** (13386: *de døde, den døde mannen*) og det sjeldne verbet *å døde* (13402). Preteritumstallet over ($2\,100\,037$ i bøker; $12\,621\,972$ i `nb_totals`) inneholder altså også adjektivbruk.
-   - `estimate_wordform_shares("døde")` gir i dag verbet **100 %**, fordi `sqlite/decomposer.py` mangler ankerregler for adjektiv (adjektivkandidaten får 0 med «ingen andre bøyningsformer», selv om `dødt` er entydig med $343\,621$ i `nb_totals`). **Dette er en kjent mangel i dekomponereren.**
-   - **Sensitivitetsoverslag (`nb_totals`):** Forholdet `-e`-form / `-t`-form for entydige, «tilstandsaktige» adjektiv ligger rundt 4,7 (*blinde/blindt*), 9–10 (*nakne/nakent*, *syke/sykt*) og 14 (*gamle/gammelt*). Det gir adjektivet *døde* ca. $1{,}6$–$4{,}8\text{M}$ av de $12{,}6\text{M}$ treffene (13–38 %). Profilen til *dø* i `nb_totals` (med `pres` = $967\,995$ fra dør-dekomponeringen) blir da `pret` 69–76 % > `inf` 18–23 % > `pres` 7–9 % i alle tre scenarioene (uten adjektivkorreksjon: 78 / 16 / 6 %).
+   - `estimate_wordform_shares("døde")` gir i dag verbet **100 %**, fordi `sqlite/decomposer.py` mangler ankre for adjektiv. Log-regresjonen dekker bare substantiv og verb, og adjektivkandidaten får 0 («ingen andre bøyningsformer»), selv om `dødt` er entydig med $343\,621$ i `nb_totals`. **Dette er en kjent mangel i dekomponereren.**
+   - **Sensitivitetsoverslag:** Forholdet `-e`-form / `-t`-form for entydige, «tilstandsaktige» adjektiv ligger rundt 4,7 (*blinde/blindt*), 9–10 (*nakne/nakent*, *syke/sykt*) og 14 (*gamle/gammelt*). Det gir adjektivet *døde* 13–38 % av treffene. Profilen til *dø* i bokkorpuset (med `pres` = $246\,300$ fra dør-dekomponeringen) blir da `pret` 64–71 % > `inf` 19–24 % > `pres` 10–12 % (uten adjektivkorreksjon 74 / 17 / 9 %). I `nb_totals` blir den 68–75 / 18–23 / 7–9 %.
    - **Konklusjon:** Rangeringen `pret > inf > pres` (2A) er robust for adjektivkorreksjonen, men prosenttallene i punkt 4 er et øvre anslag for `pret`. Før foredraget bør adjektivandelen beregnes ordentlig (f.eks. med bigrammer *de/den/det døde* vs. *han/hun/som døde*, eller adjektivankre i dekomponereren).
 6. **Språklig tolkning:**
    - Og dette gir umiddelbart dyp språklig mening: Mens *forsvinne*, *ankomme* og *omkomme* (som er 100 % kollisjonsfrie i Sett A og blir stående i **2B**) sjelden brukes etter modalverb eller *å*, snakker vi på norsk svært ofte om *«å dø»* i infinitiv (*frykten for å dø, i ferd med å dø, skal dø, må dø, heller dø enn...*), mens pågående nåtid (*«han dør nå»*) er langt sjeldnere enn både fortid (*døde*) og infinitiv (*å dø*)!

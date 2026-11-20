@@ -9,7 +9,7 @@ OBT er en kjede av tre trinn:
 
 OBT må være installert separat (Linux). Modulen finner installasjonen via miljøvariabelen
 OBT_DIR, ellers ~/opt/obt. Mappen skal inneholde tag-bm.sh, tag-nostat-bm.sh, cg/, mtag/ og
-OBT-Stat/, og `vislcg3`, `python3`, `ruby` og `perl` må ligge på PATH. Se logg.md (del 15–16).
+OBT-Stat/, og `vislcg3`, `python3`, `ruby` og `perl` må ligge på PATH. Se logg.md (del 21–22).
 
 Selve parsingen (`parse_obt_output`) bruker bare standardbiblioteket og kan kjøres hvor som helst,
 f.eks. på en OBT-fil som er kopiert fra Linux-maskinen.
@@ -63,7 +63,7 @@ def run_obt(
     Advarsler fra mtag/OBT-Stat på stderr ignoreres med mindre kjøringen feiler.
     `timeout` (sekunder): hele OBT-kjeden (skallskript + mtag/vislcg3/ruby/perl) avbrytes og
     `ObtTimeout` kastes hvis den bruker lengre tid. mtag.py kan gå i evig løkke på enkelte tekster
-    under nyere Python (sett 2026-11-19, logg del 27).
+    under nyere Python (sett 2026-11-19, logg del 33).
     """
     obt_dir = Path(obt_dir).expanduser().resolve()
     script = obt_dir / ("tag-bm.sh" if stat else "tag-nostat-bm.sh")

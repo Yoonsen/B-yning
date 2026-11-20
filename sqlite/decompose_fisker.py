@@ -253,6 +253,94 @@ def analyze_fisker_decomposition():
     print(f"  3. Verb   «å fiske»   (presens)        | {raw_3:14,.0f} | {norm_3:10,.0f} ({norm_3/obs_fisker*100:5.1f} %)")
     print("  ------------------------------------------------------------------------")
 
+    # Koeffisientene brukes av sqlite/figurer.py til å dekomponere «fisker» år for år.
+    return {
+        "fisker_noun_weights": [float(w) for w in weights_er],  # · (fiskeren, fiskere, fiskerne)
+        "fisker_noun_rest_ratio": med_ratio_er_rest,  # · (fiskeren + fiskere + fiskerne)
+        "fisk_fl_ub_per_fiskene": med_animal_fl_ratio,
+        "fiske_pres_per_fiskes": med_pres_to_pass,
+    }
+
+
+
+# -----------------------------------------------------------------------------
+# Bokkorpuset: forholdstall lært i samme korpus som de brukes på
+# -----------------------------------------------------------------------------
+# Forholdstallene over er lært på nb_totals (mest aviser). I bokkorpuset er f.eks. «fiskene»
+# relativt nesten dobbelt så vanlig, så tallene kan ikke overføres (sum av anslag ≈ 1,7–2 ×
+# observert). Her læres de i stedet i bokkorpuset 1950–2020:
+#   - substantivene: log-regresjon av mål-kategorien på de tre andre, lært på gullstandarden for
+#     substantiv (rapport_substantivtyper.md) – metoden som gjorde det best i
+#     sqlite/valider_dekomponering.py
+#   - verbet: median presens / s-passiv for aktivitetsverbene, i bokkorpuset
+
+ACT_VERBS = ["jakte", "høste", "dyrke", "plukke", "fange", "slakte", "koke", "bake", "steke", "seile"]
+NOUN_ANCHORS = {  # leksem: (mål-kategori, {kategori: ankerformer})
+    "en fisker": (1, {2: ["fiskeren"], 3: ["fiskere"], 4: ["fiskerne"]}),
+    "fisk (flertall)": (3, {1: ["fisk"], 2: ["fisken"], 4: ["fiskene"]}),
+}
+
+
+def _book_totals(forms_by_lemma: list[dict], period) -> list[dict]:
+    from sqlite.ngram import fetch_ngram_dhlab
+
+    words = sorted({w for d in forms_by_lemma for ws in d.values() for w in ws})
+    series = fetch_ngram_dhlab(words, period=period, batch_size=80)
+    return [{s: sum(sum(series[w].values()) for w in ws) for s, ws in d.items()} for d in forms_by_lemma]
+
+
+def book_decomposition(period=(1950, 2020), smooth: int = 5) -> dict:
+    """Andel per leksem per år for «fisker» i bokkorpuset, med forholdstall lært i bokkorpuset."""
+    import math
+
+    from sqlite.ngram import fetch_ngram_dhlab
+    from sqlite.substantivtyper import load_noun_forms, select_gold
+
+    conn = get_conn()
+    gold, _ = select_gold(load_noun_forms(conn))
+    totals = [t for t in _book_totals([{s: list(d["forms"][s]) for s in (1, 2, 3, 4)} for d in gold], period)
+              if all(t[s] > 0 for s in (1, 2, 3, 4))]
+
+    years = list(range(period[0], period[1] + 1))
+    anchor_words = ["fisker"] + [w for _, a in NOUN_ANCHORS.values() for ws in a.values() for w in ws] + ["fiskes"]
+    ser = fetch_ngram_dhlab(anchor_words, period=period)
+    yearly = {w: np.array([ser[w].get(y, 0) for y in years], float) for w in anchor_words}
+    if smooth > 1:
+        kern = np.ones(smooth) / smooth
+        yearly = {w: np.convolve(np.pad(v, smooth // 2, mode="edge"), kern, mode="valid") for w, v in yearly.items()}
+
+    raw, ratios = {}, {}
+    for lex, (target, anchors) in NOUN_ANCHORS.items():
+        others = sorted(anchors)
+        X = np.array([[1.0] + [math.log(t[s]) for s in others] for t in totals])
+        y = np.array([math.log(t[target]) for t in totals])
+        beta, *_ = np.linalg.lstsq(X, y, rcond=None)
+        tot = {s: sum(sum(ser[w].values()) for w in anchors[s]) for s in others}
+        est_total = math.exp(beta @ np.array([1.0] + [math.log(tot[s]) for s in others]))
+        # Antakelsen om stabile proporsjoner: samme forhold mål / ankre hvert år
+        ratios[lex] = est_total / sum(tot.values())
+        raw[lex] = ratios[lex] * sum(yearly[w] for ws in anchors.values() for w in ws)
+
+    # Verbet: «fiske», «fisket» osv. kolliderer med «et fiske», så bare s-passiv er et rent anker
+    verbs = conn.execute(
+        f"""SELECT grunnform, boy_nummer, oppslag FROM lemma_former
+            WHERE boy_gruppe = 'verb, normal' AND boy_nummer IN (2, 3)
+              AND grunnform IN ({','.join('?' * len(ACT_VERBS))})""", ACT_VERBS).fetchall()
+    forms = {}
+    for gf, b, w in verbs:
+        forms.setdefault(gf, {}).setdefault(b, set()).add(w)
+    vt = _book_totals([{b: sorted(ws) for b, ws in d.items()} for d in forms.values() if 2 in d and 3 in d], period)
+    ratios["å fiske (presens)"] = float(np.median([t[2] / t[3] for t in vt if t[3] > 0]))
+    raw["å fiske (presens)"] = ratios["å fiske (presens)"] * yearly["fiskes"]
+
+    raw_sum = sum(raw.values())
+    return {
+        "years": years,
+        "shares": {lex: 100 * v / raw_sum for lex, v in raw.items()},
+        "sum_obs": raw_sum / yearly["fisker"],
+        "ratios": ratios,
+        "n_gold": len(totals),
+    }
 
 if __name__ == "__main__":
     analyze_fisker_decomposition()
