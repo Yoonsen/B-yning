@@ -15,12 +15,12 @@ Selve parsingen (`parse_obt_output`) bruker bare standardbiblioteket og kan kjø
 f.eks. på en OBT-fil som er kopiert fra Linux-maskinen.
 
 Bruk fra kommandolinjen (fra repo-roten):
-    python -m sqlite.obt_tagger tekster/test-tekst-bokselskap.txt --out /tmp/test.tsv
+    python -m sqlite.obt_tagger /sti/til/tekst.txt --out /tmp/test.tsv
     python -m sqlite.obt_tagger --parse-only /tmp/obt_full.txt --out /tmp/test.tsv
 
 Bruk fra Python / notebook:
     from sqlite.obt_tagger import tag_file, to_rows
-    tokens = tag_file("tekster/test-tekst-bokselskap.txt")
+    tokens = tag_file("/sti/til/tekst.txt")
     rows = to_rows(tokens)          # én rad per analyse
 """
 

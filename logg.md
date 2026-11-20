@@ -1103,3 +1103,17 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Dele rapporten med kollegaen.
 - Anbefalingene til decomposer (adjektivkandidater, vise grunnlaget, delte ankre) er hans modul, så de må avtales med ham.
 - Eventuelt stikkprøver av OBT (*tro*/*trå*, *å*).
+
+---
+
+## 2026-11-20 (del 43) — Testteksten for OBT fjernet
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Slettet mappen `tekster/` med `test-tekst-bokselskap.txt` (del 21). Teksten ble bare brukt til å teste OBT-oppsettet før de ekte fulltekstene var på plass, og mappenavnet var lett å forveksle med `tekst/`.
+- Bruksexemplene i `sqlite/obt_tagger.py` bruker nå en generell sti (`/sti/til/tekst.txt`). Ingen kode var avhengig av filen.
+- Eldre loggoppføringer som nevner filen (del 21–24), er ikke endret.
+
+**Neste steg**
+- Trengs en testtekst igjen, kan en kort, åpen tekst legges til på nytt.
