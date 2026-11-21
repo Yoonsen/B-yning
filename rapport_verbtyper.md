@@ -217,6 +217,7 @@ Et perfekt demonstrasjonseksempel er verbet **`dø`** (`lemma_id = 13385`) vs. s
    - **Adjektivankre i dekomponereren:** `sqlite/adjektiv_gold.py` velger 1 840 adjektiv (belagt i bokkorpuset) der m/f, e-form og nøytrum er entydige. Med kryssvalidering anslås e-formen med typisk avvik ×1,67 fra m/f + nøytrum og ×1,91 fra nøytrum alene. For *død* er nøytrum (*dødt*, $69\,425$) eneste anker, fordi «død» også er et substantiv.
    - **Ankrene bestemmer ikke adjektivandelen.** `estimate_wordform_shares("døde", corpus="book")` gir 57 % *dø* / 39 % *død* / 4 % *døde*, men summen av de ukappede anslagene er bare **0,05 × observert**. Hele ordfamilien har atypiske ankre: *dødd* er sjelden fordi adjektivet overtar partisippets rolle (*han er død*, ikke *han har dødd*), *dødt* er sjelden, og substantivet *død* har nesten ikke flertall (*dødene*: 25 treff). Dekomponeringen av «død» har samme problem (0,19). Dekomponereren skriver nå ut en advarsel når summen / observert ligger utenfor 0,5–2.
    - **Spennet:** modellen for alle adjektiv gir adjektivet bare ca. 2 % av «døde» (90-persentil 7 %), fordi frekvente *-t*-former ofte er adverb (*godt, sterkt*). Forholdet e-form / *-t*-form for tilstandsadjektiv i bøker (*blind* 4,1, *naken* 6,5, *syk* 9,8, *gammel* 10,5) gir 14–35 %. Det grove overslaget fra 2026-11-17 gikk opp til 46 %.
+   - **Kontroll i et tagget korpus (lagt til 2026-11-21):** i det OBT-taggede korpuset (8,4 mill. ord, `rapport_dekomponering_obt.md` §9) er 28 % av «døde» adjektivet *død*. Det ligger innenfor spennet for tilstandsadjektiv. Med 28 % blir profilen til *dø* i bokkorpuset pret 67 / inf 22 / pres 11 %.
    - **Profilen til *dø* i bokkorpuset** (med `pres` = $246\,300$ fra dør-dekomponeringen):
 
      | Adjektivandel av «døde» | pret | inf | pres |
@@ -224,6 +225,7 @@ Et perfekt demonstrasjonseksempel er verbet **`dø`** (`lemma_id = 13385`) vs. s
      | 0 % (ingen korreksjon) | 74,0 % | 17,4 % | 8,7 % |
      | 2 % (alle adjektiv) | 73,6 % | 17,6 % | 8,8 % |
      | 14–35 % (tilstandsadjektiv) | 71–65 % | 19–23 % | 10–12 % |
+     | 28 % (OBT-tagget korpus) | 67,2 % | 21,9 % | 10,9 % |
      | 46 % (høyeste overslag) | 60,5 % | 26,3 % | 13,1 % |
 
    - **Konklusjon:** rangeringen `pret > inf > pres` (2A) holder så lenge adjektivet står for under **77 %** av «døde». Det er langt over alle overslagene. Prosenttallene er usikre, rangeringen er det ikke. En presis adjektivandel krever kontekst (*de/den/det døde* mot *han/hun/som døde*), og bigrammer var ikke tilgjengelige fra API-ene vi bruker.

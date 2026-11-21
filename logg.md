@@ -1241,3 +1241,27 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Åpent spørsmål
 - `rapport_dekomponering_obt.md` (del 42) ble kjørt før dekomponereren fikk adjektivankre (del 47). Gruppen «umodellert ≥ 5 %» består mest av former der OBT gir et adjektiv. De tallene vil trolig endre seg ved en ny kjøring av `python3 -m sqlite.valider_dekomponering_obt`. Rapporten er ikke endret; det bør avtales med den som skrev den.
+
+---
+
+## 2026-11-21 (del 52) — OBT-valideringen kjørt på nytt med adjektivankre
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/korpus_profiler.py`: `_corpus_gold_profiles` bygger nå også adjektiv-gullstandarden. Utvalget gjøres med Ordbankens ekte `nb_totals`, som for substantiv og verb, og frekvensene hentes fra korpuset. Uten denne endringen hadde `decomposer.gold_profiles` valgt adjektivene med korpusets frekvenser.
+- `python3 -m sqlite.valider_dekomponering_obt` er kjørt på nytt (ca. 30 sek). `resultater/dekomponering_obt_former.tsv` og `_profiler.tsv` er overskrevet; de gamle filene ligger i commit `390d420`.
+- `rapport_dekomponering_obt.md`: ny §9 med de nye tallene. §3–5 er beholdt slik de ble skrevet og merket «første kjøring». Anbefaling 1 er merket som gjennomført for vanlige adjektiv.
+- OBT-andelen for «døde» er lagt inn i `rapport_verbtyper.md` §7.2 punkt 5, i lysbilde 11 (boks og notat) og i planen (hull 5).
+
+### Funn
+- Innholdsord, logreg: medianavviket gikk fra 18,4 til **13,9 pp**, og riktig leksem størst fra 69 til **73 %**.
+- 1 321 former har nå alle kandidatene modellert (før 1 206). 129 former ble mer enn 5 pp bedre, 12 mer enn 5 pp verre.
+- **«døde»:** OBT gir 72 % *dø* / 28 % *død* (adj.), og decomposer gir nå 71 / 29 (før 100 / 0). Grunnlaget er bare 0,1. OBT-tallet (28 %) er den beste empiriske kontrollen av adjektivandelen og ligger innenfor spennet for tilstandsadjektiv (14–35 %).
+- Profilen til *dø* avviker 6,0 pp fra OBT (før 11,7) og er nå bedre enn rå formtall (8,1 pp).
+- **Ny feiltype:** sjeldne adjektiv i ordboka tar for mye når grunnlaget er lite: *grunn* (adj 63 %, OBT 2 %), *bein*, *faren*, *maken*, *engelsk*, *sikre*.
+- Fortsatt umodellert: ubøyelige adjektiv (*stille*, *få*), uregelrette (*liten/lille/litt*, *mange/flere*) og adjektiv med flertydige ankre (*hel/helt*, *ny/nytt*).
+
+### Neste steg
+- Nedvekte sjeldne ordbokshomografer, eller la grunnlaget styre (anbefaling 2–3 i OBT-rapporten).
+- Oppsummeringslysbildet.
