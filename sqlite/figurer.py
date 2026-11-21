@@ -11,6 +11,7 @@ resultater/verbtyper.tsv (skrives av `python3 -m sqlite.verbtyper`).
 1. verb_ternaer.png      – hvert verb i Sett A (N = 580) som et punkt i inf/pres/pret-trekanten
 2. verb_stabilitet.png   – andel per form per år for fire stabile verb
 3. fisker_over_tid.png   – ordformen «fisker» fordelt på tre leksemer per år, to sett forholdstall
+4. paradigmegraf_fisker.png – komponenten rundt «fisker» i paradigmegrafen (sqlite/paradigm_graph.py)
 """
 
 import contextlib
@@ -19,9 +20,12 @@ import io
 import math
 from pathlib import Path
 
+import logging
+
 import matplotlib
 
 matplotlib.use("Agg")
+logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)  # Calibri finnes ikke overalt
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
@@ -227,12 +231,85 @@ def fig_fisker() -> Path:
     return out
 
 
+POS_LABEL = {"subst": "substantiv", "verb": "verb", "adj": "adjektiv"}
+FISKER_LEMMA_ID = 17348
+
+
+def fig_paradigm_graph(start_lemma_id: int = FISKER_LEMMA_ID) -> Path:
+    """Komponenten rundt et lemma: noder = lemmaer med entydige former, kanter = delte former (bredde ~ n)."""
+    from matplotlib.patches import FancyBboxPatch
+
+    from sqlite.paradigm_graph import build_paradigm_graph, inspect_component
+
+    comp = inspect_component(build_paradigm_graph(), start_lemma_id)
+    nodes = comp["nodes"]
+    if len(nodes) != 4:
+        raise ValueError(f"layouten forutsetter fire lemmaer, fikk {len(nodes)}")
+    # Startnoden i midten, de tre andre i en trekant rundt (K4 tegnet uten kryssende kanter)
+    others = sorted(nodes[1:], key=lambda n: (n["label"].split(" (")[1], n["lemma_id"]))
+    pos = {nodes[0]["lemma_id"]: (0.0, 0.0)}
+    for n, xy in zip(others, [(0.0, 1.15), (-1.45, -0.95), (1.45, -0.95)]):
+        pos[n["lemma_id"]] = xy
+    meta = {n["lemma_id"]: n for n in nodes}
+    by_label = {n["label"]: n["lemma_id"] for n in nodes}
+    W, H = 1.05, 0.62  # nodeboks (dataenheter)
+
+    fig, ax = plt.subplots(figsize=(8.4, 5.6))
+    ax.set_xlim(-2.1, 2.1)
+    ax.set_ylim(-1.4, 1.55)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    for e in comp["edges"]:
+        u, v = by_label[e["u"]], by_label[e["v"]]
+        if v == start_lemma_id:
+            u, v = v, u
+        (x1, y1), (x2, y2) = pos[u], pos[v]
+        ax.plot([x1, x2], [y1, y2], color=MUTED, lw=1.2 + 1.8 * (e["n"] - 1), alpha=0.5, zorder=1, solid_capstyle="round")
+        # Kanter fra midtnoden: etiketten nær ytternoden; ytterkanter: midt på
+        t = 0.58 if u == start_lemma_id else 0.5
+        lx, ly = x1 + t * (x2 - x1), y1 + t * (y2 - y1)
+        if u != start_lemma_id and abs(y2 - y1) > 0.1:
+            # Skrå ytterkanter: etiketten flyttes utover (vekk fra midtnoden), ellers skjules den av midtboksen
+            nx, ny = (y2 - y1), -(x2 - x1)
+            norm = math.hypot(nx, ny)
+            if nx * lx + ny * ly < 0:
+                nx, ny = -nx, -ny
+            lx, ly = lx + 0.55 * nx / norm, ly + 0.55 * ny / norm
+        ax.text(lx, ly, ", ".join(e["shared_forms"]), ha="center", va="center", fontsize=12, style="italic",
+                color=INK, zorder=3, bbox={"boxstyle": "round,pad=0.25", "fc": "white", "ec": GRID, "lw": 0.8})
+    for lid, (x, y) in pos.items():
+        n = meta[lid]
+        gf, rest = n["label"].split(" (", 1)
+        pos_name = POS_LABEL.get(rest.split(",")[0], rest.split(",")[0])
+        anchors = n["unambiguous_forms"]
+        # Partisipp/adjektiviske former (-ende, -ede, -ete) er ikke kjerneformer; vis dem bare om de er alt som finnes
+        core = [f for f in anchors if not f.endswith(("ende", "ede", "ete"))] or anchors
+        is_start = lid == start_lemma_id
+        w = W * (1.45 if len(", ".join(core)) > 14 else 1.0)
+        ax.add_patch(FancyBboxPatch((x - w / 2, y - H / 2), w, H, boxstyle="round,pad=0.02,rounding_size=0.08",
+                                    fc=INK if is_start else "#EEF0F4", ec=INK if is_start else GRID, lw=1, zorder=4))
+        main, sub = ("white", "#D9DCE3") if is_start else (INK, MUTED)
+        ax.text(x, y + 0.15, gf, ha="center", va="center", fontsize=17, fontweight="bold", color=main, zorder=5)
+        ax.text(x, y - 0.04, pos_name, ha="center", va="center", fontsize=11, color=sub, zorder=5)
+        if anchors:
+            ax.text(x, y - 0.2, ", ".join(core), ha="center", va="center", fontsize=11, color=main, zorder=5)
+        else:
+            ax.text(x, y - 0.2, "ingen entydige former", ha="center", va="center", fontsize=10.5, style="italic",
+                    color="#B5482F", zorder=5)
+    fig.text(0.5, 0.02, "I boksene: entydige former (ankre). På linjene: delte former; tykkelse = antall.",
+             ha="center", fontsize=10.5, color=MUTED)
+    out = OUT_DIR / "paradigmegraf_fisker.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     verbs = load_verbs()
     print(f"Skrev {fig_ternary(verbs)}")
     print(f"Skrev {fig_stability(verbs)}")
     print(f"Skrev {fig_fisker()}")
+    print(f"Skrev {fig_paradigm_graph()}")
 
 
 if __name__ == "__main__":

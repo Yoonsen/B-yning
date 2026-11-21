@@ -573,3 +573,30 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Les Karlsson 1986 og Arppe 2006 i fulltekst om lysbilde 14 skal si noe mer spesifikt om dem.
 - Figur for paradigmegrafen og oppsummeringslysbildet. Abstractet må samkjøres med dataene for *vite* og *eple*.
+
+---
+
+## 2026-11-21 (del 23) — Figur av paradigmegrafen
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/figurer.py`: ny `fig_paradigm_graph()` → `tekst/figurer/paradigmegraf_fisker.png`.
+  - Figuren tegner komponenten rundt «fisker» rett fra `paradigm_graph.inspect_component`, uten hardkodede former.
+  - Noder er lemmaer, med de entydige kjerneformene (ankrene) inne i boksen. Partisippformer på *-ende/-ede/-ete* er utelatt.
+  - Kantene er merket med de delte formene, og linjetykkelsen viser antallet.
+  - Fontvarslene fra matplotlib er dempet.
+- Lysbilde 4 viser figuren i stedet for de håndtegnede boksene, har nytt talenotat og er ikke lenger merket UTKAST. Planen (rad 4, hull 2) er oppdatert.
+
+### Funn
+- Komponenten er en komplett graf (K4): alle fire lemmaene deler minst «fisker» med hverandre.
+- Ankrene er svært ujevnt fordelt:
+  - *fisker* (subst.) har tre: *fiskere, fiskeren, fiskerne*.
+  - *fisk* har bare *fisken*.
+  - Verbet *fiske* har bare s-passiv *fiskes*; *fisk* (imp.), *fiske*, *fisker*, *fiska* og *fisket* deles.
+  - Substantivet *et fiske* har **ingen** entydige former. Det kan derfor ikke anslås med ankre.
+- Firergrupper som denne er sjeldne: 452 komponenter, 1,2 % av 151 648 lemmaer.
+
+### Neste steg
+- Oppsummeringslysbildet (rad 14).
+- Samkjøre abstractet med dataene for *vite* og *eple*.

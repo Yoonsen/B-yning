@@ -189,16 +189,10 @@ s.addNotes("Tall fra AGENTS.md (rådatafilene). Sjekk hvilke korpusavgrensninger
 pres.addSection({ title: "Metode" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
 s.addText("Én form, flere leksemer", { placeholder: "title" });
-status(s, "UTKAST");
-chip(s, "fisker", 2.3, 3.4, { w: 1.8, h: 0.75, fontSize: 24, bold: true, fill: C.accent1, color: C.background1 });
-[["å fiske · pres", 1.6], ["en fisker · ent ub", 2.6], ["en fisk · fl ub", 4.2], ["et fiske · fl ub", 5.2]].forEach(([t, y]) => {
-  chip(s, t, 4.9, y, { w: 2.9, h: 0.6, fontSize: 16, italic: false });
-  const ty = y + 0.3, up = ty < 3.775;
-  s.addShape(pres.shapes.LINE, { x: 4.1, y: up ? ty : 3.775, w: 0.8, h: Math.abs(ty - 3.775), line: { color: HEX.dk2, width: 1.25 }, flipV: up, objectName: "kant" });
-});
+s.addImage({ path: FIG("paradigmegraf_fisker.png"), x: MX, y: 1.35, w: 6.66, h: 5.3, altText: "Paradigmegrafen rundt fisker: substantivene fisker, fisk og fiske og verbet fiske deler ordformer; substantivet fiske har ingen entydige former" });
 stat(s, "87,4 %", "av lemmaene i Ordbanken deler ingen form med andre lemmaer", 8.6, 1.6, 4.1);
 stat(s, "97,3 %", "ligger i grupper på høyst fire lemmaer som deler former", 8.6, 4.0, 4.1, C.accent2);
-s.addNotes("Linjene fra «fisker» kan trenge justering. Tall fra rapport_verbtyper.md §7.3 (sqlite/paradigm_graph.py). Vurder en figur av paradigmegrafen.");
+s.addNotes("Figuren lages av python3 -m sqlite.figurer fra paradigmegrafen (sqlite/paradigm_graph.py). Fire lemmaer deler «fisker». I boksene står de entydige formene (ankrene): fisker har tre, fisk har bare fisken, verbet fiske bare s-passiv fiskes (partisippformene er utelatt), og substantivet et fiske har ingen. Det er derfor et fiske ikke kan anslås. Slike firergrupper er sjeldne: 452 komponenter, 1,2 % av lemmaene. 87,4 % av 151 648 lemmaer deler ingen form; 97,3 % ligger i komponenter på høyst fire lemmaer (rapport_verbtyper.md §7.3).");
 
 // 5 Gullstandard
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
