@@ -17,9 +17,18 @@ Design (avtalt 2026-11-18):
 
 Antall ord per dokument regnes ut fra dhlab-frekvens-API-et: freq / relfreq for et vanlig ord.
 
+Utvidelse i lag (avtalt 2026-11-20, logg del 46): `--utvid` bygger videre på en eksisterende
+oversikt. Eksisterende dokumenter får `lag = 1` (hvis kolonnen mangler), og `--nye-lag N` trekker N
+nye lag, hvert balansert som det opprinnelige korpuset (samme ordmål per teksttype × tiår). Slik kan
+man senere tagge bare noen av lagene. Ingen dokumenter trekkes to ganger. Bøker: maks én bok per
+forfatter per celle i HELE korpuset (alle lag), for å få mange ulike forfattere. Aviser: maks
+MAKS_PER_AVIS numre per avistittel per celle i hvert lag.
+
 Bruk (fra repo-roten):
     python -m sqlite.korpusutvalg --ut korpus/korpusoversikt.tsv
-    python -m sqlite.korpusutvalg --totalt 240000 --ut /tmp/test.tsv     # liten prøve
+    python -m sqlite.korpusutvalg --totalt 2400000 --ut /tmp/test.tsv    # liten prøve (100 000 ord per celle;
+                                                                         # mindre gir ingen bøker, se MIN_ORD_BOK)
+    python -m sqlite.korpusutvalg --utvid korpus/korpusoversikt.tsv --nye-lag 4 --ut korpus/korpusoversikt.tsv
 
 Utvalget trekkes tilfeldig av dhlab-API-et og kan ikke gjenskapes ved ny kjøring; den lagrede
 oversikten ER den reproduserbare definisjonen av korpuset.
@@ -57,7 +66,7 @@ MARKORPAR = [("ikke", "ikkje"), ("jeg", "eg"), ("hva", "kva"), ("hvordan", "korl
 ORD_FOR_TELLING = ["og", "i", "det", "er", "på"]
 SPORREORD = sorted({w for par in MARKORPAR for w in par} | set(ORD_FOR_TELLING))
 
-KOLONNER = ["teksttype", "tiaar", "dhlabid", "urn", "title", "authors", "year", "timestamp",
+KOLONNER = ["lag", "teksttype", "tiaar", "dhlabid", "urn", "title", "authors", "year", "timestamp",
             "publisher", "city", "langs", "literaryform", "genres", "ddc", "doctype",
             "n_ord", "bokmaal_andel", "trukket_dato"]
 
@@ -109,17 +118,20 @@ def _godkjent(row, teksttype: str, cellemaal: int) -> bool:
 
 
 def trekk_celle(teksttype: str, fra: int, til: int, cellemaal: int, brukt: set,
-                batch: int, maks_runder: int) -> list[dict]:
-    """Trekker dokumenter til én celle (teksttype × tiår) til cellemålet er nådd."""
+                batch: int, maks_runder: int, per_nokkel: Counter | None = None) -> list[dict]:
+    """Trekker dokumenter til én celle (teksttype × tiår) til cellemålet er nådd.
+    `per_nokkel` teller allerede valgte dokumenter per forfatter (bøker) eller avistittel (aviser)
+    og oppdateres; gis den inn, gjelder grensene også for dokumenter valgt tidligere."""
     valgt, sum_ord = [], 0
-    per_nokkel: Counter = Counter()  # forfatter (bøker) eller avistittel (aviser)
+    if per_nokkel is None:
+        per_nokkel = Counter()
     for runde in range(maks_runder):
         if sum_ord >= cellemaal:
             break
         kand = Corpus(from_year=fra, to_year=til, limit=batch, **TYPER[teksttype]).frame
         if kand.empty:
             break
-        kand = kand[~kand["dhlabid"].isin(brukt)]
+        kand = kand[~kand["dhlabid"].astype(str).isin(brukt)]
         if teksttype != "avis":
             kand = kand[kand["langs"].fillna("").str.replace(" ", "") == "nob"]
         if kand.empty:
@@ -128,23 +140,61 @@ def trekk_celle(teksttype: str, fra: int, til: int, cellemaal: int, brukt: set,
         for _, row in kand.sample(frac=1, random_state=runde).iterrows():
             if sum_ord >= cellemaal:
                 break
-            if row["dhlabid"] in brukt or not _godkjent(row, teksttype, cellemaal):
+            if str(row["dhlabid"]) in brukt or not _godkjent(row, teksttype, cellemaal):
                 continue
-            forfatter = row.get("authors")
-            if teksttype == "avis" or pd.isna(forfatter) or not str(forfatter).strip():
-                nokkel = row["title"]
-            else:
-                nokkel = forfatter
+            nokkel = _nokkel(row, teksttype)
             grense = MAKS_PER_AVIS if teksttype == "avis" else 1
             if per_nokkel[nokkel] >= grense:
                 continue
             per_nokkel[nokkel] += 1
-            brukt.add(row["dhlabid"])
+            brukt.add(str(row["dhlabid"]))
             sum_ord += int(row["n_ord"])
             d = {k: row.get(k) for k in KOLONNER if k in row}
             d.update(teksttype=teksttype, tiaar=_tiaar_navn(fra, til))
             valgt.append(d)
     return valgt
+
+
+def _nokkel(row, teksttype: str) -> str:
+    """Forfatter for bøker (tittel hvis forfatter mangler), avistittel for aviser."""
+    forfatter = row.get("authors")
+    if teksttype == "avis" or pd.isna(forfatter) or not str(forfatter).strip():
+        return row["title"]
+    return forfatter
+
+
+def utvid_korpus(eksisterende: pd.DataFrame, nye_lag: int, totalt: int = 10_000_000,
+                 batch: int = 60, maks_runder: int = 12) -> pd.DataFrame:
+    """Legger til `nye_lag` nye, balanserte lag til en eksisterende korpusoversikt."""
+    df = eksisterende.copy()
+    if "lag" not in df.columns:
+        df["lag"] = 1
+    cellemaal = totalt // (len(TYPER) * len(TIAAR))
+    brukt = set(df["dhlabid"].astype(str))
+    # Forfattergrense for bøker gjelder hele korpuset: tell eksisterende per celle
+    forfattere: dict[tuple, Counter] = {}
+    for _, r in df[df["teksttype"] != "avis"].iterrows():
+        forfattere.setdefault((r["teksttype"], r["tiaar"]), Counter())[_nokkel(r, r["teksttype"])] += 1
+    start = int(df["lag"].max()) + 1
+    nye = []
+    for lag in range(start, start + nye_lag):
+        for teksttype in TYPER:
+            for fra, til in TIAAR:
+                celle = (teksttype, _tiaar_navn(fra, til))
+                teller = Counter() if teksttype == "avis" else forfattere.setdefault(celle, Counter())
+                valgt = trekk_celle(teksttype, fra, til, cellemaal, brukt, batch, maks_runder, teller)
+                for v in valgt:
+                    v["lag"] = lag
+                    v["trukket_dato"] = date.today().isoformat()
+                s = sum(int(v["n_ord"]) for v in valgt)
+                flagg = "" if s >= cellemaal else f"  (under målet på {cellemaal:,})"
+                print(f"lag {lag} {teksttype:17s} {fra}-{til}: {len(valgt):3d} dok, {s:>9,} ord{flagg}", flush=True)
+                nye.extend(valgt)
+    ny = pd.DataFrame(nye)
+    ny["n_ord"] = ny["n_ord"].astype(int)
+    ny["bokmaal_andel"] = ny["bokmaal_andel"].astype(float).round(3)
+    ut = pd.concat([df, ny], ignore_index=True)
+    return ut[[k for k in KOLONNER if k in ut.columns]]
 
 
 def bygg_korpus(totalt: int = 10_000_000, batch: int = 60, maks_runder: int = 8) -> pd.DataFrame:
@@ -160,6 +210,7 @@ def bygg_korpus(totalt: int = 10_000_000, batch: int = 60, maks_runder: int = 8)
             rader.extend(valgt)
     df = pd.DataFrame(rader)
     df["trukket_dato"] = date.today().isoformat()
+    df["lag"] = 1
     df["n_ord"] = df["n_ord"].astype(int)
     df["bokmaal_andel"] = df["bokmaal_andel"].astype(float).round(3)
     return df[[k for k in KOLONNER if k in df.columns]]
@@ -176,13 +227,21 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--ut", required=True, help="TSV-fil for korpusoversikten")
     p.add_argument("--batch", type=int, default=60, help="Antall kandidater per trekning")
     p.add_argument("--maks-runder", type=int, default=8, help="Maks antall trekninger per celle")
+    p.add_argument("--utvid", help="Eksisterende korpusoversikt (TSV) som skal utvides med nye lag")
+    p.add_argument("--nye-lag", type=int, default=4, help="Antall nye lag ved --utvid (standard 4)")
     args = p.parse_args(argv)
 
-    df = bygg_korpus(args.totalt, args.batch, args.maks_runder)
+    if args.utvid:
+        eks = pd.read_csv(args.utvid, sep="\t", dtype={"dhlabid": str, "urn": str})
+        df = utvid_korpus(eks, args.nye_lag, args.totalt, args.batch, max(args.maks_runder, 12))
+    else:
+        df = bygg_korpus(args.totalt, args.batch, args.maks_runder)
     Path(args.ut).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(args.ut, sep="\t", index=False)
     print(f"\nSkrev {len(df)} dokumenter, {df['n_ord'].sum():,} ord til {args.ut}")
     print(oppsummer(df).to_string())
+    if "lag" in df.columns:
+        print(df.pivot_table(index="lag", columns="teksttype", values="n_ord", aggfunc=["count", "sum"]).to_string())
     return 0
 
 
