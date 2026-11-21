@@ -64,11 +64,11 @@ NB N-gram har bigrammer (`api.nb.no/dhlab/nb_ngram`, endepunktet bak app.nb.no/n
 
 | Celle | Kontekst (ordet foran) | median r | 10.–90. persentil | sd log r |
 |---|---|---|---|---|
-| subst. ent ub | *en, ei, et, min, sin, din, vår* | 9,0 % | 0,2–30,5 % | 1,26 |
+| subst. ent ub | ubestemt artikkel og eiendomsord etter kjønn (*en/ei/et, min/mi/mitt, sin/si/sitt, din/di/ditt, vår/vårt*) + *hans, hennes, deres* | 9,9 % | 0,2–31,7 % | 1,22 |
 | verb inf | *å, kan, vil, skal, må* | 56,4 % | 38,1–70,5 % | 0,21 |
 | verb pres | *jeg, han, hun, vi, de, som* | 23,7 % | 13,5–33,7 % | 0,30 |
 
-**Substantivkonteksten er ubrukelig som rate**: abstrakte ord og masseord får sjelden *en*, konkrete tellbare ord ofte. For «dør» overskyter substantivanslaget med faktor 2,6. **Verbkontekstene er stabile.** Vi anslår derfor verbet fra bigrammene og lar resten være substantivet («restmetoden»). Bigrammene gir også sikre grenser: verbet er minst B_V og høyst f(O) − B_subst.
+**Substantivkonteksten er ubrukelig som rate**: abstrakte ord, masseord og månedsnavn får nesten aldri *en* (0 %), konkrete tellbare ord ofte (*serie* 48 %, *følelse* 42 %). Kjønnstilpassede kontekster endrer lite (sd log 1,26 med bare hankjønns eiendomsord, 1,22 kjønnstilpasset); for intetkjønnsord blir raten riktigere (median 14 → 20 %, men bare 6 ord). Substantivets egen flertallsandel korrelerer med raten (0,72), men forklarer for lite (sd log 1,22 → 1,05). For «dør» overskyter substantivanslaget med faktor 2,6. **Verbkontekstene er stabile.** Vi anslår derfor verbet fra bigrammene og lar resten være substantivet («restmetoden»). Bigrammene gir også sikre grenser: verbet er minst B_V og høyst f(O) − B_subst.
 
 | Form | Verbandel: paradigmet (§5) | Verbandel: bigram, restmetode | Sikre grenser (bigram) | OBT-korpuset |
 |---|---|---|---|---|

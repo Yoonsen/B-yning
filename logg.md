@@ -1461,3 +1461,25 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Kombinere paradigme- og bigramanslaget i `tidsserie.py` (invers varians i logit-skala) og validere på flere former mot OBT.
 - Bigrammer kan også gi adjektivandelen av «døde» (*de/den/det døde* mot *han/hun/som døde*).
+
+---
+
+## 2026-11-21 (del 58) — Kjønnstilpassede substantivkontekster i bigrammetoden
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Brukeren spurte om alle formene *en N, ei N, et N* var sjekket.
+  - *en/ei/et* var med for alle substantiv.
+  - Eiendomsordene var bare i hankjønnsform; *mitt/sitt/ditt/vårt* og *mi/si/di* manglet.
+- `sqlite/bigram_kontekst.py`: substantivkontekstene tilpasses nå kjønnet (fra `ordklasser` i Ordbanken: mask/fem/nøyt), pluss de kjønnsnøytrale *hans/hennes/deres* (`cues_for`, `noun_gender`).
+- §7 i `rapport_dekomponering_tid.md` er oppdatert.
+
+### Funn
+- Spredningen i substantivraten endres lite: sd log 1,26 → 1,22, og medianen går fra 9,0 til 9,9 %.
+- For intetkjønnsord blir raten riktigere (median 14 → 20 %), men bare 6 av de 120 hyppigste gullstandardordene er rene intetkjønnsord.
+- Variasjonen skyldes betydningen: månedsnavn og masseord ligger på 0 %, *serie/følelse/bedrift* på 38–48 %. Flertallsandelen korrelerer med raten (0,72), men senker sd bare til 1,05.
+- Restmetoden er uendret: «dør» 54 % verb og «tro» 54 % verb. Bare den øvre grensen fra substantivbigrammene er litt strammere.
+
+### Neste steg
+- Kombinere paradigme- og bigramanslaget og validere mot OBT (se del 57).

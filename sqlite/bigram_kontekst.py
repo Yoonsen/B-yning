@@ -40,6 +40,26 @@ CUES = {
     ("verb", 2): ["jeg", "han", "hun", "vi", "de", "som"],  # presens
 }
 CELL_LABEL = {("subst", 1): "ent ub", ("verb", 1): "inf", ("verb", 2): "pres"}
+# Substantiv: kontekstene tilpasses kjønnet (logg del 58). Kjønnsnøytrale eiendomsord gjelder alle.
+NOUN_CUES_BY_GENDER = {
+    "mask": ["en", "min", "sin", "din", "vår"],
+    "fem": ["ei", "en", "mi", "min", "si", "sin", "di", "din", "vår"],  # hunkjønn kan bøyes som hankjønn
+    "nøyt": ["et", "mitt", "sitt", "ditt", "vårt"],
+}
+NOUN_CUES_NEUTRAL = ["hans", "hennes", "deres"]
+
+
+def noun_gender(grunnform: str, conn=None) -> set[str]:
+    conn = conn or get_conn()
+    s = " ".join(r[0] for r in conn.execute(
+        "SELECT DISTINCT ordklasser FROM lemma_former WHERE grunnform = ? AND pos = 'subst'", (grunnform,)))
+    return {g for g in NOUN_CUES_BY_GENDER if g in s} or {"mask"}
+
+
+def cues_for(cell: tuple[str, int], grunnform: str | None = None) -> list[str]:
+    if cell == ("subst", 1) and grunnform is not None:
+        return sorted({c for g in noun_gender(grunnform) for c in NOUN_CUES_BY_GENDER[g]} | set(NOUN_CUES_NEUTRAL))
+    return CUES[cell]
 
 
 def _total(series: dict[int, float]) -> float:
@@ -54,10 +74,10 @@ def gold_forms(conn=None) -> dict[tuple[str, int], list[str]]:
     conn = conn or get_conn()
     nouns, _ = select_gold(load_noun_forms(conn))
     verbs = select_sets(load_verbs(conn))[0]["580"]
-    out = {("subst", 1): [next(iter(d["forms"][1])) for d in nouns[:N_GOLD] if len(d["forms"][1]) == 1]}
+    out = {("subst", 1): [(next(iter(d["forms"][1])), d["grunnform"]) for d in nouns[:N_GOLD] if len(d["forms"][1]) == 1]}
     verbs = sorted(verbs, key=lambda d: -sum(d["nb_slot"].values()))[:N_GOLD]
     for cell in (1, 2):
-        out[("verb", cell)] = [next(iter(d["forms"][cell])) for d in verbs if len(d["forms"][cell]) == 1]
+        out[("verb", cell)] = [(next(iter(d["forms"][cell])), d["grunnform"]) for d in verbs if len(d["forms"][cell]) == 1]
     return out
 
 
@@ -65,12 +85,13 @@ def cue_rates() -> dict[tuple[str, int], dict]:
     """Kontekstrate per celle: median og spredning (sd av log r) over entydige ord."""
     out = {}
     for cell, forms in gold_forms().items():
-        terms = forms + [f"{c} {w}" for w in forms for c in CUES[cell]]
+        cue = {w: cues_for(cell, gf) for w, gf in forms}
+        terms = [w for w, _ in forms] + [f"{c} {w}" for w, _ in forms for c in cue[w]]
         ser = fetch_nb_ngram(terms, period=PERIOD)
         rates = []
-        for w in forms:
+        for w, _ in forms:
             uni = _total(ser[w])
-            big = sum(_total(ser[f"{c} {w}"]) for c in CUES[cell])
+            big = sum(_total(ser[f"{c} {w}"]) for c in cue[w])
             if uni > 0 and big > 0:
                 rates.append(big / uni)
         logs = [math.log(r) for r in rates]
@@ -84,11 +105,11 @@ def decompose(form: str, cells: list[tuple[str, str, tuple[str, int]]], rates: d
               n_draws: int = N_DRAWS) -> dict:
     """cells: [(etikett, grunnform, (ordklasse, celle)), ...] for kandidatene som kan gi `form`."""
     rates = rates or cue_rates()
-    terms = [form] + [f"{c} {form}" for _, _, cell in cells for c in CUES[cell]]
+    terms = [form] + [f"{c} {form}" for _, gf, cell in cells for c in cues_for(cell, gf)]
     ser = fetch_nb_ngram(terms, period=PERIOD)
     years = list(range(PERIOD[0], PERIOD[1] + 1))
     obs = np.array([ser[form][y] for y in years])
-    b = np.array([[sum(ser[f"{c} {form}"][y] for c in CUES[cell]) for y in years] for _, _, cell in cells])
+    b = np.array([[sum(ser[f"{c} {form}"][y] for c in cues_for(cell, gf)) for y in years] for _, gf, cell in cells])
     med = np.array([rates[cell]["median"] for _, _, cell in cells])[:, None]
     sd = np.array([rates[cell]["sd_log"] for _, _, cell in cells])[:, None]
     est = b / med
@@ -124,11 +145,11 @@ def decompose_residual(form: str, cells: list[tuple[str, str, tuple[str, int]]],
     vi = [i for i, (_, _, cell) in enumerate(cells) if cell[0] == "verb"]
     assert len(vi) == 1, "decompose_residual antar én verbkandidat"
     vi = vi[0]
-    terms = [form] + [f"{c} {form}" for _, _, cell in cells for c in CUES[cell]]
+    terms = [form] + [f"{c} {form}" for _, gf, cell in cells for c in cues_for(cell, gf)]
     ser = fetch_nb_ngram(terms, period=PERIOD)
     years = list(range(PERIOD[0], PERIOD[1] + 1))
     obs = np.array([ser[form][y] for y in years])
-    b = np.array([[sum(ser[f"{c} {form}"][y] for c in CUES[cell]) for y in years] for _, _, cell in cells])
+    b = np.array([[sum(ser[f"{c} {form}"][y] for c in cues_for(cell, gf)) for y in years] for _, gf, cell in cells])
     r = rates[cells[vi][2]]
     b_rest = np.delete(b, vi, axis=0).sum(axis=0)
 
@@ -163,7 +184,8 @@ if __name__ == "__main__":
     rates = cue_rates()
     print("Kontekstrater (andel av formen som står etter kontekstordene), entydige ord i NB N-gram 1950–2020:")
     for cell, r in rates.items():
-        print(f"  {CELL_LABEL[cell]:7s} {', '.join(CUES[cell]):38s} median {100 * r['median']:5.1f} %  "
+        cue_txt = "artikkel/eiendomsord etter kjønn + hans/hennes/deres" if cell == ("subst", 1) else ", ".join(CUES[cell])
+        print(f"  {CELL_LABEL[cell]:7s} {cue_txt:38s} median {100 * r['median']:5.1f} %  "
               f"(10.–90. pers. {100 * r['q'][0]:.1f}–{100 * r['q'][-1]:.1f} %, sd log {r['sd_log']:.2f}, N={r['n']})")
     for w in sys.argv[1:] or ["tro", "dør"]:
         res = decompose(w, EXAMPLES[w], rates)
