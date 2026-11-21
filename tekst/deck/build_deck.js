@@ -316,7 +316,7 @@ pres.addSection({ title: "Avslutning" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Avslutning" });
 s.addText("Hva er nytt?", { placeholder: "title" });
 status(s, "UTKAST");
-const refs = [["Fokalformer", "Karlsson 1986; Arppe 2006 (finsk)"], ["Grammatiske profiler", "Janda & Lyashevskaya 2011; Newman 2008"], ["Paradigmer i mentalt leksikon", "Milin, Filipović Đurđević & Baayen 2009"]];
+const refs = [["Skjev frekvens i paradigmet", "Karlsson 1986; Arppe 2006 (finsk)"], ["Grammatiske profiler", "Janda & Lyashevskaya 2011; Newman 2008"], ["Paradigmer i mentalt leksikon", "Milin, Filipović Đurđević & Moscoso del Prado Martín 2009"]];
 refs.forEach(([h, r], i) => {
   const y = 1.6 + i * 1.05;
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: MX, y, w: 5.8, h: 0.9, rectRadius: 0.12, fill: { color: C.background2 }, line: { color: C.background2 }, objectName: `ref ${h}` });
@@ -324,7 +324,7 @@ refs.forEach(([h, r], i) => {
 });
 s.addText("Vårt bidrag", { x: 7.0, y: 1.6, w: 5.7, h: 0.5, fontSize: 20, bold: true, color: C.accent1, margin: 0, isTextBox: true });
 body(s, bullets(["70 år med årlige rangeringer, ikke ett tverrsnitt", "Alle seks rekkefølger av inf/pres/pret", "Profilene brukt baklengs: fordeler rå n-gram på leksemer uten POS-tagget korpus", "Paradigmegraf over et helt nasjonalt ordforråd"]), 7.0, 2.2, 5.7, 3.4, 16);
-s.addNotes("Referansene må sjekkes mot kildene (hull 6). Milin mfl. 2009 er trolig et kapittel i Blevins & Blevins (red.), Analogy in Grammar (OUP), ikke Cognitive Linguistics 20(1).");
+s.addNotes("Fulle referanser i rapport_verbtyper.md §7.1, sjekket 2026-11-21. Karlsson 1986: ZPSK 39(1), 19–28. Arppe 2006: festskrift for Karlsson, 175–189. Janda & Lyashevskaya 2011: Cognitive Linguistics 22(4), 717–762. Milin, Filipović Đurđević & Moscoso del Prado Martín 2009: Journal of Memory and Language 60(1), 50–64 (relativ entropi mellom leksemets og klassens profil, serbisk). «Paradigms bit by bit» er et annet arbeid: Milin, Kuperman, Kostić & Baayen 2009 i Blevins & Blevins (red.), Analogy in Grammar, OUP.");
 
 // 14 Oppsummering
 s = pres.addSlide({ masterName: "TITTEL", sectionTitle: "Avslutning" });

@@ -156,12 +156,30 @@ Når vi tar med **perfektum partisipp (`perf-part`, `boy_nummer = 5`)** og **pre
 Det finnes en sentral internasjonal tradisjon vi kan knytte an til (som gir oss et sterkt teoretisk anker), samtidig som metoden og funnene våre går et langt skritt videre:
 
 ### 7.1 Sentrale referanser i litteraturen
-1. **Fred Karlsson (1985, 1986, 2000) & Antti Arppe (2006) — *Inflectional profiles / Focal forms*:**
-   - Karlsson (1986, *«Frequency considerations in morphology»*, *Zeitschrift für Phonetik, Sprachwissenschaft und Kommunikationsforschung*) påpekte at kasusbøyde substantiv i finsk har bestemte «fokalformer» i paradigmet styrt av semantikk. Karlsson antok imidlertid opprinnelig at verb oppførte seg mer ensartet, noe Arppe (2006) nyanserte for finske verb.
-2. **Laura A. Janda & Olga Lyashevskaya (2011) — *Grammatical profiles*:**
-   - I *«Grammatical profiles and the interaction of the lexicon with aspect, tense, and mood in Russian»* (*Cognitive Linguistics* 22(4), 719–763; jf. også **Newman 2008** om engelske verb) defineres en *grammatical profile* som den relative frekvensfordelingen av et leksems bøyningsformer i et korpus. De viser at bøyningsprofilen speiler verbets aksjonsart/aspekt, og at statistiske uteliggere («outliers») peker på særskilte konstruksjoner.
-3. **Petar Milin, Dušica Filipović Đurđević & R. Harald Baayen (2009) — *Paradigms bit by bit*:**
-   - I *«Paradigms bit by bit: An information theoretic approach to the processing of paradigmatic structure in inflectional morphology»* (*Cognitive Linguistics* 20(1), 215–228) viser de psykolingvistisk (med relativ entropi / Kullback-Leibler-divergens) at språkbrukere mentalt lagrer *både* det enkelte leksemets spesifikke bøyningsprofil *og* ordklassens generelle normalprofil.
+
+*Referansene er sjekket mot forlags- og repositorieoppføringer 2026-11-21 (hull 6). Innholdet i Karlsson 1985/1986 og Arppe 2006 er gjengitt etter sitering i sekundærkilder; fulltekst er ikke lest.*
+
+1. **Fred Karlsson (1985, 1986) og Antti Arppe (2006): frekvens i paradigmet.**
+   - Karlsson viste med finske data at de fleste formene i et paradigme med rik bøyning er sjeldne eller ikke belagt i korpus, og at formfrekvensene er svært skjevt fordelt.
+   - Arppe (2006) tar opp tråden i et festskrift for Karlsson. Tittelen sier poenget: også finske verb skiller seg fra hverandre i hvordan bruken fordeler seg på formene.
+2. **Laura A. Janda og Olga Lyashevskaya (2011): grammatiske profiler.**
+   - En *grammatisk profil* er den relative frekvensfordelingen av et leksems bøyningsformer i et korpus. For russiske verb speiler profilen aspekt, og verb med uvanlige profiler peker på særskilte bruksmønstre.
+   - De bygger på Newman og Rice, som studerte bøyningsformene til engelske verb (Rice & Newman 2005; Newman & Rice 2006; Newman 2008).
+3. **Petar Milin og medarbeidere (2009): paradigmer i det mentale leksikonet.**
+   - Milin, Filipović Đurđević & Moscoso del Prado Martín (2009) viser for serbiske substantiv at jo mer et leksems fordeling over formene avviker fra fordelingen i bøyningsklassen (relativ entropi), desto langsommere gjenkjennes ordet. Språkbrukere er altså følsomme for både leksemets egen profil og klassens profil.
+   - Milin, Kuperman, Kostić & Baayen (2009, «Words and paradigms bit by bit») gir den informasjonsteoretiske rammen.
+
+**Referanser**
+
+- Arppe, Antti. 2006. Frequency considerations in morphology, revisited – Finnish verbs differ, too. I *A Man of Measure: Festschrift in Honour of Fred Karlsson on his 60th Birthday*, 175–189. Turku: Linguistic Association of Finland (SKY Journal of Linguistics 19, spesialsupplement).
+- Janda, Laura A. & Olga Lyashevskaya. 2011. Grammatical profiles and the interaction of the lexicon with aspect, tense, and mood in Russian. *Cognitive Linguistics* 22(4). 717–762. https://doi.org/10.1515/COGL.2011.027
+- Karlsson, Fred. 1985. Paradigms and word forms. *Studia Gramatyczne* 7. 135–154.
+- Karlsson, Fred. 1986. Frequency considerations in morphology. *Zeitschrift für Phonetik, Sprachwissenschaft und Kommunikationsforschung* 39(1). 19–28. https://doi.org/10.1524/stuf.1986.39.14.19
+- Milin, Petar, Dušica Filipović Đurđević & Fermín Moscoso del Prado Martín. 2009. The simultaneous effects of inflectional paradigms and classes on lexical recognition: Evidence from Serbian. *Journal of Memory and Language* 60(1). 50–64. https://doi.org/10.1016/j.jml.2008.08.007
+- Milin, Petar, Victor Kuperman, Aleksandar Kostić & R. Harald Baayen. 2009. Words and paradigms bit by bit: An information-theoretic approach to the processing of inflection and derivation. I James P. Blevins & Juliette Blevins (red.), *Analogy in Grammar: Form and Acquisition*, 214–252. Oxford: Oxford University Press.
+- Newman, John. 2008. Aiming low in linguistics: Low-level generalizations in corpus-based research. *Proceedings of the 11th International Symposium on Chinese Languages and Linguistics (IsCLL-11)*, National Chiao Tung University, Hsinchu, Taiwan.
+- Newman, John & Sally Rice. 2006. Transitivity schemas of English EAT and DRINK in the BNC. I Stefan Th. Gries & Anatol Stefanowitsch (red.), *Corpora in Cognitive Linguistics: Corpus-Based Approaches to Syntax and Lexis*. Berlin: Mouton de Gruyter.
+- Rice, Sally & John Newman. 2005. Inflectional islands. Foredrag, 9th International Cognitive Linguistics Conference, Seoul.
 
 ### 7.2 Vi snur pilen «baklengs» — Glansnummer: Dekomponering av *«dø»* (verb) vs. *«dør»* (substantiv)
 

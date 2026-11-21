@@ -551,3 +551,25 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - En presis adjektivandel krever kontekstdata (bigrammer eller konkordanser fra DH-lab). Det er ikke nødvendig for foredraget.
 - Referanser (hull 6) og figur for paradigmegrafen.
+
+---
+
+## 2026-11-21 (del 22) — Referansene sjekket (hull 6)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Alle referansene i `rapport_verbtyper.md` §7.1 er sjekket mot forlags- og repositorieoppføringer, og Janda & Lyashevskaya også mot sin egen referanseliste. §7.1 er skrevet om og har nå en full referanseliste.
+- Lysbilde 14 «Hva er nytt?» har fått rettet etikett og Milin-referanse og nytt talenotat. Planen er oppdatert (rad 13 og hull 6).
+
+### Funn
+- **Feil i rapporten:** «Paradigms bit by bit» er ikke av Milin, Filipović Đurđević & Baayen i *Cognitive Linguistics* 20(1). Det er Milin, Kuperman, Kostić & Baayen 2009 i Blevins & Blevins (red.), *Analogy in Grammar*, OUP, s. 214–252. Funnet om relativ entropi mellom leksemets og klassens profil er Milin, Filipović Đurđević & Moscoso del Prado Martín 2009, *Journal of Memory and Language* 60(1), 50–64 (serbiske substantiv).
+- Janda & Lyashevskaya 2011 har sidene 717–762 (ikke 719–763; det var manuskriptversjonen). DOI 10.1515/COGL.2011.027.
+- Newman 2008 er «Aiming low in linguistics», et konferansebidrag til IsCLL-11 i Hsinchu. Janda & Lyashevskaya siterer også Newman & Rice 2006 og Rice & Newman 2005.
+- Karlsson 1986 er bekreftet: ZPSK 39(1), 19–28. Karlsson 1985 er «Paradigms and word forms», *Studia Gramatyczne* 7. «Karlsson 2000» fant jeg ikke, så den er tatt ut.
+- Arppe 2006 er «Frequency considerations in morphology, revisited – Finnish verbs differ, too», i festskriftet for Karlsson, s. 175–189.
+- Innholdet i Karlsson- og Arppe-arbeidene er bare kjent gjennom sekundærkilder. Begrepet «fokalformer» er derfor ikke lenger tilskrevet Karlsson.
+
+### Neste steg
+- Les Karlsson 1986 og Arppe 2006 i fulltekst om lysbilde 14 skal si noe mer spesifikt om dem.
+- Figur for paradigmegrafen og oppsummeringslysbildet. Abstractet må samkjøres med dataene for *vite* og *eple*.
