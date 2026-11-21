@@ -225,16 +225,27 @@ def estimate_logreg(
     # entydige kategorier) ble anslagene åpenbart gale (f.eks. «landet» 63 % verb), så da brukes reglene.
     anchors = tuple(
         s for s in slots
-        if s not in tslots and s in slot_info and slot_info[s]["max_lem_cnt"] == 1 and slot_info[s]["freq"] > 0
+        if s not in tslots and s in slot_info and slot_info[s]["freq"] > 0
+        and (slot_info[s]["max_lem_cnt"] == 1 or slot_info[s].get("min_ext_weight", 0.0) >= EXT_ANCHOR_MIN)
     )
     if len(anchors) < MIN_ANCHORS_BY_BG.get(bg, MIN_ANCHORS):
         return None
     est = 0.0
     for t in targets:
         beta, n = fit_logreg(bg, t, anchors, corpus, conn)
-        est += float(np.exp(beta @ np.array([1.0] + [np.log(slot_info[a]["freq"]) for a in anchors])))
+        est += float(np.exp(beta @ np.array([1.0] + [np.log(slot_info[a]["eff_freq"]) for a in anchors])))
     names = "+".join(slot_info[a]["boy_tekst"] for a in anchors)
     return est, f"log-regresjon fra {names} (gullstandard N={n}, {corpus})"
+
+
+# Flertydighet regnes per leksem (grunnform + ordklasse), ikke per lemma_id (logg del 56). Homografe
+# oppslag av samme leksem i Ordbanken (f.eks. to oppføringer for subst. *tro*, to for *far*) deler alle
+# former; med antall_lemma_id ble de regnet som flertydige, slik at leksemet mistet ankrene sine.
+LEXEME_LEVEL = True
+
+
+def _amb_count(r) -> int:
+    return r["antall_leksem_pos"] if LEXEME_LEVEL else r["antall_lemma_id"]
 
 
 # Delte former i paradigmet (logg del 55). Tidligere ble en form som deles av n lemmaer, nedvektet med
@@ -249,12 +260,45 @@ SHARE_MODE = "masse"
 SHARE_FLOOR = 0.6
 
 
+# Valgfri ekstern kilde for hvordan delte former fordeles på lemmaer (logg del 56): en funksjon
+# form -> {lemma_id: antall}. `set_anchor_split(obt_anchor_split())` bruker det OBT-taggede korpuset.
+# Gjelder bare formene i resten av paradigmet (ankrene), aldri selve oppslagsordet.
+ANCHOR_SPLIT = None
+EXT_ANCHOR_MIN = 0.95  # OBT-andel som gjør en delt kategori brukbar som anker i log-regresjonen
+ANCHOR_SPLIT_MIN_N = 5  # færre OBT-forekomster av formen enn dette: bruk entydig bruk (masse) i stedet
+
+
+def set_anchor_split(provider) -> None:
+    global ANCHOR_SPLIT
+    ANCHOR_SPLIT = provider
+
+
+def obt_anchor_split(db_path: str | None = None):
+    """Leverandør for set_anchor_split: OBT-fordelingen av en form på lemma_id i korpus/obt_frekvenser.db."""
+    from sqlite.korpus_profiler import DEFAULT_SHARED_DB, _ro_uri, form_split
+
+    k = sqlite3.connect(_ro_uri(db_path or DEFAULT_SHARED_DB), uri=True)
+    k.row_factory = sqlite3.Row
+    cache: dict[str, dict[int, float]] = {}
+
+    def split(form: str) -> dict[int, float]:
+        if form not in cache:
+            out: dict[int, float] = {}
+            for r in form_split(k, form):
+                if r["lemma_id"] is not None:
+                    out[r["lemma_id"]] = out.get(r["lemma_id"], 0.0) + r["n"]
+            cache[form] = out
+        return cache[form]
+
+    return split
+
+
 def shared_form_weights(
     oppslag: str, paradigms: dict[int, list], corpus: str, conn: sqlite3.Connection
 ) -> dict[tuple[int, str], tuple[float, float]]:
     """{(lemma_id, form): (vekt med gulv, ren masseandel)} for delte former i kandidatparadigmene."""
     shared = sorted({r["oppslag"] for p in paradigms.values() for r in p
-                     if r["antall_lemma_id"] > 1 and r["oppslag"] != oppslag})
+                     if _amb_count(r) > 1 and r["oppslag"] != oppslag})
     if not shared:
         return {}
     owners: dict[str, set[int]] = {}
@@ -275,7 +319,34 @@ def shared_form_weights(
     freqs = corpus_freqs(sorted({w for s in unamb_forms.values() for w in s}), corpus, conn)
     mass = {lid: sum(freqs.get(w, 0.0) for w in unamb_forms.get(lid, ())) for lid in lemmas}
     out: dict[tuple[int, str], tuple[float, float]] = {}
+    lexeme = {}
+    if ANCHOR_SPLIT is not None:
+        q = f"SELECT lemma_id, MIN(grunnform), MIN(pos) FROM lemma_former WHERE lemma_id IN ({','.join('?' * len(lemmas))}) GROUP BY lemma_id"
+        lexeme = {lid: (g, pos) for lid, g, pos in conn.execute(q, lemmas).fetchall()}
+    pooled: dict[frozenset, dict[int, float]] = {}
+    if ANCHOR_SPLIT is not None:
+        # Sjeldne former arver fordelingen fra de andre formene med samme sett av lemmaer
+        # (f.eks. *troa*, *troer* fra *troen*: subst. *tro* mot *troe*)
+        for w, lids in owners.items():
+            acc = pooled.setdefault(frozenset(lids), {})
+            for lid, n in ANCHOR_SPLIT(w).items():
+                if lid in lids:
+                    acc[lid] = acc.get(lid, 0.0) + n
     for w, lids in owners.items():
+        if ANCHOR_SPLIT is not None:
+            ext = ANCHOR_SPLIT(w)
+            n_ext = sum(ext.get(lid, 0.0) for lid in lids)
+            if n_ext < ANCHOR_SPLIT_MIN_N:
+                ext = pooled.get(frozenset(lids), {})
+                n_ext = sum(ext.values())
+            if n_ext >= ANCHOR_SPLIT_MIN_N:
+                for lid in lids:
+                    if lid in paradigms:
+                        # Leksemnivå: homografe oppslag av samme leksem regnes sammen
+                        same = [o for o in lids if lexeme.get(o) == lexeme.get(lid)]
+                        sh = sum(ext.get(o, 0.0) for o in same) / n_ext
+                        out[(lid, w)] = (sh, sh)
+                continue
         tot = sum(mass[lid] for lid in lids)
         if tot <= 0:
             continue
@@ -345,6 +416,7 @@ def estimate_wordform_shares(
             # Vi skiller mellom helt entydige ankerformer (antall_lemma_id == 1) og delte former.
             slot_info: dict[int, dict[str, Any]] = {}
             unamb_total_in_paradigm = 0.0
+            anchor_weights: dict[str, float] = {}  # form -> vekt brukt i anslaget (1 = entydig)
             seen: set[tuple[int, str]] = set()
             for r in paradigms[lid]:
                 bnr = r["boy_nummer"]
@@ -353,7 +425,8 @@ def estimate_wordform_shares(
                     continue
                 seen.add((bnr, w))
                 fr = freqs[w]
-                is_unamb = r["antall_lemma_id"] == 1
+                amb = _amb_count(r)
+                is_unamb = amb == 1
                 if is_unamb:
                     unamb_total_in_paradigm += fr
                 # Hvis en form deles med andre lemmaer, nedvekter vi den hvis den ikke er entydig
@@ -362,20 +435,25 @@ def estimate_wordform_shares(
                 elif (lid, w) in shared_weight:
                     eff_fr = fr * shared_weight[(lid, w)][0]
                 else:
-                    eff_fr = fr / (r["antall_lemma_id"] ** 2)
+                    eff_fr = fr / (amb ** 2)
                 if bnr not in slot_info:
                     slot_info[bnr] = {
                         "boy_tekst": r["boy_tekst"],
                         "freq": 0,
                         "eff_freq": 0.0,
-                        "min_lem_cnt": r["antall_lemma_id"],
-                        "max_lem_cnt": r["antall_lemma_id"],
+                        "min_lem_cnt": amb,
+                        "max_lem_cnt": amb,
                         "forms": [],
                     }
                 slot_info[bnr]["freq"] += fr
                 slot_info[bnr]["eff_freq"] += eff_fr
-                slot_info[bnr]["min_lem_cnt"] = min(slot_info[bnr]["min_lem_cnt"], r["antall_lemma_id"])
-                slot_info[bnr]["max_lem_cnt"] = max(slot_info[bnr]["max_lem_cnt"], r["antall_lemma_id"])
+                anchor_weights[w] = (eff_fr / fr) if fr > 0 else (1.0 if is_unamb else 0.0)
+                # Vekt fra ekstern kilde (OBT): kategorien kan brukes som anker hvis alle formene
+                # nesten bare tilhører dette leksemet
+                ext_w = shared_weight[(lid, w)][0] if (lid, w) in shared_weight and ANCHOR_SPLIT is not None else (1.0 if is_unamb else 0.0)
+                slot_info[bnr]["min_ext_weight"] = min(slot_info[bnr].get("min_ext_weight", 1.0), ext_w)
+                slot_info[bnr]["min_lem_cnt"] = min(slot_info[bnr]["min_lem_cnt"], amb)
+                slot_info[bnr]["max_lem_cnt"] = max(slot_info[bnr]["max_lem_cnt"], amb)
                 slot_info[bnr]["forms"].append(f"{w} ({fr:,.0f}{'*' if is_unamb else ''})")
 
             tslots = set(meta["target_slots"])
@@ -404,10 +482,24 @@ def estimate_wordform_shares(
                     "boy_tekst": "/".join(meta["target_labels"]),
                     "raw_est": capped_est,
                     "uncapped_est": est_freq,
+                    "anchor_weights": anchor_weights,
+                    "method_used": "logreg" if lr is not None else "regler",
                     "anchor_explanation": anchor_explanation,
                     "paradigm_rest": anchor_summary,
                 }
             )
+
+        if LEXEME_LEVEL:
+            # Homografe oppslag av samme leksem slås sammen: leksemet telles én gang (største anslag)
+            by_lex: dict[tuple[str, str], dict[str, Any]] = {}
+            for r in results:
+                key = (r["grunnform"], r["pos"])
+                if key not in by_lex or r["uncapped_est"] > by_lex[key]["uncapped_est"]:
+                    lids = by_lex[key]["lemma_ids"] if key in by_lex else []
+                    by_lex[key] = {**r, "lemma_ids": lids + [r["lemma_id"]]}
+                else:
+                    by_lex[key]["lemma_ids"].append(r["lemma_id"])
+            results = list(by_lex.values())
 
         total_est = sum(r["raw_est"] for r in results)
         total_uncapped = sum(r["uncapped_est"] for r in results)

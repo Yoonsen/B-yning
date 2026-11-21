@@ -12,6 +12,7 @@ resultater/verbtyper.tsv (skrives av `python3 -m sqlite.verbtyper`).
 2. verb_stabilitet.png   – andel per form per år for fire stabile verb
 3. fisker_over_tid.png   – ordformen «fisker» fordelt på tre leksemer per år, to sett forholdstall
 4. paradigmegraf_fisker.png – komponenten rundt «fisker» i paradigmegrafen (sqlite/paradigm_graph.py)
+5. dor_tro_over_tid.png  – «dør» og «tro» fordelt på leksemer per år, med usikkerhetsbånd (sqlite/tidsserie.py)
 """
 
 import contextlib
@@ -303,6 +304,53 @@ def fig_paradigm_graph(start_lemma_id: int = FISKER_LEMMA_ID) -> Path:
     plt.close(fig)
     return out
 
+LEX_LABEL = {("dør", "subst"): "en dør", ("dø", "verb"): "å dø", ("tro", "subst"): "en tro",
+             ("tro", "verb"): "å tro", ("trå", "verb"): "å trå (pret.)"}
+LEX_COLOR = {"subst": FORM_COLOR["pres"], "verb": FORM_COLOR["inf"], "annet": FORM_COLOR["pret"]}
+
+
+def fig_time_decomposition(forms: tuple[str, ...] = ("dør", "tro")) -> Path:
+    """Leksemandel av hver form per år (5-årig glidende snitt), linje = anslag, bånd = 80 %-intervall."""
+    from sqlite.tidsserie import MIN_SHARE, decompose_over_time, summary
+
+    fig, axes = plt.subplots(1, len(forms), figsize=(6.2 * len(forms), 4.6), sharey=True)
+    for ax, form in zip(np.atleast_1d(axes), forms):
+        res = decompose_over_time(form)
+        print(summary(res))
+        yrs = np.array(res["years"])
+        verbs_seen = 0
+        ends = []
+        for i, c in enumerate(res["candidates"]):
+            if res["share"][i].max() < MIN_SHARE:
+                continue
+            kind = c["pos"] if c["pos"] == "subst" else "verb"
+            if kind == "verb":
+                verbs_seen += 1
+                kind = "verb" if verbs_seen == 1 else "annet"
+            col = LEX_COLOR[kind]
+            ax.fill_between(yrs, 100 * res["lo"][i], 100 * res["hi"][i], color=col, alpha=0.13, lw=0)
+            ax.plot(yrs, 100 * res["share"][i], color=col, lw=2.2)
+            ends.append([100 * res["share"][i][-1], LEX_LABEL.get((c["grunnform"], c["pos"]), c["label"]), col])
+        ends.sort(key=lambda e: e[0])
+        for k in range(1, len(ends)):  # etiketter minst 7 pp fra hverandre
+            ends[k][0] = max(ends[k][0], ends[k - 1][0] + 7)
+        for y, lab, col in ends:
+            ax.text(yrs[-1] + 1.5, y, lab, color=col, fontsize=12, fontweight="bold", va="center")
+        ax.set_title(f"«{form}»", fontsize=15, loc="left", color=INK)
+        ax.set_xlim(yrs[0], yrs[-1] + 16)
+        ax.set_ylim(0, 100)
+        ax.set_xticks([1950, 1970, 1990, 2010])
+        ax.yaxis.grid(True, color=GRID, lw=0.8)
+        ax.set_axisbelow(True)
+    np.atleast_1d(axes)[0].set_ylabel("andel av ordformen (%)")
+    fig.text(0.01, -0.02, "Linje: anslag. Bånd: 80 % usikkerhet i nivået (profilen til ordet). Endringen over tid er "
+             "langt sikrere enn nivået. Bokkorpuset, 5-årig glidende snitt.", fontsize=10, color=MUTED)
+    out = OUT_DIR / "dor_tro_over_tid.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     verbs = load_verbs()
@@ -310,6 +358,7 @@ def main() -> None:
     print(f"Skrev {fig_stability(verbs)}")
     print(f"Skrev {fig_fisker()}")
     print(f"Skrev {fig_paradigm_graph()}")
+    print(f"Skrev {fig_time_decomposition()}")
 
 
 if __name__ == "__main__":

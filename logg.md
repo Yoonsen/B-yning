@@ -1411,3 +1411,30 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Eventuelt en liste over sjeldne ordbokshomografer, eller lemmafrekvenser fra OBT-korpuset, som forhåndsvekt.
 - De tre UTKAST-lysbildene.
+
+---
+
+## 2026-11-21 (del 56) — Leksemandeler over tid med usikkerhet: «dør» og «tro»
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Brukstilfelle (fra brukeren): en ordbokbruker ser et paradigme og vil se kurven for ordet, ikke for overflateformen.
+- `sqlite/decomposer.py`:
+  - Flertydighet telles per leksem (`LEXEME_LEVEL`), og homografe oppslag av samme leksem slås sammen.
+  - Valgfri ekstern fordeling av delte ankerformer (`set_anchor_split`, `obt_anchor_split`), med pooling over former som har samme lemmasett, og kategorier med OBT-andel ≥ 95 % som anker (`EXT_ANCHOR_MIN`).
+  - Resultatet har nå `anchor_weights` og `method_used` per kandidat.
+- Ny `sqlite/tidsserie.py`: stabil profil (xᵢ(t) = x̂ᵢ/Rᵢ · Rᵢ(t)) og Monte Carlo-bånd med σ kalibrert på de kunstige homografene (logreg 0,78, regler 0,93). Rapporterer både nivå og endring.
+- Ny figur `tekst/figurer/dor_tro_over_tid.png` (`figurer.fig_time_decomposition`). Ny rapport `rapport_dekomponering_tid.md`.
+- OBT-valideringen er kjørt med leksemnivå (uten OBT-ankre): riktig flest 74,0 %, median 13,7 pp, 90-persentil 78,8 pp. Resultatfilene i `resultater/` er ikke overskrevet; tallene står i rapporten §4.
+
+### Funn
+- «dør»: *en dør* ca. 63–66 % gjennom hele perioden. Endringen 1950–2020 er +3 pp (80 %: +1 til +3).
+- «tro»: *en tro* går fra 47 til 33 %, og *å tro* fra 45 til 55 %. Endringen er −14 pp (−15 til −7) for substantivet.
+- Nivåene har ±25–30 pp usikkerhet; endringene er mye sikrere fordi profilfeilen er felles for alle år.
+- «grunn» med OBT-ankre: subst. 91 %, mot adjektiv 75 % uten.
+- Uendret: «dør», «døde» og «fisker» i bokkorpuset uten OBT-ankre (decket påvirkes ikke).
+
+### Neste steg
+- Teste antakelsen om stabil profil, f.eks. per tiår i OBT-korpuset (men se del 45 om støy).
+- Vurdere om figuren skal inn i decket, f.eks. som et eksempel på brukstilfellet.
