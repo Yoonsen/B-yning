@@ -17,6 +17,7 @@ Arbeidsdokument for presentasjonen. Status per punkt: ✅ finnes i repoet, 🟡 
 | 9 | Enkeltbøker | Bøker realiserer sjelden hele paradigmet; den globale profilen styrer hvilken form som blir med | `sqlite/book_dispersion.py`, logg del 11 | ✅ (trenger figur) |
 | 10 | Dekomponering: *dør* | 64 % subst. / 36 % verb; *dø* flytter fra 2B til 2A | rapport §7.2 | ✅ rangeringen er robust for adjektivet i «døde»; prosentene usikre (hull 5) |
 | 11 | Dekomponering over tid: *fisker* | Leksemandeler per år | `sqlite/figurer.py`, `tekst/figurer/fisker_over_tid.png` | 🟡 figur med to varianter; nivået er ikke bestemt, bare trenden for *fisk* (fl) er robust |
+| 11b | Fra ordboka til kurven: *dør* og *tro* | Verbandel per år, bigram mot paradigme, OBT som kontroll | `rapport_dekomponering_tid.md` §7–8, `tekst/figurer/dor_tro_metoder.png` | 🟡 nytt, til gjennomlesning |
 | 12 | Hvor godt virker metoden? | Validering mot kjent fasit | `rapport_dekomponering_validering.md`, `sqlite/valider_dekomponering.py` | ✅ |
 | 13 | Litteratur og hva som er nytt | Karlsson, Arppe, Janda & Lyashevskaya, Milin mfl. | rapport §7.1 | ✅ referanser sjekket (hull 6) |
 | 14 | Oppsummering | Fire funn: favorittform, stabilitet, dekomponering, usikkerhet | rapportene + validering | ✅ |

@@ -294,6 +294,15 @@ s.addImage({ path: FIG("fisker_over_tid.png"), x: 5.4, y: 1.5, w: 7.3, h: 4.33, 
 missing(s, "Nivået avhenger av hvor forholdstallene er lært: en fisker 14–21 % eller ca. 50 %. Bare økningen for fisk (flertall) er robust.", MX, 5.0, 4.4, 1.5);
 s.addNotes("python3 -m sqlite.figurer. Heltrukket: forholdstall lært i bokkorpuset (log-regresjon på 5 799 gullstandard-substantiv; pres / s-passiv for aktivitetsverb), sqlite/decompose_fisker.py book_decomposition. Stiplet: forholdstallene fra nb_totals (mest aviser) overført til bøker. «fiskene» er relativt nesten dobbelt så vanlig i bøker som i nb_totals, så tall lært i ett korpus passer dårlig i et annet. Andeler 1950 / 2020, bok: en fisker 21 / 14 %, fisk (fl) 57 / 74 %, å fiske 22 / 12 %. Sum av ukappede anslag / observert: 1,3 (bok) mot 2,0 (overført). 5 års glidende snitt.");
 
+// 12b dør/tro over tid: brukstilfellet (ordbok → kurve for leksemet)
+s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
+s.addText("Fra ordboka til kurven: «dør» og «tro»", { placeholder: "title" });
+status(s, "UTKAST");
+s.addImage({ path: FIG("dor_tro_metoder.png"), x: MX, y: 1.3, w: 11.4, h: 4.71, altText: "Verbandelen av ordformene dør og tro per år 1950–2020, anslått med bigrammer og med paradigmet, sammenlignet med det taggede korpuset" });
+body(s, [{ text: "Bigrammer (å/kan/vil … tro, jeg/han/som/det … dør) treffer verbandelen best: median avvik 5 pp mot tagget korpus. ", options: { bold: true, color: C.text1 } },
+         { text: "«tro» blir mer verb over tid; «dør» er stabil.", options: {} }], MX, 6.15, 12.1, 0.7, 15);
+s.addNotes("Brukstilfellet: en bruker ser paradigmet i en ordbok og vil se kurven for ordet, ikke for overflateformen. Figur: python3 -m sqlite.figurer (dor_tro_metoder.png). Metode (rapport_dekomponering_tid.md §7–8): kontekstraten r = andelen av en infinitiv som står etter å/kan/vil/skal/må (56 %), og av en presensform etter jeg/han/hun/vi/de/som/det/den (24 %), lært på 120 entydige verb. Verbet = bigramtall / r; resten er substantivet. Substantivkonteksten (en/ei/et/min …) er for ustabil (0–32 % mellom ord) til å brukes som rate. Validert på 150 substantiv/verb-homografer mot OBT: median avvik 5,0 pp, riktig flertallsleksem 95 %; paradigmeanslaget 9,7 pp og 79 %. Usikkerhet: ±15 pp generelt, ±29 pp for jevnt fordelte former (båndet). «dør»: 51 % verb (OBT 52 %). «tro»: 54 % verb (OBT 68 % av substantiv + verb); verbet øker fra ca. 40–50 % til ca. 60 % 1950–2020, med begge metodene. Stiplet linje: paradigmeanslaget (for «tro» med OBT-fordelte ankre).");
+
 // 12 Validering
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Hvor godt treffer metoden?", { placeholder: "title" });

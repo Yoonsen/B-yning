@@ -1508,3 +1508,17 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Flere kontekster, f.eks. høyrekontekst (*tro på*, *dør av*), for å stramme inn usikkerheten.
 - Bruke bigrammer for adjektivandelen av «døde».
 - Teste usikkerheten på et utvalg som ikke er brukt til å kalibrere den.
+
+---
+
+## 2026-11-21 (del 60) — Lysbilde om «dør» og «tro» over tid
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny gren `deck-dor-tro` fra `main` (etter PR 6).
+- `tekst/deck/build_deck.js`: nytt lysbilde 13 «Fra ordboka til kurven: «dør» og «tro»» i seksjonen Dekomponering, etter «fisker» over tid. Det viser `tekst/figurer/dor_tro_metoder.png` med én konklusjonslinje og talenotat med metode og valideringstall. Merket UTKAST til gjennomlesning.
+- Decket har nå 16 lysbilder. Planen har ny rad 11b.
+
+### Neste steg
+- Brukeren leser gjennom decket søndag; møte mandag. Gjenstår: UTKAST-merkene på lysbildene om «dør» (11), «fisker» (12), «dør»/«tro» (13) og «Hva er nytt?» (15), og hvor mye av det utvidede korpuset som skal tagges.
