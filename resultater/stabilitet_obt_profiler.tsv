@@ -1,0 +1,1217 @@
+lemma	pos	variant	tiaar	kategori	n	andel
+fisk	subst	obt_tiaar	1950-1959	ent ub	37906.0509	0.6721
+fisk	subst	obt_tiaar	1950-1959	ent be	15146.0000	0.2686
+fisk	subst	obt_tiaar	1950-1959	fl ub	1310.7073	0.0232
+fisk	subst	obt_tiaar	1950-1959	fl be	2034.3333	0.0361
+fisk	subst	obt_tiaar	1960-1969	ent ub	46629.8102	0.6654
+fisk	subst	obt_tiaar	1960-1969	ent be	20230.0000	0.2887
+fisk	subst	obt_tiaar	1960-1969	fl ub	778.0976	0.0111
+fisk	subst	obt_tiaar	1960-1969	fl be	2439.5000	0.0348
+fisk	subst	obt_tiaar	1970-1979	ent ub	79848.0000	0.6865
+fisk	subst	obt_tiaar	1970-1979	ent be	31063.0000	0.2671
+fisk	subst	obt_tiaar	1970-1979	fl ub	1278.7317	0.0110
+fisk	subst	obt_tiaar	1970-1979	fl be	4128.1667	0.0355
+fisk	subst	obt_tiaar	1980-1989	ent ub	128785.0000	0.6965
+fisk	subst	obt_tiaar	1980-1989	ent be	48157.0000	0.2605
+fisk	subst	obt_tiaar	1980-1989	fl ub	2011.0976	0.0109
+fisk	subst	obt_tiaar	1980-1989	fl be	5936.7778	0.0321
+fisk	subst	obt_tiaar	1990-1999	ent ub	270987.0000	0.6952
+fisk	subst	obt_tiaar	1990-1999	ent be	96522.0000	0.2476
+fisk	subst	obt_tiaar	1990-1999	fl ub	10376.7317	0.0266
+fisk	subst	obt_tiaar	1990-1999	fl be	11918.8889	0.0306
+fisk	subst	obt_tiaar	2000-2009	ent ub	249234.5868	0.6860
+fisk	subst	obt_tiaar	2000-2009	ent be	100759.0000	0.2773
+fisk	subst	obt_tiaar	2000-2009	fl ub	2095.5111	0.0058
+fisk	subst	obt_tiaar	2000-2009	fl be	11241.7222	0.0309
+fisk	subst	obt_tiaar	2010-2019	ent ub	170341.7755	0.6782
+fisk	subst	obt_tiaar	2010-2019	ent be	69141.0000	0.2753
+fisk	subst	obt_tiaar	2010-2019	fl ub	2891.9268	0.0115
+fisk	subst	obt_tiaar	2010-2019	fl be	8785.2222	0.0350
+fisk	subst	obt_tiaar	2020-2026	ent ub	12218.6505	0.7023
+fisk	subst	obt_tiaar	2020-2026	ent be	4397.0000	0.2527
+fisk	subst	obt_tiaar	2020-2026	fl ub	209.4878	0.0120
+fisk	subst	obt_tiaar	2020-2026	fl be	572.3333	0.0329
+fisk	subst	obt_fast	1950-1959	ent ub	37906.0509	0.6721
+fisk	subst	obt_fast	1950-1959	ent be	15146.0000	0.2686
+fisk	subst	obt_fast	1950-1959	fl ub	1310.7073	0.0232
+fisk	subst	obt_fast	1950-1959	fl be	2034.3333	0.0361
+fisk	subst	obt_fast	1960-1969	ent ub	46629.8102	0.6654
+fisk	subst	obt_fast	1960-1969	ent be	20230.0000	0.2887
+fisk	subst	obt_fast	1960-1969	fl ub	778.0976	0.0111
+fisk	subst	obt_fast	1960-1969	fl be	2439.5000	0.0348
+fisk	subst	obt_fast	1970-1979	ent ub	79663.1667	0.6860
+fisk	subst	obt_fast	1970-1979	ent be	31063.0000	0.2675
+fisk	subst	obt_fast	1970-1979	fl ub	1278.7317	0.0110
+fisk	subst	obt_fast	1970-1979	fl be	4128.1667	0.0355
+fisk	subst	obt_fast	1980-1989	ent ub	128486.8866	0.6961
+fisk	subst	obt_fast	1980-1989	ent be	48157.0000	0.2609
+fisk	subst	obt_fast	1980-1989	fl ub	2011.0976	0.0109
+fisk	subst	obt_fast	1980-1989	fl be	5936.7778	0.0322
+fisk	subst	obt_fast	1990-1999	ent ub	270359.7153	0.7054
+fisk	subst	obt_fast	1990-1999	ent be	96522.0000	0.2519
+fisk	subst	obt_fast	1990-1999	fl ub	4447.1707	0.0116
+fisk	subst	obt_fast	1990-1999	fl be	11918.8889	0.0311
+fisk	subst	obt_fast	2000-2009	ent ub	250155.5926	0.6842
+fisk	subst	obt_fast	2000-2009	ent be	100759.0000	0.2756
+fisk	subst	obt_fast	2000-2009	fl ub	3449.9268	0.0094
+fisk	subst	obt_fast	2000-2009	fl be	11241.7222	0.0307
+fisk	subst	obt_fast	2010-2019	ent ub	170341.7755	0.6782
+fisk	subst	obt_fast	2010-2019	ent be	69141.0000	0.2753
+fisk	subst	obt_fast	2010-2019	fl ub	2891.9268	0.0115
+fisk	subst	obt_fast	2010-2019	fl be	8785.2222	0.0350
+fisk	subst	obt_fast	2020-2026	ent ub	12218.6505	0.7023
+fisk	subst	obt_fast	2020-2026	ent be	4397.0000	0.2527
+fisk	subst	obt_fast	2020-2026	fl ub	209.4878	0.0120
+fisk	subst	obt_fast	2020-2026	fl be	572.3333	0.0329
+fisk	subst	decomposer	1950-1959	ent ub	37822.9626	0.5968
+fisk	subst	decomposer	1950-1959	ent be	15146.0000	0.2390
+fisk	subst	decomposer	1950-1959	fl ub	8352.5138	0.1318
+fisk	subst	decomposer	1950-1959	fl be	2051.4286	0.0324
+fisk	subst	decomposer	1960-1969	ent ub	46514.9303	0.6264
+fisk	subst	decomposer	1960-1969	ent be	20230.0000	0.2724
+fisk	subst	decomposer	1960-1969	fl ub	5053.3434	0.0681
+fisk	subst	decomposer	1960-1969	fl be	2460.0000	0.0331
+fisk	subst	decomposer	1970-1979	ent ub	79567.6593	0.6431
+fisk	subst	decomposer	1970-1979	ent be	31063.0000	0.2511
+fisk	subst	decomposer	1970-1979	fl ub	8922.4909	0.0721
+fisk	subst	decomposer	1970-1979	fl be	4162.8571	0.0336
+fisk	subst	decomposer	1980-1989	ent ub	128234.9726	0.6555
+fisk	subst	decomposer	1980-1989	ent be	48157.0000	0.2462
+fisk	subst	decomposer	1980-1989	fl ub	13250.5148	0.0677
+fisk	subst	decomposer	1980-1989	fl be	5986.6667	0.0306
+fisk	subst	decomposer	1990-1999	ent ub	270238.8683	0.6532
+fisk	subst	decomposer	1990-1999	ent be	96522.0000	0.2333
+fisk	subst	decomposer	1990-1999	fl ub	34918.4328	0.0844
+fisk	subst	decomposer	1990-1999	fl be	12019.0476	0.0291
+fisk	subst	decomposer	2000-2009	ent ub	249968.6074	0.6445
+fisk	subst	decomposer	2000-2009	ent be	100759.0000	0.2598
+fisk	subst	decomposer	2000-2009	fl ub	25777.7837	0.0665
+fisk	subst	decomposer	2000-2009	fl be	11336.1905	0.0292
+fisk	subst	decomposer	2010-2019	ent ub	170360.1177	0.6256
+fisk	subst	decomposer	2010-2019	ent be	69141.0000	0.2539
+fisk	subst	decomposer	2010-2019	fl ub	23964.0045	0.0880
+fisk	subst	decomposer	2010-2019	fl be	8859.0476	0.0325
+fisk	subst	decomposer	2020-2026	ent ub	12222.0576	0.6466
+fisk	subst	decomposer	2020-2026	ent be	4397.0000	0.2326
+fisk	subst	decomposer	2020-2026	fl ub	1706.8648	0.0903
+fisk	subst	decomposer	2020-2026	fl be	577.1429	0.0305
+fisk	subst	naiv	1950-1959	ent ub	37994.0000	0.5190
+fisk	subst	naiv	1950-1959	ent be	15146.0000	0.2069
+fisk	subst	naiv	1950-1959	fl ub	17913.0000	0.2447
+fisk	subst	naiv	1950-1959	fl be	2154.0000	0.0294
+fisk	subst	naiv	1960-1969	ent ub	46738.0000	0.5829
+fisk	subst	naiv	1960-1969	ent be	20230.0000	0.2523
+fisk	subst	naiv	1960-1969	fl ub	10634.0000	0.1326
+fisk	subst	naiv	1960-1969	fl be	2583.0000	0.0322
+fisk	subst	naiv	1970-1979	ent ub	79848.0000	0.6015
+fisk	subst	naiv	1970-1979	ent be	31063.0000	0.2340
+fisk	subst	naiv	1970-1979	fl ub	17476.0000	0.1316
+fisk	subst	naiv	1970-1979	fl be	4371.0000	0.0329
+fisk	subst	naiv	1980-1989	ent ub	128785.0000	0.6112
+fisk	subst	naiv	1980-1989	ent be	48157.0000	0.2285
+fisk	subst	naiv	1980-1989	fl ub	27485.0000	0.1304
+fisk	subst	naiv	1980-1989	fl be	6286.0000	0.0298
+fisk	subst	naiv	1990-1999	ent ub	270987.0000	0.6146
+fisk	subst	naiv	1990-1999	ent be	96522.0000	0.2189
+fisk	subst	naiv	1990-1999	fl ub	60778.0000	0.1378
+fisk	subst	naiv	1990-1999	fl be	12620.0000	0.0286
+fisk	subst	naiv	2000-2009	ent ub	250736.0000	0.6107
+fisk	subst	naiv	2000-2009	ent be	100759.0000	0.2454
+fisk	subst	naiv	2000-2009	fl ub	47149.0000	0.1148
+fisk	subst	naiv	2000-2009	fl be	11903.0000	0.0290
+fisk	subst	naiv	2010-2019	ent ub	170737.0000	0.5914
+fisk	subst	naiv	2010-2019	ent be	69141.0000	0.2395
+fisk	subst	naiv	2010-2019	fl ub	39523.0000	0.1369
+fisk	subst	naiv	2010-2019	fl be	9302.0000	0.0322
+fisk	subst	naiv	2020-2026	ent ub	12247.0000	0.6089
+fisk	subst	naiv	2020-2026	ent be	4397.0000	0.2186
+fisk	subst	naiv	2020-2026	fl ub	2863.0000	0.1423
+fisk	subst	naiv	2020-2026	fl be	606.0000	0.0301
+fisker	subst	obt_tiaar	1950-1959	ent ub	2371.7561	0.1155
+fisker	subst	obt_tiaar	1950-1959	ent be	1976.0000	0.0962
+fisker	subst	obt_tiaar	1950-1959	fl ub	9426.0000	0.4589
+fisker	subst	obt_tiaar	1950-1959	fl be	6768.0000	0.3295
+fisker	subst	obt_tiaar	1960-1969	ent ub	1407.9861	0.0729
+fisker	subst	obt_tiaar	1960-1969	ent be	2267.0000	0.1174
+fisker	subst	obt_tiaar	1960-1969	fl ub	9634.0000	0.4987
+fisker	subst	obt_tiaar	1960-1969	fl be	6009.0000	0.3111
+fisker	subst	obt_tiaar	1970-1979	ent ub	2313.8955	0.0668
+fisker	subst	obt_tiaar	1970-1979	ent be	3346.0000	0.0966
+fisker	subst	obt_tiaar	1970-1979	fl ub	17285.0000	0.4989
+fisker	subst	obt_tiaar	1970-1979	fl be	11699.0000	0.3377
+fisker	subst	obt_tiaar	1980-1989	ent ub	3639.1289	0.0716
+fisker	subst	obt_tiaar	1980-1989	ent be	5178.0000	0.1018
+fisker	subst	obt_tiaar	1980-1989	fl ub	25961.0000	0.5106
+fisker	subst	obt_tiaar	1980-1989	fl be	16063.0000	0.3159
+fisker	subst	obt_tiaar	1990-1999	ent ub	11859.1220	0.1488
+fisker	subst	obt_tiaar	1990-1999	ent be	7212.0000	0.0905
+fisker	subst	obt_tiaar	1990-1999	fl ub	39036.0000	0.4897
+fisker	subst	obt_tiaar	1990-1999	fl be	21614.0000	0.2711
+fisker	subst	obt_tiaar	2000-2009	ent ub	1571.6333	0.0235
+fisker	subst	obt_tiaar	2000-2009	ent be	8149.0000	0.1217
+fisker	subst	obt_tiaar	2000-2009	fl ub	35254.0000	0.5265
+fisker	subst	obt_tiaar	2000-2009	fl be	21983.0000	0.3283
+fisker	subst	obt_tiaar	2010-2019	ent ub	5233.0105	0.1074
+fisker	subst	obt_tiaar	2010-2019	ent be	5965.0000	0.1224
+fisker	subst	obt_tiaar	2010-2019	fl ub	23759.0000	0.4876
+fisker	subst	obt_tiaar	2010-2019	fl be	13774.0000	0.2827
+fisker	subst	obt_tiaar	2020-2026	ent ub	379.0732	0.1098
+fisker	subst	obt_tiaar	2020-2026	ent be	459.0000	0.1330
+fisker	subst	obt_tiaar	2020-2026	fl ub	1664.0000	0.4822
+fisker	subst	obt_tiaar	2020-2026	fl be	949.0000	0.2750
+fisker	subst	obt_fast	1950-1959	ent ub	2371.7561	0.1155
+fisker	subst	obt_fast	1950-1959	ent be	1976.0000	0.0962
+fisker	subst	obt_fast	1950-1959	fl ub	9426.0000	0.4589
+fisker	subst	obt_fast	1950-1959	fl be	6768.0000	0.3295
+fisker	subst	obt_fast	1960-1969	ent ub	1407.9861	0.0729
+fisker	subst	obt_fast	1960-1969	ent be	2267.0000	0.1174
+fisker	subst	obt_fast	1960-1969	fl ub	9634.0000	0.4987
+fisker	subst	obt_fast	1960-1969	fl be	6009.0000	0.3111
+fisker	subst	obt_fast	1970-1979	ent ub	2313.8955	0.0668
+fisker	subst	obt_fast	1970-1979	ent be	3346.0000	0.0966
+fisker	subst	obt_fast	1970-1979	fl ub	17285.0000	0.4989
+fisker	subst	obt_fast	1970-1979	fl be	11699.0000	0.3377
+fisker	subst	obt_fast	1980-1989	ent ub	3639.1289	0.0716
+fisker	subst	obt_fast	1980-1989	ent be	5178.0000	0.1018
+fisker	subst	obt_fast	1980-1989	fl ub	25961.0000	0.5106
+fisker	subst	obt_fast	1980-1989	fl be	16063.0000	0.3159
+fisker	subst	obt_fast	1990-1999	ent ub	8047.2613	0.1060
+fisker	subst	obt_fast	1990-1999	ent be	7212.0000	0.0950
+fisker	subst	obt_fast	1990-1999	fl ub	39036.0000	0.5142
+fisker	subst	obt_fast	1990-1999	fl be	21614.0000	0.2847
+fisker	subst	obt_fast	2000-2009	ent ub	6242.7247	0.0872
+fisker	subst	obt_fast	2000-2009	ent be	8149.0000	0.1138
+fisker	subst	obt_fast	2000-2009	fl ub	35254.0000	0.4922
+fisker	subst	obt_fast	2000-2009	fl be	21983.0000	0.3069
+fisker	subst	obt_fast	2010-2019	ent ub	5233.0105	0.1074
+fisker	subst	obt_fast	2010-2019	ent be	5965.0000	0.1224
+fisker	subst	obt_fast	2010-2019	fl ub	23759.0000	0.4876
+fisker	subst	obt_fast	2010-2019	fl be	13774.0000	0.2827
+fisker	subst	obt_fast	2020-2026	ent ub	379.0732	0.1098
+fisker	subst	obt_fast	2020-2026	ent be	459.0000	0.1330
+fisker	subst	obt_fast	2020-2026	fl ub	1664.0000	0.4822
+fisker	subst	obt_fast	2020-2026	fl be	949.0000	0.2750
+fisker	subst	decomposer	1950-1959	ent ub	6086.1864	0.2509
+fisker	subst	decomposer	1950-1959	ent be	1976.0000	0.0815
+fisker	subst	decomposer	1950-1959	fl ub	9426.0000	0.3886
+fisker	subst	decomposer	1950-1959	fl be	6768.0000	0.2790
+fisker	subst	decomposer	1960-1969	ent ub	3144.5146	0.1494
+fisker	subst	decomposer	1960-1969	ent be	2267.0000	0.1077
+fisker	subst	decomposer	1960-1969	fl ub	9634.0000	0.4576
+fisker	subst	decomposer	1960-1969	fl be	6009.0000	0.2854
+fisker	subst	decomposer	1970-1979	ent ub	5635.3005	0.1484
+fisker	subst	decomposer	1970-1979	ent be	3346.0000	0.0881
+fisker	subst	decomposer	1970-1979	fl ub	17285.0000	0.4553
+fisker	subst	decomposer	1970-1979	fl be	11699.0000	0.3081
+fisker	subst	decomposer	1980-1989	ent ub	8612.6289	0.1543
+fisker	subst	decomposer	1980-1989	ent be	5178.0000	0.0928
+fisker	subst	decomposer	1980-1989	fl ub	25961.0000	0.4651
+fisker	subst	decomposer	1980-1989	fl be	16063.0000	0.2878
+fisker	subst	decomposer	1990-1999	ent ub	16131.9269	0.1921
+fisker	subst	decomposer	1990-1999	ent be	7212.0000	0.0859
+fisker	subst	decomposer	1990-1999	fl ub	39036.0000	0.4647
+fisker	subst	decomposer	1990-1999	fl be	21614.0000	0.2573
+fisker	subst	decomposer	2000-2009	ent ub	12655.9738	0.1622
+fisker	subst	decomposer	2000-2009	ent be	8149.0000	0.1044
+fisker	subst	decomposer	2000-2009	fl ub	35254.0000	0.4517
+fisker	subst	decomposer	2000-2009	fl be	21983.0000	0.2817
+fisker	subst	decomposer	2010-2019	ent ub	10279.8223	0.1912
+fisker	subst	decomposer	2010-2019	ent be	5965.0000	0.1109
+fisker	subst	decomposer	2010-2019	fl ub	23759.0000	0.4418
+fisker	subst	decomposer	2010-2019	fl be	13774.0000	0.2561
+fisker	subst	decomposer	2020-2026	ent ub	813.7891	0.2094
+fisker	subst	decomposer	2020-2026	ent be	459.0000	0.1181
+fisker	subst	decomposer	2020-2026	fl ub	1664.0000	0.4282
+fisker	subst	decomposer	2020-2026	fl be	949.0000	0.2442
+fisker	subst	naiv	1950-1959	ent ub	17913.0000	0.4964
+fisker	subst	naiv	1950-1959	ent be	1976.0000	0.0548
+fisker	subst	naiv	1950-1959	fl ub	9426.0000	0.2612
+fisker	subst	naiv	1950-1959	fl be	6768.0000	0.1876
+fisker	subst	naiv	1960-1969	ent ub	10634.0000	0.3725
+fisker	subst	naiv	1960-1969	ent be	2267.0000	0.0794
+fisker	subst	naiv	1960-1969	fl ub	9634.0000	0.3375
+fisker	subst	naiv	1960-1969	fl be	6009.0000	0.2105
+fisker	subst	naiv	1970-1979	ent ub	17476.0000	0.3509
+fisker	subst	naiv	1970-1979	ent be	3346.0000	0.0672
+fisker	subst	naiv	1970-1979	fl ub	17285.0000	0.3470
+fisker	subst	naiv	1970-1979	fl be	11699.0000	0.2349
+fisker	subst	naiv	1980-1989	ent ub	27485.0000	0.3680
+fisker	subst	naiv	1980-1989	ent be	5178.0000	0.0693
+fisker	subst	naiv	1980-1989	fl ub	25961.0000	0.3476
+fisker	subst	naiv	1980-1989	fl be	16063.0000	0.2151
+fisker	subst	naiv	1990-1999	ent ub	60778.0000	0.4725
+fisker	subst	naiv	1990-1999	ent be	7212.0000	0.0561
+fisker	subst	naiv	1990-1999	fl ub	39036.0000	0.3035
+fisker	subst	naiv	1990-1999	fl be	21614.0000	0.1680
+fisker	subst	naiv	2000-2009	ent ub	47149.0000	0.4190
+fisker	subst	naiv	2000-2009	ent be	8149.0000	0.0724
+fisker	subst	naiv	2000-2009	fl ub	35254.0000	0.3133
+fisker	subst	naiv	2000-2009	fl be	21983.0000	0.1953
+fisker	subst	naiv	2010-2019	ent ub	39523.0000	0.4761
+fisker	subst	naiv	2010-2019	ent be	5965.0000	0.0718
+fisker	subst	naiv	2010-2019	fl ub	23759.0000	0.2862
+fisker	subst	naiv	2010-2019	fl be	13774.0000	0.1659
+fisker	subst	naiv	2020-2026	ent ub	2863.0000	0.4824
+fisker	subst	naiv	2020-2026	ent be	459.0000	0.0773
+fisker	subst	naiv	2020-2026	fl ub	1664.0000	0.2804
+fisker	subst	naiv	2020-2026	fl be	949.0000	0.1599
+dør	subst	obt_tiaar	1950-1959	ent ub	20911.6429	0.1808
+dør	subst	obt_tiaar	1950-1959	ent be	79771.0000	0.6896
+dør	subst	obt_tiaar	1950-1959	fl ub	9036.0000	0.0781
+dør	subst	obt_tiaar	1950-1959	fl be	5954.0000	0.0515
+dør	subst	obt_tiaar	1960-1969	ent ub	18067.7234	0.1560
+dør	subst	obt_tiaar	1960-1969	ent be	80965.0000	0.6992
+dør	subst	obt_tiaar	1960-1969	fl ub	10066.0000	0.0869
+dør	subst	obt_tiaar	1960-1969	fl be	6694.0000	0.0578
+dør	subst	obt_tiaar	1970-1979	ent ub	35894.3774	0.2038
+dør	subst	obt_tiaar	1970-1979	ent be	114616.0000	0.6508
+dør	subst	obt_tiaar	1970-1979	fl ub	15541.0000	0.0882
+dør	subst	obt_tiaar	1970-1979	fl be	10066.0000	0.0572
+dør	subst	obt_tiaar	1980-1989	ent ub	37877.1321	0.1843
+dør	subst	obt_tiaar	1980-1989	ent be	132139.0000	0.6430
+dør	subst	obt_tiaar	1980-1989	fl ub	23059.0000	0.1122
+dør	subst	obt_tiaar	1980-1989	fl be	12435.0000	0.0605
+dør	subst	obt_tiaar	1990-1999	ent ub	72188.0093	0.1671
+dør	subst	obt_tiaar	1990-1999	ent be	291649.0000	0.6751
+dør	subst	obt_tiaar	1990-1999	fl ub	43002.0000	0.0995
+dør	subst	obt_tiaar	1990-1999	fl be	25147.0000	0.0582
+dør	subst	obt_tiaar	2000-2009	ent ub	70661.7778	0.1347
+dør	subst	obt_tiaar	2000-2009	ent be	377785.0000	0.7200
+dør	subst	obt_tiaar	2000-2009	fl ub	44849.0000	0.0855
+dør	subst	obt_tiaar	2000-2009	fl be	31406.0000	0.0599
+dør	subst	obt_tiaar	2010-2019	ent ub	87087.1765	0.1235
+dør	subst	obt_tiaar	2010-2019	ent be	534786.0000	0.7585
+dør	subst	obt_tiaar	2010-2019	fl ub	44031.0000	0.0624
+dør	subst	obt_tiaar	2010-2019	fl be	39195.0000	0.0556
+dør	subst	obt_tiaar	2020-2026	ent ub	3770.0602	0.0769
+dør	subst	obt_tiaar	2020-2026	ent be	38968.0000	0.7953
+dør	subst	obt_tiaar	2020-2026	fl ub	3318.0000	0.0677
+dør	subst	obt_tiaar	2020-2026	fl be	2940.0000	0.0600
+dør	subst	obt_fast	1950-1959	ent ub	15631.4867	0.1416
+dør	subst	obt_fast	1950-1959	ent be	79771.0000	0.7226
+dør	subst	obt_fast	1950-1959	fl ub	9036.0000	0.0819
+dør	subst	obt_fast	1950-1959	fl be	5954.0000	0.0539
+dør	subst	obt_fast	1960-1969	ent ub	18530.4261	0.1594
+dør	subst	obt_fast	1960-1969	ent be	80965.0000	0.6964
+dør	subst	obt_fast	1960-1969	fl ub	10066.0000	0.0866
+dør	subst	obt_fast	1960-1969	fl be	6694.0000	0.0576
+dør	subst	obt_fast	1970-1979	ent ub	28082.4716	0.1669
+dør	subst	obt_fast	1970-1979	ent be	114616.0000	0.6810
+dør	subst	obt_fast	1970-1979	fl ub	15541.0000	0.0923
+dør	subst	obt_fast	1970-1979	fl be	10066.0000	0.0598
+dør	subst	obt_fast	1980-1989	ent ub	35983.7879	0.1767
+dør	subst	obt_fast	1980-1989	ent be	132139.0000	0.6490
+dør	subst	obt_fast	1980-1989	fl ub	23059.0000	0.1132
+dør	subst	obt_fast	1980-1989	fl be	12435.0000	0.0611
+dør	subst	obt_fast	1990-1999	ent ub	71143.9678	0.1651
+dør	subst	obt_fast	1990-1999	ent be	291649.0000	0.6768
+dør	subst	obt_fast	1990-1999	fl ub	43002.0000	0.0998
+dør	subst	obt_fast	1990-1999	fl be	25147.0000	0.0584
+dør	subst	obt_fast	2000-2009	ent ub	79795.6155	0.1495
+dør	subst	obt_fast	2000-2009	ent be	377785.0000	0.7077
+dør	subst	obt_fast	2000-2009	fl ub	44849.0000	0.0840
+dør	subst	obt_fast	2000-2009	fl be	31406.0000	0.0588
+dør	subst	obt_fast	2010-2019	ent ub	82560.5492	0.1178
+dør	subst	obt_fast	2010-2019	ent be	534786.0000	0.7634
+dør	subst	obt_fast	2010-2019	fl ub	44031.0000	0.0629
+dør	subst	obt_fast	2010-2019	fl be	39195.0000	0.0559
+dør	subst	obt_fast	2020-2026	ent ub	6828.2670	0.1312
+dør	subst	obt_fast	2020-2026	ent be	38968.0000	0.7486
+dør	subst	obt_fast	2020-2026	fl ub	3318.0000	0.0637
+dør	subst	obt_fast	2020-2026	fl be	2940.0000	0.0565
+dør	subst	decomposer	1950-1959	ent ub	22517.6547	0.1920
+dør	subst	decomposer	1950-1959	ent be	79771.0000	0.6802
+dør	subst	decomposer	1950-1959	fl ub	9036.0000	0.0770
+dør	subst	decomposer	1950-1959	fl be	5954.0000	0.0508
+dør	subst	decomposer	1960-1969	ent ub	26517.0573	0.2134
+dør	subst	decomposer	1960-1969	ent be	80965.0000	0.6517
+dør	subst	decomposer	1960-1969	fl ub	10066.0000	0.0810
+dør	subst	decomposer	1960-1969	fl be	6694.0000	0.0539
+dør	subst	decomposer	1970-1979	ent ub	40461.1720	0.2239
+dør	subst	decomposer	1970-1979	ent be	114616.0000	0.6343
+dør	subst	decomposer	1970-1979	fl ub	15541.0000	0.0860
+dør	subst	decomposer	1970-1979	fl be	10066.0000	0.0557
+dør	subst	decomposer	1980-1989	ent ub	52476.3689	0.2384
+dør	subst	decomposer	1980-1989	ent be	132139.0000	0.6003
+dør	subst	decomposer	1980-1989	fl ub	23059.0000	0.1048
+dør	subst	decomposer	1980-1989	fl be	12435.0000	0.0565
+dør	subst	decomposer	1990-1999	ent ub	103990.5324	0.2242
+dør	subst	decomposer	1990-1999	ent be	291649.0000	0.6288
+dør	subst	decomposer	1990-1999	fl ub	43002.0000	0.0927
+dør	subst	decomposer	1990-1999	fl be	25147.0000	0.0542
+dør	subst	decomposer	2000-2009	ent ub	116110.5005	0.2036
+dør	subst	decomposer	2000-2009	ent be	377785.0000	0.6626
+dør	subst	decomposer	2000-2009	fl ub	44849.0000	0.0787
+dør	subst	decomposer	2000-2009	fl be	31406.0000	0.0551
+dør	subst	decomposer	2010-2019	ent ub	114861.4833	0.1567
+dør	subst	decomposer	2010-2019	ent be	534786.0000	0.7297
+dør	subst	decomposer	2010-2019	fl ub	44031.0000	0.0601
+dør	subst	decomposer	2010-2019	fl be	39195.0000	0.0535
+dør	subst	decomposer	2020-2026	ent ub	9817.9386	0.1784
+dør	subst	decomposer	2020-2026	ent be	38968.0000	0.7079
+dør	subst	decomposer	2020-2026	fl ub	3318.0000	0.0603
+dør	subst	decomposer	2020-2026	fl be	2940.0000	0.0534
+dør	subst	naiv	1950-1959	ent ub	31145.0000	0.2474
+dør	subst	naiv	1950-1959	ent be	79771.0000	0.6336
+dør	subst	naiv	1950-1959	fl ub	9036.0000	0.0718
+dør	subst	naiv	1950-1959	fl be	5954.0000	0.0473
+dør	subst	naiv	1960-1969	ent ub	36921.0000	0.2742
+dør	subst	naiv	1960-1969	ent be	80965.0000	0.6013
+dør	subst	naiv	1960-1969	fl ub	10066.0000	0.0748
+dør	subst	naiv	1960-1969	fl be	6694.0000	0.0497
+dør	subst	naiv	1970-1979	ent ub	55953.0000	0.2852
+dør	subst	naiv	1970-1979	ent be	114616.0000	0.5843
+dør	subst	naiv	1970-1979	fl ub	15541.0000	0.0792
+dør	subst	naiv	1970-1979	fl be	10066.0000	0.0513
+dør	subst	naiv	1980-1989	ent ub	71696.0000	0.2996
+dør	subst	naiv	1980-1989	ent be	132139.0000	0.5521
+dør	subst	naiv	1980-1989	fl ub	23059.0000	0.0963
+dør	subst	naiv	1980-1989	fl be	12435.0000	0.0520
+dør	subst	naiv	1990-1999	ent ub	141751.0000	0.2826
+dør	subst	naiv	1990-1999	ent be	291649.0000	0.5815
+dør	subst	naiv	1990-1999	fl ub	43002.0000	0.0857
+dør	subst	naiv	1990-1999	fl be	25147.0000	0.0501
+dør	subst	naiv	2000-2009	ent ub	158989.0000	0.2593
+dør	subst	naiv	2000-2009	ent be	377785.0000	0.6163
+dør	subst	naiv	2000-2009	fl ub	44849.0000	0.0732
+dør	subst	naiv	2000-2009	fl be	31406.0000	0.0512
+dør	subst	naiv	2010-2019	ent ub	164498.0000	0.2102
+dør	subst	naiv	2010-2019	ent be	534786.0000	0.6834
+dør	subst	naiv	2010-2019	fl ub	44031.0000	0.0563
+dør	subst	naiv	2010-2019	fl be	39195.0000	0.0501
+dør	subst	naiv	2020-2026	ent ub	13605.0000	0.2313
+dør	subst	naiv	2020-2026	ent be	38968.0000	0.6624
+dør	subst	naiv	2020-2026	fl ub	3318.0000	0.0564
+dør	subst	naiv	2020-2026	fl be	2940.0000	0.0500
+krone	subst	obt_tiaar	1950-1959	ent ub	11211.1579	0.1090
+krone	subst	obt_tiaar	1950-1959	ent be	6586.8000	0.0640
+krone	subst	obt_tiaar	1950-1959	fl ub	83335.9429	0.8100
+krone	subst	obt_tiaar	1950-1959	fl be	1754.0000	0.0170
+krone	subst	obt_tiaar	1960-1969	ent ub	12087.4737	0.1015
+krone	subst	obt_tiaar	1960-1969	ent be	6865.8000	0.0577
+krone	subst	obt_tiaar	1960-1969	fl ub	98332.3077	0.8259
+krone	subst	obt_tiaar	1960-1969	fl be	1774.0000	0.0149
+krone	subst	obt_tiaar	1970-1979	ent ub	15050.8421	0.0862
+krone	subst	obt_tiaar	1970-1979	ent be	8356.0000	0.0479
+krone	subst	obt_tiaar	1970-1979	fl ub	148891.9718	0.8528
+krone	subst	obt_tiaar	1970-1979	fl be	2283.0000	0.0131
+krone	subst	obt_tiaar	1980-1989	ent ub	17517.7576	0.0694
+krone	subst	obt_tiaar	1980-1989	ent be	9882.0000	0.0391
+krone	subst	obt_tiaar	1980-1989	fl ub	222178.8636	0.8797
+krone	subst	obt_tiaar	1980-1989	fl be	2987.0000	0.0118
+krone	subst	obt_tiaar	1990-1999	ent ub	36506.8421	0.0672
+krone	subst	obt_tiaar	1990-1999	ent be	18352.0000	0.0338
+krone	subst	obt_tiaar	1990-1999	fl ub	482886.6327	0.8892
+krone	subst	obt_tiaar	1990-1999	fl be	5289.0000	0.0097
+krone	subst	obt_tiaar	2000-2009	ent ub	36664.1053	0.0657
+krone	subst	obt_tiaar	2000-2009	ent be	16718.0000	0.0299
+krone	subst	obt_tiaar	2000-2009	fl ub	498712.1311	0.8934
+krone	subst	obt_tiaar	2000-2009	fl be	6114.0000	0.0110
+krone	subst	obt_tiaar	2010-2019	ent ub	28496.8421	0.0623
+krone	subst	obt_tiaar	2010-2019	ent be	12873.0000	0.0281
+krone	subst	obt_tiaar	2010-2019	fl ub	410815.6098	0.8981
+krone	subst	obt_tiaar	2010-2019	fl be	5246.0000	0.0115
+krone	subst	obt_tiaar	2020-2026	ent ub	1981.8947	0.0663
+krone	subst	obt_tiaar	2020-2026	ent be	868.0000	0.0290
+krone	subst	obt_tiaar	2020-2026	fl ub	26679.8963	0.8919
+krone	subst	obt_tiaar	2020-2026	fl be	384.0000	0.0128
+krone	subst	obt_fast	1950-1959	ent ub	11211.1579	0.1079
+krone	subst	obt_fast	1950-1959	ent be	6586.8000	0.0634
+krone	subst	obt_fast	1950-1959	fl ub	84380.6557	0.8119
+krone	subst	obt_fast	1950-1959	fl be	1754.0000	0.0169
+krone	subst	obt_fast	1960-1969	ent ub	12087.4737	0.1007
+krone	subst	obt_fast	1960-1969	ent be	6865.8000	0.0572
+krone	subst	obt_fast	1960-1969	fl ub	99265.5738	0.8273
+krone	subst	obt_fast	1960-1969	fl be	1774.0000	0.0148
+krone	subst	obt_fast	1970-1979	ent ub	15050.8421	0.0864
+krone	subst	obt_fast	1970-1979	ent be	8356.0000	0.0480
+krone	subst	obt_fast	1970-1979	fl ub	148543.2787	0.8526
+krone	subst	obt_fast	1970-1979	fl be	2283.0000	0.0131
+krone	subst	obt_fast	1980-1989	ent ub	18884.8421	0.0745
+krone	subst	obt_fast	1980-1989	ent be	9882.0000	0.0390
+krone	subst	obt_fast	1980-1989	fl ub	221898.6885	0.8748
+krone	subst	obt_fast	1980-1989	fl be	2987.0000	0.0118
+krone	subst	obt_fast	1990-1999	ent ub	36506.8421	0.0657
+krone	subst	obt_fast	1990-1999	ent be	18352.0000	0.0330
+krone	subst	obt_fast	1990-1999	fl ub	495181.9672	0.8917
+krone	subst	obt_fast	1990-1999	fl be	5289.0000	0.0095
+krone	subst	obt_fast	2000-2009	ent ub	36664.1053	0.0657
+krone	subst	obt_fast	2000-2009	ent be	16718.0000	0.0299
+krone	subst	obt_fast	2000-2009	fl ub	498712.1311	0.8934
+krone	subst	obt_fast	2000-2009	fl be	6114.0000	0.0110
+krone	subst	obt_fast	2010-2019	ent ub	28496.8421	0.0618
+krone	subst	obt_fast	2010-2019	ent be	12873.0000	0.0279
+krone	subst	obt_fast	2010-2019	fl ub	414182.9508	0.8988
+krone	subst	obt_fast	2010-2019	fl be	5246.0000	0.0114
+krone	subst	obt_fast	2020-2026	ent ub	1981.8947	0.0668
+krone	subst	obt_fast	2020-2026	ent be	868.0000	0.0293
+krone	subst	obt_fast	2020-2026	fl ub	26438.3607	0.8910
+krone	subst	obt_fast	2020-2026	fl be	384.0000	0.0129
+krone	subst	decomposer	1950-1959	ent ub	7892.0851	0.1165
+krone	subst	decomposer	1950-1959	ent be	6471.5000	0.0956
+krone	subst	decomposer	1950-1959	fl ub	51602.5509	0.7620
+krone	subst	decomposer	1950-1959	fl be	1754.0000	0.0259
+krone	subst	decomposer	1960-1969	ent ub	8464.2145	0.1126
+krone	subst	decomposer	1960-1969	ent be	6748.5000	0.0898
+krone	subst	decomposer	1960-1969	fl ub	58201.5891	0.7741
+krone	subst	decomposer	1960-1969	fl be	1774.0000	0.0236
+krone	subst	decomposer	1970-1979	ent ub	10894.6545	0.0986
+krone	subst	decomposer	1970-1979	ent be	8189.5000	0.0741
+krone	subst	decomposer	1970-1979	fl ub	89107.2890	0.8066
+krone	subst	decomposer	1970-1979	fl be	2283.0000	0.0207
+krone	subst	decomposer	1980-1989	ent ub	14137.5127	0.0849
+krone	subst	decomposer	1980-1989	ent be	9668.0000	0.0581
+krone	subst	decomposer	1980-1989	fl ub	139738.6612	0.8391
+krone	subst	decomposer	1980-1989	fl be	2987.0000	0.0179
+krone	subst	decomposer	1990-1999	ent ub	27646.2180	0.0774
+krone	subst	decomposer	1990-1999	ent be	17980.0000	0.0504
+krone	subst	decomposer	1990-1999	fl ub	306155.4233	0.8574
+krone	subst	decomposer	1990-1999	fl be	5289.0000	0.0148
+krone	subst	decomposer	2000-2009	ent ub	27894.2661	0.0739
+krone	subst	decomposer	2000-2009	ent be	16361.5000	0.0434
+krone	subst	decomposer	2000-2009	fl ub	326971.0152	0.8665
+krone	subst	decomposer	2000-2009	fl be	6114.0000	0.0162
+krone	subst	decomposer	2010-2019	ent ub	20815.2855	0.0680
+krone	subst	decomposer	2010-2019	ent be	12554.5000	0.0410
+krone	subst	decomposer	2010-2019	fl ub	267682.7872	0.8739
+krone	subst	decomposer	2010-2019	fl be	5246.0000	0.0171
+krone	subst	decomposer	2020-2026	ent ub	1386.0735	0.0723
+krone	subst	decomposer	2020-2026	ent be	849.0000	0.0443
+krone	subst	decomposer	2020-2026	fl ub	16560.8605	0.8634
+krone	subst	decomposer	2020-2026	fl be	384.0000	0.0200
+krone	subst	naiv	1950-1959	ent ub	11834.0000	0.1112
+krone	subst	naiv	1950-1959	ent be	7048.0000	0.0662
+krone	subst	naiv	1950-1959	fl ub	85787.0000	0.8061
+krone	subst	naiv	1950-1959	fl be	1754.0000	0.0165
+krone	subst	naiv	1960-1969	ent ub	12759.0000	0.1039
+krone	subst	naiv	1960-1969	ent be	7335.0000	0.0597
+krone	subst	naiv	1960-1969	fl ub	100920.0000	0.8219
+krone	subst	naiv	1960-1969	fl be	1774.0000	0.0144
+krone	subst	naiv	1970-1979	ent ub	15887.0000	0.0891
+krone	subst	naiv	1970-1979	ent be	9022.0000	0.0506
+krone	subst	naiv	1970-1979	fl ub	151019.0000	0.8474
+krone	subst	naiv	1970-1979	fl be	2283.0000	0.0128
+krone	subst	naiv	1980-1989	ent ub	19934.0000	0.0769
+krone	subst	naiv	1980-1989	ent be	10738.0000	0.0414
+krone	subst	naiv	1980-1989	fl ub	225597.0000	0.8702
+krone	subst	naiv	1980-1989	fl be	2987.0000	0.0115
+krone	subst	naiv	1990-1999	ent ub	38535.0000	0.0680
+krone	subst	naiv	1990-1999	ent be	19840.0000	0.0350
+krone	subst	naiv	1990-1999	fl ub	503435.0000	0.8877
+krone	subst	naiv	1990-1999	fl be	5289.0000	0.0093
+krone	subst	naiv	2000-2009	ent ub	38701.0000	0.0679
+krone	subst	naiv	2000-2009	ent be	18144.0000	0.0318
+krone	subst	naiv	2000-2009	fl ub	507024.0000	0.8895
+krone	subst	naiv	2000-2009	fl be	6114.0000	0.0107
+krone	subst	naiv	2010-2019	ent ub	30080.0000	0.0639
+krone	subst	naiv	2010-2019	ent be	14147.0000	0.0301
+krone	subst	naiv	2010-2019	fl ub	421086.0000	0.8949
+krone	subst	naiv	2010-2019	fl be	5246.0000	0.0111
+krone	subst	naiv	2020-2026	ent ub	2092.0000	0.0690
+krone	subst	naiv	2020-2026	ent be	944.0000	0.0312
+krone	subst	naiv	2020-2026	fl ub	26879.0000	0.8871
+krone	subst	naiv	2020-2026	fl be	384.0000	0.0127
+dø	verb	obt_tiaar	1950-1959	inf/imp	23553.0000	0.2150
+dø	verb	obt_tiaar	1950-1959	pres	10233.3571	0.0934
+dø	verb	obt_tiaar	1950-1959	pret	74469.4054	0.6797
+dø	verb	obt_tiaar	1950-1959	perf-part	1307.0000	0.0119
+dø	verb	obt_tiaar	1960-1969	inf/imp	28645.0000	0.2291
+dø	verb	obt_tiaar	1960-1969	pres	18853.2766	0.1508
+dø	verb	obt_tiaar	1960-1969	pret	75976.0909	0.6078
+dø	verb	obt_tiaar	1960-1969	perf-part	1534.0000	0.0123
+dø	verb	obt_tiaar	1970-1979	inf/imp	41894.0000	0.2540
+dø	verb	obt_tiaar	1970-1979	pres	20058.6226	0.1216
+dø	verb	obt_tiaar	1970-1979	pret	100228.9091	0.6077
+dø	verb	obt_tiaar	1970-1979	perf-part	2738.0000	0.0166
+dø	verb	obt_tiaar	1980-1989	inf/imp	50659.0000	0.1866
+dø	verb	obt_tiaar	1980-1989	pres	33818.8679	0.1246
+dø	verb	obt_tiaar	1980-1989	pret	182898.0187	0.6738
+dø	verb	obt_tiaar	1980-1989	perf-part	4047.0000	0.0149
+dø	verb	obt_tiaar	1990-1999	inf/imp	97354.0000	0.2127
+dø	verb	obt_tiaar	1990-1999	pres	69562.9907	0.1520
+dø	verb	obt_tiaar	1990-1999	pret	280898.7403	0.6137
+dø	verb	obt_tiaar	1990-1999	perf-part	9879.0000	0.0216
+dø	verb	obt_tiaar	2000-2009	inf/imp	109489.0000	0.2168
+dø	verb	obt_tiaar	2000-2009	pres	88327.2222	0.1749
+dø	verb	obt_tiaar	2000-2009	pret	294450.5310	0.5830
+dø	verb	obt_tiaar	2000-2009	perf-part	12830.0000	0.0254
+dø	verb	obt_tiaar	2010-2019	inf/imp	131617.0000	0.2239
+dø	verb	obt_tiaar	2010-2019	pres	77410.8235	0.1317
+dø	verb	obt_tiaar	2010-2019	pret	362416.0894	0.6164
+dø	verb	obt_tiaar	2010-2019	perf-part	16480.0000	0.0280
+dø	verb	obt_tiaar	2020-2026	inf/imp	9483.0000	0.1751
+dø	verb	obt_tiaar	2020-2026	pres	9834.9398	0.1816
+dø	verb	obt_tiaar	2020-2026	pret	33384.0000	0.6165
+dø	verb	obt_tiaar	2020-2026	perf-part	1450.0000	0.0268
+dø	verb	obt_fast	1950-1959	inf/imp	23553.0000	0.1930
+dø	verb	obt_fast	1950-1959	pres	15513.5133	0.1271
+dø	verb	obt_fast	1950-1959	pret	81649.2373	0.6691
+dø	verb	obt_fast	1950-1959	perf-part	1307.0000	0.0107
+dø	verb	obt_fast	1960-1969	inf/imp	28645.0000	0.2165
+dø	verb	obt_fast	1960-1969	pres	18390.5739	0.1390
+dø	verb	obt_fast	1960-1969	pret	83730.0221	0.6329
+dø	verb	obt_fast	1960-1969	perf-part	1534.0000	0.0116
+dø	verb	obt_fast	1970-1979	inf/imp	41894.0000	0.2240
+dø	verb	obt_fast	1970-1979	pres	27870.5284	0.1490
+dø	verb	obt_fast	1970-1979	pret	114549.0606	0.6124
+dø	verb	obt_fast	1970-1979	perf-part	2738.0000	0.0146
+dø	verb	obt_fast	1980-1989	inf/imp	50659.0000	0.2134
+dø	verb	obt_fast	1980-1989	pres	35712.2121	0.1504
+dø	verb	obt_fast	1980-1989	pret	146985.3183	0.6191
+dø	verb	obt_fast	1980-1989	perf-part	4047.0000	0.0170
+dø	verb	obt_fast	1990-1999	inf/imp	97354.0000	0.2123
+dø	verb	obt_fast	1990-1999	pres	70607.0322	0.1540
+dø	verb	obt_fast	1990-1999	pret	280759.3715	0.6122
+dø	verb	obt_fast	1990-1999	perf-part	9879.0000	0.0215
+dø	verb	obt_fast	2000-2009	inf/imp	109489.0000	0.1973
+dø	verb	obt_fast	2000-2009	pres	79193.3845	0.1427
+dø	verb	obt_fast	2000-2009	pret	353554.5786	0.6370
+dø	verb	obt_fast	2000-2009	perf-part	12830.0000	0.0231
+dø	verb	obt_fast	2010-2019	inf/imp	131617.0000	0.2161
+dø	verb	obt_fast	2010-2019	pres	81937.4508	0.1345
+dø	verb	obt_fast	2010-2019	pret	379130.6285	0.6224
+dø	verb	obt_fast	2010-2019	perf-part	16480.0000	0.0271
+dø	verb	obt_fast	2020-2026	inf/imp	9483.0000	0.1892
+dø	verb	obt_fast	2020-2026	pres	6776.7330	0.1352
+dø	verb	obt_fast	2020-2026	pret	32417.3224	0.6467
+dø	verb	obt_fast	2020-2026	perf-part	1450.0000	0.0289
+dø	verb	decomposer	1950-1959	inf/imp	23553.0000	0.1586
+dø	verb	decomposer	1950-1959	pres	8627.3453	0.0581
+dø	verb	decomposer	1950-1959	pret	115026.2053	0.7745
+dø	verb	decomposer	1950-1959	perf-part	1307.0000	0.0088
+dø	verb	decomposer	1960-1969	inf/imp	28645.0000	0.1801
+dø	verb	decomposer	1960-1969	pres	10403.9427	0.0654
+dø	verb	decomposer	1960-1969	pret	118425.0705	0.7448
+dø	verb	decomposer	1960-1969	perf-part	1534.0000	0.0096
+dø	verb	decomposer	1970-1979	inf/imp	41894.0000	0.1883
+dø	verb	decomposer	1970-1979	pres	15491.8280	0.0696
+dø	verb	decomposer	1970-1979	pret	162349.0411	0.7297
+dø	verb	decomposer	1970-1979	perf-part	2738.0000	0.0123
+dø	verb	decomposer	1980-1989	inf/imp	50659.0000	0.1794
+dø	verb	decomposer	1980-1989	pres	19219.6311	0.0681
+dø	verb	decomposer	1980-1989	pret	208457.1736	0.7382
+dø	verb	decomposer	1980-1989	perf-part	4047.0000	0.0143
+dø	verb	decomposer	1990-1999	inf/imp	97354.0000	0.1794
+dø	verb	decomposer	1990-1999	pres	37760.4676	0.0696
+dø	verb	decomposer	1990-1999	pret	397556.7385	0.7328
+dø	verb	decomposer	1990-1999	perf-part	9879.0000	0.0182
+dø	verb	decomposer	2000-2009	inf/imp	109489.0000	0.1640
+dø	verb	decomposer	2000-2009	pres	42878.4995	0.0642
+dø	verb	decomposer	2000-2009	pret	502239.9302	0.7525
+dø	verb	decomposer	2000-2009	perf-part	12830.0000	0.0192
+dø	verb	decomposer	2010-2019	inf/imp	131617.0000	0.1787
+dø	verb	decomposer	2010-2019	pres	49636.5167	0.0674
+dø	verb	decomposer	2010-2019	pret	538782.4372	0.7315
+dø	verb	decomposer	2010-2019	perf-part	16480.0000	0.0224
+dø	verb	decomposer	2020-2026	inf/imp	9483.0000	0.1558
+dø	verb	decomposer	2020-2026	pres	3787.0614	0.0622
+dø	verb	decomposer	2020-2026	pret	46141.3633	0.7581
+dø	verb	decomposer	2020-2026	perf-part	1450.0000	0.0238
+dø	verb	naiv	1950-1959	inf/imp	23553.0000	0.1366
+dø	verb	naiv	1950-1959	pres	31145.0000	0.1806
+dø	verb	naiv	1950-1959	pret	116424.0000	0.6752
+dø	verb	naiv	1950-1959	perf-part	1307.0000	0.0076
+dø	verb	naiv	1960-1969	inf/imp	28645.0000	0.1536
+dø	verb	naiv	1960-1969	pres	36921.0000	0.1980
+dø	verb	naiv	1960-1969	pret	119391.0000	0.6402
+dø	verb	naiv	1960-1969	perf-part	1534.0000	0.0082
+dø	verb	naiv	1970-1979	inf/imp	41894.0000	0.1587
+dø	verb	naiv	1970-1979	pres	55953.0000	0.2120
+dø	verb	naiv	1970-1979	pret	163336.0000	0.6189
+dø	verb	naiv	1970-1979	perf-part	2738.0000	0.0104
+dø	verb	naiv	1980-1989	inf/imp	50659.0000	0.1508
+dø	verb	naiv	1980-1989	pres	71696.0000	0.2134
+dø	verb	naiv	1980-1989	pret	209587.0000	0.6238
+dø	verb	naiv	1980-1989	perf-part	4047.0000	0.0120
+dø	verb	naiv	1990-1999	inf/imp	97354.0000	0.1499
+dø	verb	naiv	1990-1999	pres	141751.0000	0.2183
+dø	verb	naiv	1990-1999	pret	400336.0000	0.6165
+dø	verb	naiv	1990-1999	perf-part	9879.0000	0.0152
+dø	verb	naiv	2000-2009	inf/imp	109489.0000	0.1394
+dø	verb	naiv	2000-2009	pres	158989.0000	0.2024
+dø	verb	naiv	2000-2009	pret	504135.0000	0.6418
+dø	verb	naiv	2000-2009	perf-part	12830.0000	0.0163
+dø	verb	naiv	2010-2019	inf/imp	131617.0000	0.1543
+dø	verb	naiv	2010-2019	pres	164498.0000	0.1928
+dø	verb	naiv	2010-2019	pret	540604.0000	0.6336
+dø	verb	naiv	2010-2019	perf-part	16480.0000	0.0193
+dø	verb	naiv	2020-2026	inf/imp	9483.0000	0.1340
+dø	verb	naiv	2020-2026	pres	13605.0000	0.1923
+dø	verb	naiv	2020-2026	pret	46224.0000	0.6532
+dø	verb	naiv	2020-2026	perf-part	1450.0000	0.0205
+gå	verb	obt_tiaar	1950-1959	inf/imp	334802.0000	0.2425
+gå	verb	obt_tiaar	1950-1959	pres	347002.8354	0.2513
+gå	verb	obt_tiaar	1950-1959	pret	571380.0000	0.4139
+gå	verb	obt_tiaar	1950-1959	perf-part	127391.0000	0.0923
+gå	verb	obt_tiaar	1960-1969	inf/imp	372059.0000	0.2463
+gå	verb	obt_tiaar	1960-1969	pres	434887.3197	0.2879
+gå	verb	obt_tiaar	1960-1969	pret	570883.0000	0.3779
+gå	verb	obt_tiaar	1960-1969	perf-part	132844.0000	0.0879
+gå	verb	obt_tiaar	1970-1979	inf/imp	575903.0000	0.2577
+gå	verb	obt_tiaar	1970-1979	pres	706841.0088	0.3163
+gå	verb	obt_tiaar	1970-1979	pret	749770.0000	0.3355
+gå	verb	obt_tiaar	1970-1979	perf-part	202176.0000	0.0905
+gå	verb	obt_tiaar	1980-1989	inf/imp	712939.0000	0.2619
+gå	verb	obt_tiaar	1980-1989	pres	855614.0276	0.3143
+gå	verb	obt_tiaar	1980-1989	pret	902767.0000	0.3317
+gå	verb	obt_tiaar	1980-1989	perf-part	250561.0000	0.0921
+gå	verb	obt_tiaar	1990-1999	inf/imp	1375954.0000	0.2643
+gå	verb	obt_tiaar	1990-1999	pres	1624262.8774	0.3120
+gå	verb	obt_tiaar	1990-1999	pret	1732926.0000	0.3329
+gå	verb	obt_tiaar	1990-1999	perf-part	473161.0000	0.0909
+gå	verb	obt_tiaar	2000-2009	inf/imp	1482887.0000	0.2576
+gå	verb	obt_tiaar	2000-2009	pres	1772606.6679	0.3080
+gå	verb	obt_tiaar	2000-2009	pret	1982924.0000	0.3445
+gå	verb	obt_tiaar	2000-2009	perf-part	517504.0000	0.0899
+gå	verb	obt_tiaar	2010-2019	inf/imp	1544304.0000	0.2546
+gå	verb	obt_tiaar	2010-2019	pres	1639784.4368	0.2703
+gå	verb	obt_tiaar	2010-2019	pret	2331452.0000	0.3843
+gå	verb	obt_tiaar	2010-2019	perf-part	550936.0000	0.0908
+gå	verb	obt_tiaar	2020-2026	inf/imp	112531.0000	0.2492
+gå	verb	obt_tiaar	2020-2026	pres	121838.7942	0.2698
+gå	verb	obt_tiaar	2020-2026	pret	176169.0000	0.3902
+gå	verb	obt_tiaar	2020-2026	perf-part	40991.0000	0.0908
+gå	verb	obt_fast	1950-1959	inf/imp	334802.0000	0.2409
+gå	verb	obt_fast	1950-1959	pres	356480.7504	0.2565
+gå	verb	obt_fast	1950-1959	pret	571380.0000	0.4110
+gå	verb	obt_fast	1950-1959	perf-part	127391.0000	0.0916
+gå	verb	obt_fast	1960-1969	inf/imp	372059.0000	0.2485
+gå	verb	obt_fast	1960-1969	pres	421677.0722	0.2816
+gå	verb	obt_fast	1960-1969	pret	570883.0000	0.3812
+gå	verb	obt_fast	1960-1969	perf-part	132844.0000	0.0887
+gå	verb	obt_fast	1970-1979	inf/imp	575903.0000	0.2600
+gå	verb	obt_fast	1970-1979	pres	686981.1663	0.3102
+gå	verb	obt_fast	1970-1979	pret	749770.0000	0.3385
+gå	verb	obt_fast	1970-1979	perf-part	202176.0000	0.0913
+gå	verb	obt_fast	1980-1989	inf/imp	712939.0000	0.2609
+gå	verb	obt_fast	1980-1989	pres	865840.6331	0.3169
+gå	verb	obt_fast	1980-1989	pret	902767.0000	0.3304
+gå	verb	obt_fast	1980-1989	perf-part	250561.0000	0.0917
+gå	verb	obt_fast	1990-1999	inf/imp	1375954.0000	0.2626
+gå	verb	obt_fast	1990-1999	pres	1658045.8479	0.3164
+gå	verb	obt_fast	1990-1999	pret	1732926.0000	0.3307
+gå	verb	obt_fast	1990-1999	perf-part	473161.0000	0.0903
+gå	verb	obt_fast	2000-2009	inf/imp	1482887.0000	0.2574
+gå	verb	obt_fast	2000-2009	pres	1778389.0090	0.3087
+gå	verb	obt_fast	2000-2009	pret	1982924.0000	0.3442
+gå	verb	obt_fast	2000-2009	perf-part	517504.0000	0.0898
+gå	verb	obt_fast	2010-2019	inf/imp	1544304.0000	0.2531
+gå	verb	obt_fast	2010-2019	pres	1675534.7156	0.2746
+gå	verb	obt_fast	2010-2019	pret	2331452.0000	0.3821
+gå	verb	obt_fast	2010-2019	perf-part	550936.0000	0.0903
+gå	verb	obt_fast	2020-2026	inf/imp	112531.0000	0.2496
+gå	verb	obt_fast	2020-2026	pres	121240.0021	0.2689
+gå	verb	obt_fast	2020-2026	pret	176169.0000	0.3907
+gå	verb	obt_fast	2020-2026	perf-part	40991.0000	0.0909
+gå	verb	decomposer	1950-1959	inf/imp	334802.0000	0.2366
+gå	verb	decomposer	1950-1959	pres	381185.7439	0.2694
+gå	verb	decomposer	1950-1959	pret	571380.0000	0.4039
+gå	verb	decomposer	1950-1959	perf-part	127391.0000	0.0900
+gå	verb	decomposer	1960-1969	inf/imp	372059.0000	0.2437
+gå	verb	decomposer	1960-1969	pres	450898.4149	0.2953
+gå	verb	decomposer	1960-1969	pret	570883.0000	0.3739
+gå	verb	decomposer	1960-1969	perf-part	132844.0000	0.0870
+gå	verb	decomposer	1970-1979	inf/imp	575903.0000	0.2545
+gå	verb	decomposer	1970-1979	pres	734591.1591	0.3247
+gå	verb	decomposer	1970-1979	pret	749770.0000	0.3314
+gå	verb	decomposer	1970-1979	perf-part	202176.0000	0.0894
+gå	verb	decomposer	1980-1989	inf/imp	712939.0000	0.2553
+gå	verb	decomposer	1980-1989	pres	925847.1440	0.3316
+gå	verb	decomposer	1980-1989	pret	902767.0000	0.3233
+gå	verb	decomposer	1980-1989	perf-part	250561.0000	0.0897
+gå	verb	decomposer	1990-1999	inf/imp	1375954.0000	0.2569
+gå	verb	decomposer	1990-1999	pres	1772955.6619	0.3311
+gå	verb	decomposer	1990-1999	pret	1732926.0000	0.3236
+gå	verb	decomposer	1990-1999	perf-part	473161.0000	0.0884
+gå	verb	decomposer	2000-2009	inf/imp	1482887.0000	0.2520
+gå	verb	decomposer	2000-2009	pres	1901641.7088	0.3231
+gå	verb	decomposer	2000-2009	pret	1982924.0000	0.3369
+gå	verb	decomposer	2000-2009	perf-part	517504.0000	0.0879
+gå	verb	decomposer	2010-2019	inf/imp	1544304.0000	0.2483
+gå	verb	decomposer	2010-2019	pres	1791661.0288	0.2881
+gå	verb	decomposer	2010-2019	pret	2331452.0000	0.3749
+gå	verb	decomposer	2010-2019	perf-part	550936.0000	0.0886
+gå	verb	decomposer	2020-2026	inf/imp	112531.0000	0.2450
+gå	verb	decomposer	2020-2026	pres	129642.8868	0.2822
+gå	verb	decomposer	2020-2026	pret	176169.0000	0.3835
+gå	verb	decomposer	2020-2026	perf-part	40991.0000	0.0892
+gå	verb	naiv	1950-1959	inf/imp	334802.0000	0.2366
+gå	verb	naiv	1950-1959	pres	381188.0000	0.2694
+gå	verb	naiv	1950-1959	pret	571380.0000	0.4039
+gå	verb	naiv	1950-1959	perf-part	127391.0000	0.0900
+gå	verb	naiv	1960-1969	inf/imp	372059.0000	0.2437
+gå	verb	naiv	1960-1969	pres	450903.0000	0.2953
+gå	verb	naiv	1960-1969	pret	570883.0000	0.3739
+gå	verb	naiv	1960-1969	perf-part	132844.0000	0.0870
+gå	verb	naiv	1970-1979	inf/imp	575903.0000	0.2545
+gå	verb	naiv	1970-1979	pres	734595.0000	0.3247
+gå	verb	naiv	1970-1979	pret	749770.0000	0.3314
+gå	verb	naiv	1970-1979	perf-part	202176.0000	0.0894
+gå	verb	naiv	1980-1989	inf/imp	712939.0000	0.2553
+gå	verb	naiv	1980-1989	pres	925851.0000	0.3316
+gå	verb	naiv	1980-1989	pret	902767.0000	0.3233
+gå	verb	naiv	1980-1989	perf-part	250561.0000	0.0897
+gå	verb	naiv	1990-1999	inf/imp	1375954.0000	0.2569
+gå	verb	naiv	1990-1999	pres	1772963.0000	0.3311
+gå	verb	naiv	1990-1999	pret	1732926.0000	0.3236
+gå	verb	naiv	1990-1999	perf-part	473161.0000	0.0884
+gå	verb	naiv	2000-2009	inf/imp	1482887.0000	0.2520
+gå	verb	naiv	2000-2009	pres	1901647.0000	0.3231
+gå	verb	naiv	2000-2009	pret	1982924.0000	0.3369
+gå	verb	naiv	2000-2009	perf-part	517504.0000	0.0879
+gå	verb	naiv	2010-2019	inf/imp	1544304.0000	0.2483
+gå	verb	naiv	2010-2019	pres	1791664.0000	0.2881
+gå	verb	naiv	2010-2019	pret	2331452.0000	0.3749
+gå	verb	naiv	2010-2019	perf-part	550936.0000	0.0886
+gå	verb	naiv	2020-2026	inf/imp	112531.0000	0.2450
+gå	verb	naiv	2020-2026	pres	129643.0000	0.2822
+gå	verb	naiv	2020-2026	pret	176169.0000	0.3835
+gå	verb	naiv	2020-2026	perf-part	40991.0000	0.0892
+svare	verb	obt_tiaar	1950-1959	inf	24587.7667	0.1185
+svare	verb	obt_tiaar	1950-1959	pres	48911.0000	0.2357
+svare	verb	obt_tiaar	1950-1959	pret	130663.8013	0.6297
+svare	verb	obt_tiaar	1950-1959	perf-part	2312.1064	0.0111
+svare	verb	obt_tiaar	1950-1959	imp	1042.1190	0.0050
+svare	verb	obt_tiaar	1960-1969	inf	27387.9184	0.1235
+svare	verb	obt_tiaar	1960-1969	pres	58617.8870	0.2643
+svare	verb	obt_tiaar	1960-1969	pret	129620.9917	0.5844
+svare	verb	obt_tiaar	1960-1969	perf-part	5807.3684	0.0262
+svare	verb	obt_tiaar	1960-1969	imp	349.2538	0.0016
+svare	verb	obt_tiaar	1970-1979	inf	56247.5625	0.1680
+svare	verb	obt_tiaar	1970-1979	pres	89748.6357	0.2681
+svare	verb	obt_tiaar	1970-1979	pret	173596.6981	0.5185
+svare	verb	obt_tiaar	1970-1979	perf-part	13831.8182	0.0413
+svare	verb	obt_tiaar	1970-1979	imp	1358.7590	0.0041
+svare	verb	obt_tiaar	1980-1989	inf	66117.7969	0.1672
+svare	verb	obt_tiaar	1980-1989	pres	109203.3162	0.2762
+svare	verb	obt_tiaar	1980-1989	pret	204159.6503	0.5163
+svare	verb	obt_tiaar	1980-1989	perf-part	8680.0964	0.0220
+svare	verb	obt_tiaar	1980-1989	imp	7258.1860	0.0184
+svare	verb	obt_tiaar	1990-1999	inf	129567.6061	0.1577
+svare	verb	obt_tiaar	1990-1999	pres	209663.2957	0.2553
+svare	verb	obt_tiaar	1990-1999	pret	430993.4211	0.5247
+svare	verb	obt_tiaar	1990-1999	perf-part	34668.0000	0.0422
+svare	verb	obt_tiaar	1990-1999	imp	16511.3500	0.0201
+svare	verb	obt_tiaar	2000-2009	inf	146230.0000	0.1766
+svare	verb	obt_tiaar	2000-2009	pres	223020.5405	0.2693
+svare	verb	obt_tiaar	2000-2009	pret	418433.9925	0.5052
+svare	verb	obt_tiaar	2000-2009	perf-part	34609.9556	0.0418
+svare	verb	obt_tiaar	2000-2009	imp	5878.8034	0.0071
+svare	verb	obt_tiaar	2010-2019	inf	162814.0408	0.1741
+svare	verb	obt_tiaar	2010-2019	pres	213641.8960	0.2284
+svare	verb	obt_tiaar	2010-2019	pret	510537.0000	0.5459
+svare	verb	obt_tiaar	2010-2019	perf-part	40327.0714	0.0431
+svare	verb	obt_tiaar	2010-2019	imp	7875.2453	0.0084
+svare	verb	obt_tiaar	2020-2026	inf	11571.6267	0.1625
+svare	verb	obt_tiaar	2020-2026	pres	19380.0000	0.2721
+svare	verb	obt_tiaar	2020-2026	pret	36347.3793	0.5103
+svare	verb	obt_tiaar	2020-2026	perf-part	3645.5072	0.0512
+svare	verb	obt_tiaar	2020-2026	imp	281.1467	0.0039
+svare	verb	obt_fast	1950-1959	inf	29108.6185	0.1343
+svare	verb	obt_fast	1950-1959	pres	48423.5150	0.2234
+svare	verb	obt_fast	1950-1959	pret	132086.5425	0.6095
+svare	verb	obt_fast	1950-1959	perf-part	6239.3684	0.0288
+svare	verb	obt_fast	1950-1959	imp	858.2157	0.0040
+svare	verb	obt_fast	1960-1969	inf	33834.6506	0.1487
+svare	verb	obt_fast	1960-1969	pres	58617.8870	0.2576
+svare	verb	obt_fast	1960-1969	pret	127621.1049	0.5609
+svare	verb	obt_fast	1960-1969	perf-part	6335.3110	0.0278
+svare	verb	obt_fast	1960-1969	imp	1119.6667	0.0049
+svare	verb	obt_fast	1970-1979	inf	52698.8434	0.1590
+svare	verb	obt_fast	1970-1979	pres	90253.4086	0.2724
+svare	verb	obt_fast	1970-1979	pret	175398.1176	0.5293
+svare	verb	obt_fast	1970-1979	perf-part	10791.3876	0.0326
+svare	verb	obt_fast	1970-1979	imp	2211.3137	0.0067
+svare	verb	obt_fast	1980-1989	inf	65096.1687	0.1689
+svare	verb	obt_fast	1980-1989	pres	108578.9236	0.2817
+svare	verb	obt_fast	1980-1989	pret	193250.6934	0.5013
+svare	verb	obt_fast	1980-1989	perf-part	15512.0383	0.0402
+svare	verb	obt_fast	1980-1989	imp	3059.8235	0.0079
+svare	verb	obt_fast	1990-1999	inf	133820.1365	0.1712
+svare	verb	obt_fast	1990-1999	pres	209663.2957	0.2683
+svare	verb	obt_fast	1990-1999	pret	401182.1176	0.5134
+svare	verb	obt_fast	1990-1999	perf-part	30355.2344	0.0388
+svare	verb	obt_fast	1990-1999	imp	6475.0392	0.0083
+svare	verb	obt_fast	2000-2009	inf	145995.0924	0.1710
+svare	verb	obt_fast	2000-2009	pres	222804.9967	0.2610
+svare	verb	obt_fast	2000-2009	pret	444626.3046	0.5208
+svare	verb	obt_fast	2000-2009	perf-part	33533.5694	0.0393
+svare	verb	obt_fast	2000-2009	imp	6743.3333	0.0079
+svare	verb	obt_fast	2010-2019	inf	150853.6386	0.1555
+svare	verb	obt_fast	2010-2019	pres	212742.2990	0.2193
+svare	verb	obt_fast	2010-2019	pret	567742.7722	0.5854
+svare	verb	obt_fast	2010-2019	perf-part	32416.0191	0.0334
+svare	verb	obt_fast	2010-2019	imp	6138.0588	0.0063
+svare	verb	obt_fast	2020-2026	inf	10644.6908	0.1433
+svare	verb	obt_fast	2020-2026	pres	19186.8439	0.2583
+svare	verb	obt_fast	2020-2026	pret	41863.6857	0.5636
+svare	verb	obt_fast	2020-2026	perf-part	2166.3732	0.0292
+svare	verb	obt_fast	2020-2026	imp	413.4510	0.0056
+svare	verb	decomposer	1950-1959	inf	32071.0000	0.1163
+svare	verb	decomposer	1950-1959	pres	48822.9763	0.1770
+svare	verb	decomposer	1950-1959	pret	158370.0000	0.5741
+svare	verb	decomposer	1950-1959	perf-part	36223.0000	0.1313
+svare	verb	decomposer	1950-1959	imp	378.3440	0.0014
+svare	verb	decomposer	1960-1969	inf	37278.0000	0.1303
+svare	verb	decomposer	1960-1969	pres	58697.9802	0.2051
+svare	verb	decomposer	1960-1969	pret	153016.0000	0.5348
+svare	verb	decomposer	1960-1969	perf-part	36780.0000	0.1285
+svare	verb	decomposer	1960-1969	imp	350.4464	0.0012
+svare	verb	decomposer	1970-1979	inf	58062.0000	0.1387
+svare	verb	decomposer	1970-1979	pres	86920.0240	0.2076
+svare	verb	decomposer	1970-1979	pret	210300.0000	0.5024
+svare	verb	decomposer	1970-1979	perf-part	62650.0000	0.1497
+svare	verb	decomposer	1970-1979	imp	684.0583	0.0016
+svare	verb	decomposer	1980-1989	inf	71721.0000	0.1431
+svare	verb	decomposer	1980-1989	pres	106349.0427	0.2122
+svare	verb	decomposer	1980-1989	pret	231705.0000	0.4623
+svare	verb	decomposer	1980-1989	perf-part	90056.0000	0.1797
+svare	verb	decomposer	1980-1989	imp	1415.5222	0.0028
+svare	verb	decomposer	1990-1999	inf	147439.0000	0.1458
+svare	verb	decomposer	1990-1999	pres	204908.4167	0.2026
+svare	verb	decomposer	1990-1999	pret	481012.0000	0.4756
+svare	verb	decomposer	1990-1999	perf-part	176229.0000	0.1742
+svare	verb	decomposer	1990-1999	imp	1854.2163	0.0018
+svare	verb	decomposer	2000-2009	inf	160853.0000	0.1469
+svare	verb	decomposer	2000-2009	pres	205438.3645	0.1876
+svare	verb	decomposer	2000-2009	pret	533101.0000	0.4868
+svare	verb	decomposer	2000-2009	perf-part	194681.0000	0.1778
+svare	verb	decomposer	2000-2009	imp	1073.4169	0.0010
+svare	verb	decomposer	2010-2019	inf	166206.0000	0.1372
+svare	verb	decomposer	2010-2019	pres	176076.6922	0.1453
+svare	verb	decomposer	2010-2019	pret	680716.0000	0.5618
+svare	verb	decomposer	2010-2019	perf-part	188193.0000	0.1553
+svare	verb	decomposer	2010-2019	imp	560.6249	0.0005
+svare	verb	decomposer	2020-2026	inf	11728.0000	0.1300
+svare	verb	decomposer	2020-2026	pres	15674.5584	0.1738
+svare	verb	decomposer	2020-2026	pret	50194.0000	0.5565
+svare	verb	decomposer	2020-2026	perf-part	12577.0000	0.1394
+svare	verb	decomposer	2020-2026	imp	19.0561	0.0002
+svare	verb	naiv	1950-1959	inf	32071.0000	0.1004
+svare	verb	naiv	1950-1959	pres	48911.0000	0.1532
+svare	verb	naiv	1950-1959	pret	158370.0000	0.4959
+svare	verb	naiv	1950-1959	perf-part	36223.0000	0.1134
+svare	verb	naiv	1950-1959	imp	43769.0000	0.1371
+svare	verb	naiv	1960-1969	inf	37278.0000	0.1086
+svare	verb	naiv	1960-1969	pres	59208.0000	0.1724
+svare	verb	naiv	1960-1969	pret	153016.0000	0.4456
+svare	verb	naiv	1960-1969	perf-part	36780.0000	0.1071
+svare	verb	naiv	1960-1969	imp	57103.0000	0.1663
+svare	verb	naiv	1970-1979	inf	58062.0000	0.1085
+svare	verb	naiv	1970-1979	pres	91162.0000	0.1704
+svare	verb	naiv	1970-1979	pret	210300.0000	0.3931
+svare	verb	naiv	1970-1979	perf-part	62650.0000	0.1171
+svare	verb	naiv	1970-1979	imp	112777.0000	0.2108
+svare	verb	naiv	1980-1989	inf	71721.0000	0.1088
+svare	verb	naiv	1980-1989	pres	109672.0000	0.1664
+svare	verb	naiv	1980-1989	pret	231705.0000	0.3515
+svare	verb	naiv	1980-1989	perf-part	90056.0000	0.1366
+svare	verb	naiv	1980-1989	imp	156051.0000	0.2367
+svare	verb	naiv	1990-1999	inf	147439.0000	0.1095
+svare	verb	naiv	1990-1999	pres	211774.0000	0.1573
+svare	verb	naiv	1990-1999	pret	481012.0000	0.3572
+svare	verb	naiv	1990-1999	perf-part	176229.0000	0.1309
+svare	verb	naiv	1990-1999	imp	330227.0000	0.2452
+svare	verb	naiv	2000-2009	inf	160853.0000	0.1104
+svare	verb	naiv	2000-2009	pres	225048.0000	0.1544
+svare	verb	naiv	2000-2009	pret	533101.0000	0.3657
+svare	verb	naiv	2000-2009	perf-part	194681.0000	0.1336
+svare	verb	naiv	2000-2009	imp	343910.0000	0.2359
+svare	verb	naiv	2010-2019	inf	166206.0000	0.1063
+svare	verb	naiv	2010-2019	pres	214884.0000	0.1375
+svare	verb	naiv	2010-2019	pret	680716.0000	0.4355
+svare	verb	naiv	2010-2019	perf-part	188193.0000	0.1204
+svare	verb	naiv	2010-2019	imp	313041.0000	0.2003
+svare	verb	naiv	2020-2026	inf	11728.0000	0.1020
+svare	verb	naiv	2020-2026	pres	19380.0000	0.1686
+svare	verb	naiv	2020-2026	pret	50194.0000	0.4366
+svare	verb	naiv	2020-2026	perf-part	12577.0000	0.1094
+svare	verb	naiv	2020-2026	imp	21086.0000	0.1834
+sette	verb	obt_tiaar	1950-1959	inf	96105.0543	0.3110
+sette	verb	obt_tiaar	1950-1959	pres	67328.9937	0.2178
+sette	verb	obt_tiaar	1950-1959	pret	107034.5705	0.3463
+sette	verb	obt_tiaar	1950-1959	perf-part	38597.0108	0.1249
+sette	verb	obt_tiaar	1950-1959	imp	0.0000	0.0000
+sette	verb	obt_tiaar	1960-1969	inf	109410.8642	0.2745
+sette	verb	obt_tiaar	1960-1969	pres	77376.9552	0.1941
+sette	verb	obt_tiaar	1960-1969	pret	94446.1943	0.2369
+sette	verb	obt_tiaar	1960-1969	perf-part	117420.4254	0.2945
+sette	verb	obt_tiaar	1960-1969	imp	0.0000	0.0000
+sette	verb	obt_tiaar	1970-1979	inf	190630.3141	0.3696
+sette	verb	obt_tiaar	1970-1979	pres	128374.8978	0.2489
+sette	verb	obt_tiaar	1970-1979	pret	104324.2105	0.2022
+sette	verb	obt_tiaar	1970-1979	perf-part	91240.6349	0.1769
+sette	verb	obt_tiaar	1970-1979	imp	1249.9286	0.0024
+sette	verb	obt_tiaar	1980-1989	inf	253721.7627	0.3647
+sette	verb	obt_tiaar	1980-1989	pres	158765.7260	0.2282
+sette	verb	obt_tiaar	1980-1989	pret	112908.8889	0.1623
+sette	verb	obt_tiaar	1980-1989	perf-part	170208.2478	0.2447
+sette	verb	obt_tiaar	1980-1989	imp	0.0000	0.0000
+sette	verb	obt_tiaar	1990-1999	inf	564347.6054	0.3683
+sette	verb	obt_tiaar	1990-1999	pres	331628.1781	0.2164
+sette	verb	obt_tiaar	1990-1999	pret	339141.2131	0.2213
+sette	verb	obt_tiaar	1990-1999	perf-part	293688.9076	0.1916
+sette	verb	obt_tiaar	1990-1999	imp	3652.8833	0.0024
+sette	verb	obt_tiaar	2000-2009	inf	556070.2411	0.3770
+sette	verb	obt_tiaar	2000-2009	pres	373869.0000	0.2534
+sette	verb	obt_tiaar	2000-2009	pret	283317.5130	0.1921
+sette	verb	obt_tiaar	2000-2009	perf-part	261878.6111	0.1775
+sette	verb	obt_tiaar	2000-2009	imp	0.0000	0.0000
+sette	verb	obt_tiaar	2010-2019	inf	503313.9863	0.2665
+sette	verb	obt_tiaar	2010-2019	pres	361258.6207	0.1913
+sette	verb	obt_tiaar	2010-2019	pret	515319.7044	0.2729
+sette	verb	obt_tiaar	2010-2019	perf-part	508622.9972	0.2693
+sette	verb	obt_tiaar	2010-2019	imp	0.0000	0.0000
+sette	verb	obt_tiaar	2020-2026	inf	35696.9804	0.2436
+sette	verb	obt_tiaar	2020-2026	pres	26710.7189	0.1823
+sette	verb	obt_tiaar	2020-2026	pret	48024.0583	0.3277
+sette	verb	obt_tiaar	2020-2026	perf-part	36102.2812	0.2464
+sette	verb	obt_tiaar	2020-2026	imp	0.0000	0.0000
+sette	verb	obt_fast	1950-1959	inf	99077.2071	0.2957
+sette	verb	obt_fast	1950-1959	pres	68198.8812	0.2035
+sette	verb	obt_fast	1950-1959	pret	105867.0354	0.3160
+sette	verb	obt_fast	1950-1959	perf-part	61785.1794	0.1844
+sette	verb	obt_fast	1950-1959	imp	121.8297	0.0004
+sette	verb	obt_fast	1960-1969	inf	119389.8074	0.3139
+sette	verb	obt_fast	1960-1969	pres	79470.3614	0.2090
+sette	verb	obt_fast	1960-1969	pret	96740.2524	0.2544
+sette	verb	obt_fast	1960-1969	perf-part	84547.4149	0.2223
+sette	verb	obt_fast	1960-1969	imp	150.8101	0.0004
+sette	verb	obt_fast	1970-1979	inf	191819.2215	0.3558
+sette	verb	obt_fast	1970-1979	pres	126506.6437	0.2346
+sette	verb	obt_fast	1970-1979	pret	105704.8113	0.1961
+sette	verb	obt_fast	1970-1979	perf-part	114820.3886	0.2130
+sette	verb	obt_fast	1970-1979	imp	293.7352	0.0005
+sette	verb	obt_fast	1980-1989	inf	252081.8218	0.3677
+sette	verb	obt_fast	1980-1989	pres	160147.4355	0.2336
+sette	verb	obt_fast	1980-1989	pret	110129.9764	0.1606
+sette	verb	obt_fast	1980-1989	perf-part	162843.5383	0.2375
+sette	verb	obt_fast	1980-1989	imp	398.6528	0.0006
+sette	verb	obt_fast	1990-1999	inf	535834.8917	0.3462
+sette	verb	obt_fast	1990-1999	pres	344210.3442	0.2224
+sette	verb	obt_fast	1990-1999	pret	342382.0307	0.2212
+sette	verb	obt_fast	1990-1999	perf-part	324374.9486	0.2096
+sette	verb	obt_fast	1990-1999	imp	817.5555	0.0005
+sette	verb	obt_fast	2000-2009	inf	543662.8812	0.3634
+sette	verb	obt_fast	2000-2009	pres	380375.4217	0.2543
+sette	verb	obt_fast	2000-2009	pret	282193.0660	0.1886
+sette	verb	obt_fast	2000-2009	perf-part	288754.8389	0.1930
+sette	verb	obt_fast	2000-2009	imp	879.1881	0.0006
+sette	verb	obt_fast	2010-2019	inf	491464.9679	0.2813
+sette	verb	obt_fast	2010-2019	pres	357500.8606	0.2046
+sette	verb	obt_fast	2010-2019	pret	515347.4316	0.2950
+sette	verb	obt_fast	2010-2019	perf-part	382091.7349	0.2187
+sette	verb	obt_fast	2010-2019	imp	797.9981	0.0005
+sette	verb	obt_fast	2020-2026	inf	35036.8780	0.2543
+sette	verb	obt_fast	2020-2026	pres	26417.1945	0.1917
+sette	verb	obt_fast	2020-2026	pret	47813.8608	0.3470
+sette	verb	obt_fast	2020-2026	perf-part	28470.1760	0.2066
+sette	verb	obt_fast	2020-2026	imp	53.9658	0.0004
+sette	verb	decomposer	1950-1959	inf	105064.0000	0.2563
+sette	verb	decomposer	1950-1959	pres	69310.1455	0.1691
+sette	verb	decomposer	1950-1959	pret	110289.0000	0.2690
+sette	verb	decomposer	1950-1959	perf-part	122897.7827	0.2998
+sette	verb	decomposer	1950-1959	imp	2396.9535	0.0058
+sette	verb	decomposer	1960-1969	inf	126604.0000	0.2632
+sette	verb	decomposer	1960-1969	pres	80758.8641	0.1679
+sette	verb	decomposer	1960-1969	pret	100781.0000	0.2095
+sette	verb	decomposer	1960-1969	perf-part	169938.8253	0.3533
+sette	verb	decomposer	1960-1969	imp	2877.3003	0.0060
+sette	verb	decomposer	1970-1979	inf	203410.0000	0.3038
+sette	verb	decomposer	1970-1979	pres	128572.5464	0.1921
+sette	verb	decomposer	1970-1979	pret	110120.0000	0.1645
+sette	verb	decomposer	1970-1979	perf-part	223325.3855	0.3336
+sette	verb	decomposer	1970-1979	imp	4033.2947	0.0060
+sette	verb	decomposer	1980-1989	inf	267314.0000	0.3107
+sette	verb	decomposer	1980-1989	pres	162969.1435	0.1894
+sette	verb	decomposer	1980-1989	pret	114730.0000	0.1334
+sette	verb	decomposer	1980-1989	perf-part	309947.8200	0.3603
+sette	verb	decomposer	1980-1989	imp	5315.1579	0.0062
+sette	verb	decomposer	1990-1999	inf	568213.0000	0.2915
+sette	verb	decomposer	1990-1999	pres	350354.6888	0.1798
+sette	verb	decomposer	1990-1999	pret	356683.0000	0.1830
+sette	verb	decomposer	1990-1999	perf-part	662322.9808	0.3398
+sette	verb	decomposer	1990-1999	imp	11511.5299	0.0059
+sette	verb	decomposer	2000-2009	inf	576514.0000	0.3212
+sette	verb	decomposer	2000-2009	pres	387255.8967	0.2158
+sette	verb	decomposer	2000-2009	pret	293980.0000	0.1638
+sette	verb	decomposer	2000-2009	perf-part	526264.0062	0.2932
+sette	verb	decomposer	2000-2009	imp	10873.1299	0.0061
+sette	verb	decomposer	2010-2019	inf	521162.0000	0.2422
+sette	verb	decomposer	2010-2019	pres	364080.6601	0.1692
+sette	verb	decomposer	2010-2019	pret	536873.0000	0.2495
+sette	verb	decomposer	2010-2019	perf-part	716775.8251	0.3331
+sette	verb	decomposer	2010-2019	imp	13167.3037	0.0061
+sette	verb	decomposer	2020-2026	inf	37154.0000	0.2189
+sette	verb	decomposer	2020-2026	pres	26905.9964	0.1585
+sette	verb	decomposer	2020-2026	pret	49811.0000	0.2934
+sette	verb	decomposer	2020-2026	perf-part	54872.8651	0.3232
+sette	verb	decomposer	2020-2026	imp	1017.3717	0.0060
+sette	verb	naiv	1950-1959	inf	105064.0000	0.1539
+sette	verb	naiv	1950-1959	pres	69515.0000	0.1018
+sette	verb	naiv	1950-1959	pret	110289.0000	0.1616
+sette	verb	naiv	1950-1959	perf-part	201724.0000	0.2955
+sette	verb	naiv	1950-1959	imp	195963.0000	0.2871
+sette	verb	naiv	1960-1969	inf	126604.0000	0.1531
+sette	verb	naiv	1960-1969	pres	81004.0000	0.0979
+sette	verb	naiv	1960-1969	pret	100781.0000	0.1219
+sette	verb	naiv	1960-1969	perf-part	276041.0000	0.3338
+sette	verb	naiv	1960-1969	imp	242578.0000	0.2933
+sette	verb	naiv	1970-1979	inf	203410.0000	0.1577
+sette	verb	naiv	1970-1979	pres	128948.0000	0.1000
+sette	verb	naiv	1970-1979	pret	110120.0000	0.0854
+sette	verb	naiv	1970-1979	perf-part	374880.0000	0.2906
+sette	verb	naiv	1970-1979	imp	472473.0000	0.3663
+sette	verb	naiv	1980-1989	inf	267314.0000	0.1556
+sette	verb	naiv	1980-1989	pres	163238.0000	0.0950
+sette	verb	naiv	1980-1989	pret	114730.0000	0.0668
+sette	verb	naiv	1980-1989	perf-part	531672.0000	0.3094
+sette	verb	naiv	1980-1989	imp	641233.0000	0.3732
+sette	verb	naiv	1990-1999	inf	568213.0000	0.1557
+sette	verb	naiv	1990-1999	pres	350853.0000	0.0961
+sette	verb	naiv	1990-1999	pret	356683.0000	0.0977
+sette	verb	naiv	1990-1999	perf-part	1059060.0000	0.2902
+sette	verb	naiv	1990-1999	imp	1315038.0000	0.3603
+sette	verb	naiv	2000-2009	inf	576514.0000	0.1595
+sette	verb	naiv	2000-2009	pres	387716.0000	0.1072
+sette	verb	naiv	2000-2009	pret	293980.0000	0.0813
+sette	verb	naiv	2000-2009	perf-part	942763.0000	0.2608
+sette	verb	naiv	2000-2009	imp	1414174.0000	0.3912
+sette	verb	naiv	2010-2019	inf	521162.0000	0.1318
+sette	verb	naiv	2010-2019	pres	364400.0000	0.0922
+sette	verb	naiv	2010-2019	pret	536873.0000	0.1358
+sette	verb	naiv	2010-2019	perf-part	1247501.0000	0.3155
+sette	verb	naiv	2010-2019	imp	1283580.0000	0.3247
+sette	verb	naiv	2020-2026	inf	37154.0000	0.1265
+sette	verb	naiv	2020-2026	pres	26927.0000	0.0917
+sette	verb	naiv	2020-2026	pret	49811.0000	0.1696
+sette	verb	naiv	2020-2026	perf-part	92953.0000	0.3165
+sette	verb	naiv	2020-2026	imp	86804.0000	0.2956
+bygge	verb	obt_tiaar	1950-1959	inf	45787.0000	0.2398
+bygge	verb	obt_tiaar	1950-1959	pres	26336.9207	0.1379
+bygge	verb	obt_tiaar	1950-1959	pret/perf-part	118194.2044	0.6190
+bygge	verb	obt_tiaar	1950-1959	imp	631.6339	0.0033
+bygge	verb	obt_tiaar	1960-1969	inf	57144.0000	0.2484
+bygge	verb	obt_tiaar	1960-1969	pres	37236.7533	0.1618
+bygge	verb	obt_tiaar	1960-1969	pret/perf-part	135109.2242	0.5872
+bygge	verb	obt_tiaar	1960-1969	imp	593.5446	0.0026
+bygge	verb	obt_tiaar	1970-1979	inf	105061.0000	0.2740
+bygge	verb	obt_tiaar	1970-1979	pres	85538.1091	0.2231
+bygge	verb	obt_tiaar	1970-1979	pret/perf-part	191702.5436	0.5000
+bygge	verb	obt_tiaar	1970-1979	imp	1103.3125	0.0029
+bygge	verb	obt_tiaar	1980-1989	inf	139669.0000	0.2693
+bygge	verb	obt_tiaar	1980-1989	pres	113286.6740	0.2185
+bygge	verb	obt_tiaar	1980-1989	pret/perf-part	264381.9334	0.5098
+bygge	verb	obt_tiaar	1980-1989	imp	1251.8839	0.0024
+bygge	verb	obt_tiaar	1990-1999	inf	275433.0000	0.2727
+bygge	verb	obt_tiaar	1990-1999	pres	235395.0925	0.2330
+bygge	verb	obt_tiaar	1990-1999	pret/perf-part	496781.9439	0.4918
+bygge	verb	obt_tiaar	1990-1999	imp	2496.2946	0.0025
+bygge	verb	obt_tiaar	2000-2009	inf	278053.0000	0.2971
+bygge	verb	obt_tiaar	2000-2009	pres	220994.9268	0.2361
+bygge	verb	obt_tiaar	2000-2009	pret/perf-part	434354.9027	0.4641
+bygge	verb	obt_tiaar	2000-2009	imp	2573.3036	0.0027
+bygge	verb	obt_tiaar	2010-2019	inf	244932.0000	0.2906
+bygge	verb	obt_tiaar	2010-2019	pres	168457.3084	0.1998
+bygge	verb	obt_tiaar	2010-2019	pret/perf-part	427498.4376	0.5071
+bygge	verb	obt_tiaar	2010-2019	imp	2074.0179	0.0025
+bygge	verb	obt_tiaar	2020-2026	inf	18712.0000	0.2995
+bygge	verb	obt_tiaar	2020-2026	pres	10058.5639	0.1610
+bygge	verb	obt_tiaar	2020-2026	pret/perf-part	33540.3460	0.5368
+bygge	verb	obt_tiaar	2020-2026	imp	169.7679	0.0027
+bygge	verb	obt_fast	1950-1959	inf	45787.0000	0.2398
+bygge	verb	obt_fast	1950-1959	pres	26336.9207	0.1379
+bygge	verb	obt_fast	1950-1959	pret/perf-part	118194.2044	0.6190
+bygge	verb	obt_fast	1950-1959	imp	631.6339	0.0033
+bygge	verb	obt_fast	1960-1969	inf	57144.0000	0.2532
+bygge	verb	obt_fast	1960-1969	pres	37236.7533	0.1650
+bygge	verb	obt_fast	1960-1969	pret/perf-part	130739.5675	0.5792
+bygge	verb	obt_fast	1960-1969	imp	593.5446	0.0026
+bygge	verb	obt_fast	1970-1979	inf	105061.0000	0.2796
+bygge	verb	obt_fast	1970-1979	pres	87284.5242	0.2323
+bygge	verb	obt_fast	1970-1979	pret/perf-part	182399.2506	0.4855
+bygge	verb	obt_fast	1970-1979	imp	945.6964	0.0025
+bygge	verb	obt_fast	1980-1989	inf	139669.0000	0.2718
+bygge	verb	obt_fast	1980-1989	pres	113286.6740	0.2205
+bygge	verb	obt_fast	1980-1989	pret/perf-part	259657.5571	0.5053
+bygge	verb	obt_fast	1980-1989	imp	1251.8839	0.0024
+bygge	verb	obt_fast	1990-1999	inf	275433.0000	0.2772
+bygge	verb	obt_fast	1990-1999	pres	235395.0925	0.2369
+bygge	verb	obt_fast	1990-1999	pret/perf-part	480282.3113	0.4834
+bygge	verb	obt_fast	1990-1999	imp	2496.2946	0.0025
+bygge	verb	obt_fast	2000-2009	inf	278053.0000	0.2808
+bygge	verb	obt_fast	2000-2009	pres	224140.2291	0.2263
+bygge	verb	obt_fast	2000-2009	pret/perf-part	485563.0630	0.4903
+bygge	verb	obt_fast	2000-2009	imp	2573.3036	0.0026
+bygge	verb	obt_fast	2010-2019	inf	244932.0000	0.2929
+bygge	verb	obt_fast	2010-2019	pres	168457.3084	0.2014
+bygge	verb	obt_fast	2010-2019	pret/perf-part	420869.7389	0.5032
+bygge	verb	obt_fast	2010-2019	imp	2074.0179	0.0025
+bygge	verb	obt_fast	2020-2026	inf	18712.0000	0.2978
+bygge	verb	obt_fast	2020-2026	pres	10058.5639	0.1601
+bygge	verb	obt_fast	2020-2026	pret/perf-part	33900.0800	0.5395
+bygge	verb	obt_fast	2020-2026	imp	169.7679	0.0027
+bygge	verb	decomposer	1950-1959	inf	45787.0000	0.2712
+bygge	verb	decomposer	1950-1959	pres	24863.2088	0.1473
+bygge	verb	decomposer	1950-1959	pret/perf-part	94289.8924	0.5585
+bygge	verb	decomposer	1950-1959	imp	3898.0113	0.0231
+bygge	verb	decomposer	1960-1969	inf	57144.0000	0.2702
+bygge	verb	decomposer	1960-1969	pres	36106.5402	0.1707
+bygge	verb	decomposer	1960-1969	pret/perf-part	114860.6191	0.5432
+bygge	verb	decomposer	1960-1969	imp	3358.9079	0.0159
+bygge	verb	decomposer	1970-1979	inf	105061.0000	0.2896
+bygge	verb	decomposer	1970-1979	pres	85959.2487	0.2369
+bygge	verb	decomposer	1970-1979	pret/perf-part	166447.3537	0.4588
+bygge	verb	decomposer	1970-1979	imp	5306.7968	0.0146
+bygge	verb	decomposer	1980-1989	inf	139669.0000	0.2786
+bygge	verb	decomposer	1980-1989	pres	111254.3510	0.2219
+bygge	verb	decomposer	1980-1989	pret/perf-part	243537.7086	0.4857
+bygge	verb	decomposer	1980-1989	imp	6914.2030	0.0138
+bygge	verb	decomposer	1990-1999	inf	275433.0000	0.2822
+bygge	verb	decomposer	1990-1999	pres	231644.2801	0.2374
+bygge	verb	decomposer	1990-1999	pret/perf-part	454953.1002	0.4662
+bygge	verb	decomposer	1990-1999	imp	13925.0788	0.0143
+bygge	verb	decomposer	2000-2009	inf	278053.0000	0.2858
+bygge	verb	decomposer	2000-2009	pres	218627.3360	0.2248
+bygge	verb	decomposer	2000-2009	pret/perf-part	461465.6064	0.4744
+bygge	verb	decomposer	2000-2009	imp	14588.2945	0.0150
+bygge	verb	decomposer	2010-2019	inf	244932.0000	0.2975
+bygge	verb	decomposer	2010-2019	pres	160181.2483	0.1946
+bygge	verb	decomposer	2010-2019	pret/perf-part	406621.5370	0.4939
+bygge	verb	decomposer	2010-2019	imp	11494.2161	0.0140
+bygge	verb	decomposer	2020-2026	inf	18712.0000	0.3082
+bygge	verb	decomposer	2020-2026	pres	9235.7441	0.1521
+bygge	verb	decomposer	2020-2026	pret/perf-part	31778.6175	0.5235
+bygge	verb	decomposer	2020-2026	imp	978.6885	0.0161
+bygge	verb	naiv	1950-1959	inf	45787.0000	0.1962
+bygge	verb	naiv	1950-1959	pres	27299.0000	0.1170
+bygge	verb	naiv	1950-1959	pret/perf-part	136720.0000	0.5858
+bygge	verb	naiv	1950-1959	imp	23581.0000	0.1010
+bygge	verb	naiv	1960-1969	inf	57144.0000	0.2126
+bygge	verb	naiv	1960-1969	pres	38597.0000	0.1436
+bygge	verb	naiv	1960-1969	pret/perf-part	150844.0000	0.5613
+bygge	verb	naiv	1960-1969	imp	22159.0000	0.0825
+bygge	verb	naiv	1970-1979	inf	105061.0000	0.2389
+bygge	verb	naiv	1970-1979	pres	90473.0000	0.2057
+bygge	verb	naiv	1970-1979	pret/perf-part	208954.0000	0.4751
+bygge	verb	naiv	1970-1979	imp	35306.0000	0.0803
+bygge	verb	naiv	1980-1989	inf	139669.0000	0.2319
+bygge	verb	naiv	1980-1989	pres	117425.0000	0.1950
+bygge	verb	naiv	1980-1989	pret/perf-part	298366.0000	0.4955
+bygge	verb	naiv	1980-1989	imp	46737.0000	0.0776
+bygge	verb	naiv	1990-1999	inf	275433.0000	0.2364
+bygge	verb	naiv	1990-1999	pres	243994.0000	0.2094
+bygge	verb	naiv	1990-1999	pret/perf-part	552394.0000	0.4742
+bygge	verb	naiv	1990-1999	imp	93195.0000	0.0800
+bygge	verb	naiv	2000-2009	inf	278053.0000	0.2395
+bygge	verb	naiv	2000-2009	pres	232328.0000	0.2001
+bygge	verb	naiv	2000-2009	pret/perf-part	554678.0000	0.4777
+bygge	verb	naiv	2000-2009	imp	96070.0000	0.0827
+bygge	verb	naiv	2010-2019	inf	244932.0000	0.2517
+bygge	verb	naiv	2010-2019	pres	174611.0000	0.1794
+bygge	verb	naiv	2010-2019	pret/perf-part	476255.0000	0.4894
+bygge	verb	naiv	2010-2019	imp	77430.0000	0.0796
+bygge	verb	naiv	2020-2026	inf	18712.0000	0.2531
+bygge	verb	naiv	2020-2026	pres	10426.0000	0.1411
+bygge	verb	naiv	2020-2026	pret/perf-part	38441.0000	0.5201
+bygge	verb	naiv	2020-2026	imp	6338.0000	0.0857
