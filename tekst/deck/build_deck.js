@@ -322,10 +322,21 @@ body(s, bullets(["70 år med årlige rangeringer, ikke ett tverrsnitt", "Alle se
 s.addNotes("Fulle referanser i rapport_verbtyper.md §7.1, sjekket 2026-11-21. Karlsson 1986: ZPSK 39(1), 19–28. Arppe 2006: festskrift for Karlsson, 175–189. Janda & Lyashevskaya 2011: Cognitive Linguistics 22(4), 717–762. Milin, Filipović Đurđević & Moscoso del Prado Martín 2009: Journal of Memory and Language 60(1), 50–64 (relativ entropi mellom leksemets og klassens profil, serbisk). «Paradigms bit by bit» er et annet arbeid: Milin, Kuperman, Kostić & Baayen 2009 i Blevins & Blevins (red.), Analogy in Grammar, OUP.");
 
 // 14 Oppsummering
-s = pres.addSlide({ masterName: "TITTEL", sectionTitle: "Avslutning" });
+s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Avslutning" });
 s.addText("Bøyningsprofiler er leksikalske — og stabile", { placeholder: "title" });
-s.addText("1  Verb fordeler seg på seks profiltyper som speiler aksjonsart\n2  Rangeringen holder seg uendret over 70 år\n3  Stabile profiler gjør det mulig å fordele flertydige former på leksemer\n[Substantivfunn og valideringsresultat settes inn]", { placeholder: "body" });
-s.addNotes("Oppsummeringen er et utkast; punkt 3 forutsetter at valideringen (lysbilde 12) gir et akseptabelt resultat.");
+[
+  ["Hvert leksem har sin favorittform", "Alle seks rekkefølger av inf / pres / pret finnes blant 580 verb. Substantiv skiller seg først på tall, så på bestemthet."],
+  ["Profilene står stille i 70 år", "Samme form på topp i alle 71 år for 46 % av verbene og 53 % av substantivene (bokkorpuset 1950–2020)."],
+  ["Profilene kan brukes baklengs", "Flertydige former fordeles på leksemer uten tagget korpus: riktig hovedleksem i om lag 4 av 5 tilfeller. «dør» er 64 % substantiv, og dø blir type 2A."],
+  ["Andelene er usikre", "±10–15 pp. Metoden trenger entydige former i paradigmet og svikter når de mangler (et fiske, døde) eller når sjeldne ordbokshomografer får for stor vekt."],
+].forEach(([head, text], i) => {
+  const x = MX + (i % 2) * 6.2, y = 1.55 + Math.floor(i / 2) * 2.7, w = 5.9, h = 2.45;
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.12, fill: { color: i === 3 ? C.background1 : C.background2 }, line: i === 3 ? { color: HEX.accent3, width: 1.5, dashType: "dash" } : undefined, objectName: `funn ${i + 1}` });
+  s.addText(String(i + 1), { shape: pres.shapes.OVAL, x: x + 0.3, y: y + 0.3, w: 0.6, h: 0.6, fontSize: 20, bold: true, align: "center", valign: "middle", margin: 0, color: C.background1, fill: { color: i === 3 ? C.text2 : C.accent1 }, objectName: `nummer ${i + 1}` });
+  s.addText(head, { x: x + 1.1, y: y + 0.28, w: w - 1.35, h: 0.65, fontSize: 21, bold: true, color: C.text1, valign: "middle", margin: 0, isTextBox: true });
+  s.addText(text, { x: x + 1.1, y: y + 1.0, w: w - 1.35, h: h - 1.2, fontSize: 15, color: C.text2, valign: "top", margin: 0, isTextBox: true });
+});
+s.addNotes("1: lysbilde 6–8 (rapport_verbtyper.md §3, rapport_substantivtyper.md §3). 2: lysbilde 8 og rapportenes §4; 46 % = 260 av 569 Sett A-verb belagt alle 71 år, 53 % = 2 314 av 4 355 substantiv. 3: lysbilde 10–12; ca. 80 % riktig hovedleksem både med kunstige homografer (rapport_dekomponering_validering.md) og for former der alle kandidatene er modellert i det OBT-taggede korpuset (rapport_dekomponering_obt.md §9). 4: et fiske har ingen entydige former (lysbilde 4); for døde er ankrene atypisk sjeldne; sjeldne adjektiv som grunn og bein får for mye. Hovedpoeng: profilene er en egenskap ved leksemet, og nettopp derfor kan de brukes til å fordele rå n-gram.");
 
 (async () => {
   await pres.writeFile({ fileName: OUT });

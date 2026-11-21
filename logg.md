@@ -1265,3 +1265,21 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Nedvekte sjeldne ordbokshomografer, eller la grunnlaget styre (anbefaling 2–3 i OBT-rapporten).
 - Oppsummeringslysbildet.
+
+---
+
+## 2026-11-21 (del 53) — Oppsummeringslysbildet
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Lysbilde 15 «Bøyningsprofiler er leksikalske — og stabile» er skrevet om fra en plassholder til fire nummererte kort på innholdslayouten. Planen (rad 14) er oppdatert.
+  1. *Hvert leksem har sin favorittform:* alle seks rekkefølger blant 580 verb; substantiv skiller seg først på tall.
+  2. *Profilene står stille i 70 år:* samme toppform alle 71 år for 46 % av verbene og 53 % av substantivene.
+  3. *Profilene kan brukes baklengs:* riktig hovedleksem i om lag 4 av 5 tilfeller; «dør» 64 % substantiv; *dø* blir 2A.
+  4. *Andelene er usikre:* ±10–15 pp; metoden svikter uten entydige former eller når sjeldne ordbokshomografer får for stor vekt.
+- Talenotatet viser hvor hvert tall kommer fra.
+
+### Neste steg
+- Gå gjennom hele decket for UTKAST-merker og «mangler»-bokser som gjenstår.
+- Nedvekte sjeldne ordbokshomografer i dekomponereren (OBT-rapporten §9).
