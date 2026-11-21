@@ -1508,3 +1508,25 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Flere kontekster, f.eks. høyrekontekst (*tro på*, *dør av*), for å stramme inn usikkerheten.
 - Bruke bigrammer for adjektivandelen av «døde».
 - Teste usikkerheten på et utvalg som ikke er brukt til å kalibrere den.
+
+---
+
+## 2026-11-21 (del 61) — Infinitivstyrere: hva står foran infinitivene? (utforskende)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny gren `infinitiv-styrere` fra `main`.
+- Ny `sqlite/infinitiv_styrere.py`: bigrammene «styringsord + infinitiv» for 17 styringsord og 60 hyppige entydige verb (NB N-gram), profil per tiår og figur `tekst/figurer/infinitiv_styrere.png`. Resultater i `resultater/infinitiv_styrere.tsv`.
+- Nytt notat `rapport_infinitiv_styrere.md`.
+
+### Funn
+- 65 % av infinitivene står rett etter et styringsord, og *å* står for 61 % av dem.
+- Infinitivandelen er 33 % → 37 % (1990-tallet) → 34 %.
+  - Økningen fram til 1990 kommer fra *å* (+3,3 per 100 verbformer) og modalene i presens (+2,1).
+  - Nedgangen etter 1990 kommer fra de ustyrte infinitivene (−1,9) og modalene i presens (−1,0).
+  - Modalene i preteritum endrer seg lite.
+
+### Neste steg
+- Trigrammer (*vil ikke X*, *skal vi X*) for å skille avstand fra imperativ i «ustyrt».
+- Profil per verb, koblet til verbtypene.
