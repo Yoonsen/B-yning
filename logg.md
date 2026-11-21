@@ -1134,7 +1134,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-20 (del 45) — Adjektivet i «døde» (hull 5)
+## 2026-11-20 (del 47) — Adjektivet i «døde» (hull 5)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -1159,7 +1159,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-21 (del 46) — Referansene sjekket (hull 6)
+## 2026-11-21 (del 48) — Referansene sjekket (hull 6)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -1181,7 +1181,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-21 (del 47) — Figur av paradigmegrafen
+## 2026-11-21 (del 49) — Figur av paradigmegrafen
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -1208,7 +1208,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-21 (del 48) — Abstractet samkjørt med dataene
+## 2026-11-21 (del 50) — Abstractet samkjørt med dataene
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -1230,14 +1230,14 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-21 (del 49) — `main` flettet inn i `figurer-deck`
+## 2026-11-21 (del 51) — `main` flettet inn i `figurer-deck`
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
 ### Hva ble gjort
 - `origin/main` er flettet inn i `figurer-deck`, slik at PR 6 kan flettes uten konflikt. Det inkluderer PR 5 (`multitagger-oppsett`).
-- Eneste konflikt var `logg.md`: begge grenene hadde brukt del 21–24. Konflikten er løst ved å bruke `main` sin logg uendret. Oppføringene fra `figurer-deck` (adjektivet i «døde», referanser, paradigmegraf og abstract) er lagt til etter del 44 som **del 45–48**, slik del 44 ba om.
+- Eneste konflikt var `logg.md`: begge grenene hadde brukt del 21–24. Konflikten er løst ved å bruke `main` sin logg uendret. Oppføringene fra `figurer-deck` (adjektivet i «døde», referanser, paradigmegraf og abstract) er lagt til etter del 44 som **del 47–50**. Del 45 og 46 er holdt av til oppføringene på `stabilitet-obt-fordeling` og `korpus-utvidelse`, som ikke er flettet ennå.
 - Etter flettingen er det kontrollert at `python3 -m sqlite.decomposer dør --korpus book` gir de samme tallene som før (63,5 / 36,5 %).
 
 ### Åpent spørsmål
-- `rapport_dekomponering_obt.md` (del 42) ble kjørt før dekomponereren fikk adjektivankre (del 45). Gruppen «umodellert ≥ 5 %» består mest av former der OBT gir et adjektiv. De tallene vil trolig endre seg ved en ny kjøring av `python3 -m sqlite.valider_dekomponering_obt`. Rapporten er ikke endret; det bør avtales med den som skrev den.
+- `rapport_dekomponering_obt.md` (del 42) ble kjørt før dekomponereren fikk adjektivankre (del 47). Gruppen «umodellert ≥ 5 %» består mest av former der OBT gir et adjektiv. De tallene vil trolig endre seg ved en ny kjøring av `python3 -m sqlite.valider_dekomponering_obt`. Rapporten er ikke endret; det bør avtales med den som skrev den.
