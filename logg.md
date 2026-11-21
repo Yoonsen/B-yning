@@ -1513,12 +1513,33 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ## 2026-11-21 (del 60) — Lysbilde om «dør» og «tro» over tid
 
+---
+
+## 2026-11-21 (del 61) — Infinitivstyrere: hva står foran infinitivene? (utforskende)
+
 **Agent:** Claude Code (Claude Opus 5.5)
 
 ### Hva ble gjort
+<<<<<<< HEAD
+- Ny gren `infinitiv-styrere` fra `main`.
+- Ny `sqlite/infinitiv_styrere.py`: bigrammene «styringsord + infinitiv» for 17 styringsord og 60 hyppige entydige verb (NB N-gram), profil per tiår og figur `tekst/figurer/infinitiv_styrere.png`. Resultater i `resultater/infinitiv_styrere.tsv`.
+- Nytt notat `rapport_infinitiv_styrere.md`.
+
+### Funn
+- 65 % av infinitivene står rett etter et styringsord, og *å* står for 61 % av dem.
+- Infinitivandelen er 33 % → 37 % (1990-tallet) → 34 %.
+  - Økningen fram til 1990 kommer fra *å* (+3,3 per 100 verbformer) og modalene i presens (+2,1).
+  - Nedgangen etter 1990 kommer fra de ustyrte infinitivene (−1,9) og modalene i presens (−1,0).
+  - Modalene i preteritum endrer seg lite.
+
+### Neste steg
+- Trigrammer (*vil ikke X*, *skal vi X*) for å skille avstand fra imperativ i «ustyrt».
+- Profil per verb, koblet til verbtypene.
+=======
 - Ny gren `deck-dor-tro` fra `main` (etter PR 6).
 - `tekst/deck/build_deck.js`: nytt lysbilde 13 «Fra ordboka til kurven: «dør» og «tro»» i seksjonen Dekomponering, etter «fisker» over tid. Det viser `tekst/figurer/dor_tro_metoder.png` med én konklusjonslinje og talenotat med metode og valideringstall. Merket UTKAST til gjennomlesning.
 - Decket har nå 16 lysbilder. Planen har ny rad 11b.
 
 ### Neste steg
 - Brukeren leser gjennom decket søndag; møte mandag. Gjenstår: UTKAST-merkene på lysbildene om «dør» (11), «fisker» (12), «dør»/«tro» (13) og «Hva er nytt?» (15), og hvor mye av det utvidede korpuset som skal tagges.
+>>>>>>> origin/main
