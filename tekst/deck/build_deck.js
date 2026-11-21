@@ -159,17 +159,18 @@ s.addNotes("Fyll inn navn på foredragsholdere. Brikkene viser den dominerende f
 // 2 Spørsmålet
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Innledning" });
 s.addText("Hvert leksem har sin favorittform", { placeholder: "title" });
-status(s, "UTKAST");
-s.addText("Verb: inf / pres / pret", { x: MX, y: 1.5, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-chipRow(s, ["gikk 38 %", "går 34 %", "gå 28 %"], MX, 2.05);
-chipRow(s, ["vet 55 %", "visste 26 %", "vite 19 %"], MX, 2.75);
-body(s, [{ text: "Bokkorpuset 1950–2020. «går» inkluderer «i går».", options: {} }], MX, 3.4, 6, 0.4, 12);
-s.addText("Substantiv: ent ub / ent be / fl ub", { x: MX, y: 3.95, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-chipRow(s, ["epler 45 %", "eple 30 %", "eplet 11 %"], MX, 4.5);
-chipRow(s, ["bussen 42 %", "buss 37 %", "busser 15 %"], MX, 5.2);
-body(s, [{ text: "Andeler av alle fire former; bestemt flertall er ikke vist.", options: {} }], MX, 5.85, 6, 0.4, 12);
-body(s, [{ text: "Spørsmål: Hvor mye av fordelingen skyldes leksemet selv — og er den stabil over tid?", options: { bold: true, color: C.text1 } }], 7.2, 2.05, 5.5, 1.3, 20);
-s.addNotes("Verbtall fra rapport_verbtyper.md §4 (Sett B), substantivtall fra rapport_substantivtyper.md §5. OBS: abstractet sier at infinitiv «vite» dominerer (dataene: vet 55 % > visste 26 % > vite 19 %) og at «eple» dominerer (dataene: epler 45 % > eple 30 %; epla/eplene 14 % > eplet 11 %). Abstract og lysbilde må samkjøres. Alle formene til «buss» kolliderer med subst./verb «busse» i Ordbanken.");
+const CH2 = { w: 2.05, fontSize: 15 }; // lik bredde, så radene får plass ved siden av teksten
+s.addText("Verb: inf / pres / pret", { x: MX, y: 1.35, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
+chipRow(s, ["vurdere 70 %", "vurderer 21 %", "vurderte 9 %"], MX, 1.85, CH2);
+chipRow(s, ["vet 55 %", "visste 26 %", "vite 19 %"], MX, 2.5, CH2);
+chipRow(s, ["forsvant 54 %", "forsvinner 29 %", "forsvinne 18 %"], MX, 3.15, CH2);
+s.addText("Substantiv: andel av alle fire former", { x: MX, y: 4.0, w: 6.5, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
+chipRow(s, ["tid 63 %", "tiden/tida 30 %", "tider 6 %"], MX, 4.5, CH2);
+chipRow(s, ["sommeren 69 %", "sommer 26 %", "somre 3 %"], MX, 5.15, CH2);
+chipRow(s, ["epler 45 %", "eple 30 %", "eplet 11 %"], MX, 5.8, CH2);
+body(s, [{ text: "Spørsmål: Hvor mye av fordelingen skyldes leksemet selv — og er den stabil over tid?", options: { bold: true, color: C.text1 } }], 8.5, 1.85, 4.2, 1.6, 20);
+body(s, [{ text: "Alle seks har samme form på topp i alle 71 år (bokkorpuset 1950–2020).", options: {} }], 8.5, 3.6, 4.2, 0.9, 16);
+s.addNotes("Tall fra bokkorpuset 1950–2020: verb fra rapport_verbtyper.md §4, substantiv fra resultater/substantivtyper.tsv (rapport_substantivtyper.md §3–5). For substantiv vises ent ub, ent be og fl ub; bestemt flertall er utelatt (for eple er epla/eplene 14 %, mer enn eplet). vurdere, forsvinne, tid og sommer er helt entydige i Ordbanken. vite og eple er også rene i kjerneformene (sideformen veit = ei veit). Abstractet er samkjørt 2026-11-21: den innsendte versjonen hadde gikk, infinitiv vite, ubestemt entall eple og bussen. Dataene gir vet > visste > vite og epler > eple > eplet; gikk er på topp bare 70 % av årene og «går» inkluderer i går; alle formene til buss kolliderer med busse. Se abstract.md.");
 
 // 3 Data
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Innledning" });

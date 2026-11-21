@@ -600,3 +600,25 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Oppsummeringslysbildet (rad 14).
 - Samkjøre abstractet med dataene for *vite* og *eple*.
+
+---
+
+## 2026-11-21 (del 24) — Abstractet samkjørt med dataene
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `abstract.md`: revidert versjon øverst, med en endringstabell og den innsendte versjonen uendret nederst.
+- Lysbilde 2 har nye eksempler: tre verb og tre substantiv med ulik form på topp. Chipsene har lik bredde, og UTKAST-merket er fjernet. Talenotatet forklarer endringene. Planen er oppdatert.
+
+### Funn / beslutninger
+- *vite* og *eple* er beholdt med riktig retning: **vet** 55 % og **epler** 45 % er formene på topp, og begge har samme toppform alle 71 år.
+- *gå* er erstattet med *forsvinne* (pret 54 %, topp alle 71 år). *gikk* er på topp bare 70 % av årene, og «går» inkluderer *i går*.
+- *buss* er erstattet med *sommer* (ent be 69 %). Alle formene til *buss* kolliderer med *busse* i Ordbanken.
+- *vurdere* (inf 70 %) og *tid* (ent ub 63 %) er lagt til, slik at hver kategori har et eksempel.
+- Abstractet nevner nå valideringen (riktig hovedleksem i om lag fire av fem kunstige homografer).
+- Merk: den reviderte teksten er ikke sendt til konferansen. Om den skal brukes i programmet, må det avgjøres av forfatterne.
+
+### Neste steg
+- Oppsummeringslysbildet (rad 14).
+- Sjekke merge-konflikter og åpne pull requests (brukerens ønske).

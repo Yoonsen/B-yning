@@ -7,7 +7,7 @@ Arbeidsdokument for presentasjonen. Status per punkt: ✅ finnes i repoet, 🟡 
 | # | Lysbilde | Innhold | Kilde | Status |
 |---|---|---|---|---|
 | 1 | Tittel | Leksikalske bøyningsprofiler: ordboksdata og historiske n-gram | `abstract.md` | ✅ |
-| 2 | Spørsmålet | *gikk > gå/går*, men *vite > vet/visste*; *eple > eplet/epler*, men *bussen > buss/busser* | `abstract.md` | ✅ (trenger figur) |
+| 2 | Spørsmålet | *gikk > gå/går*, men *vite > vet/visste*; *eple > eplet/epler*, men *bussen > buss/busser* | `abstract.md` | ✅ samkjørt 2026-11-21 |
 | 3 | Data | Norsk Ordbank (paradigmer) + NB n-gram (former, 1950–2020) | `sqlite/build_db.py`, `sqlite/ngram.py` | ✅ |
 | 4 | Problemet: former ≠ leksemer | *fisker* = 4 analyser; paradigmegrafen: 87,4 % av lemmaene er isolert, 97,3 % i komponenter ≤ 4 | `sqlite/paradigm_graph.py`, rapport 7.3, `tekst/figurer/paradigmegraf_fisker.png` | ✅ |
 | 5 | Gullstandard | Sett A (N = 580 globalt POS-isolerte verb) / Sett B | rapport §2, `sqlite/verbtyper.py` | ✅ |
@@ -23,7 +23,7 @@ Arbeidsdokument for presentasjonen. Status per punkt: ✅ finnes i repoet, 🟡 
 
 ## Hull som må tettes (prioritert)
 
-1. ~~**Substantivresultatene mangler.**~~ Løst 2026-11-17: `rapport_substantivtyper.md` (N = 5 799). **Nytt:** abstractets eksempler stemmer ikke med dataene for *eple* (epler 45 % > eple 30 %) og *vite* (vet > visste > vite). Abstract/foredrag må samkjøres.
+1. ~~**Substantivresultatene mangler.**~~ Løst 2026-11-17: `rapport_substantivtyper.md` (N = 5 799). Abstract og lysbilde 2 er samkjørt med dataene 2026-11-21 (se `abstract.md`, endringstabell; innsendt versjon er bevart).
 2. ~~**Ingen ferdige figurer.**~~ Stort sett løst 2026-11-20: `python3 -m sqlite.figurer` lager (a) ternærplott, (b) tidsserier for *vurdere, undersøke, forsvinne, trenge* og (d) *fisker* over tid i `tekst/figurer/`. (c) *dø* og (e) enkeltbøker er native diagrammer i decket. (4) Paradigmegrafen rundt *fisker* er lagt til 2026-11-21 (`paradigmegraf_fisker.png`, lysbilde 4).
 3. ~~**Sett A-tallene kan ikke reproduseres fra kode.**~~ Løst 2026-11-19: `python3 -m sqlite.verbtyper` gjenskaper alle tall i rapportens §2–4 nøyaktig. **Beslutning 2026-11-19:** foredraget bruker bokkorpuset 1950–2020 for alle verb- og substantivtall. §3 i rapporten og lysbilde 6 er regnet om; `nb_totals`-tallene står bare som sammenligning.
 4. ~~**Dekomponereren er ikke validert.**~~ Løst 2026-11-20 (`rapport_dekomponering_validering.md`): riktig leksem i flertall for 78–80 % av kunstige homografer med log-regresjon, median feil 10–11 pp. De faste reglene i `decomposer.py` er skjeve (dør-typen: −13 pp for substantivet). Reglene er byttet ut med log-regresjon lært i samme korpus, og *dør* er regnet om: 64 % substantiv i bøker (lysbilde 10).
