@@ -1369,3 +1369,21 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Gå gjennom hele decket for UTKAST-merker og «mangler»-bokser som gjenstår.
 - Nedvekte sjeldne ordbokshomografer i dekomponereren (OBT-rapporten §9).
+
+---
+
+## 2026-11-21 (del 54) — Maries grener flettet inn i `figurer-deck`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `stabilitet-obt-fordeling` (del 45) og `korpus-utvidelse` (del 46) er flettet inn i `figurer-deck`, slik at de følger med PR 6 til `main`.
+- Eneste konflikt var `logg.md`. Oppføringene er satt inn i nummerrekkefølge: del 45 og 46 kommer etter del 44 og før del 47. Ingen tekst er endret.
+- Nye filer fra grenene: `sqlite/stabilitet_obt.py`, `resultater/stabilitet_obt_profiler.tsv` og utvidet `sqlite/korpusutvalg.py` og `korpus/korpusoversikt.tsv` (1 097 dokumenter i fem lag).
+
+### Observasjoner
+- Det utvidede korpuset er ikke tagget (del 46). `korpus/obt_frekvenser.db` er uendret, så OBT-valideringen fra del 52 gjelder fortsatt. Den bør kjøres på nytt hvis flere lag tagges.
+- Del 45 legger stabilitetsanalysen per tiår til side: med 6–10 bøker per teksttype og tiår er fordelingen av flertydige former for avhengig av enkeltbøker. Analysen ble kjørt før adjektivankrene, så decomposer-tallene for *svart/svarte* der er utdatert.
+
+### Neste steg
+- Møte mandag: gå gjennom PR 6, de tre UTKAST-lysbildene og hvor mye av det utvidede korpuset som skal tagges.
