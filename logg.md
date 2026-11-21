@@ -1387,3 +1387,27 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - Møte mandag: gå gjennom PR 6, de tre UTKAST-lysbildene og hvor mye av det utvidede korpuset som skal tagges.
+
+---
+
+## 2026-11-21 (del 55) — Sjeldne homografer vektet ned i dekomponereren
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/decomposer.py`: ny `shared_form_weights` og konstantene `SHARE_MODE = "masse"` og `SHARE_FLOOR = 0.6`.
+  - En form som deles av flere lemmaer, ble før nedvektet med 1/n² for alle.
+  - Nå fordeles den etter hvor mye entydig bruk hvert lemma har, med et gulv på 0,6/n.
+- Prøvd og forkastet: et tillegg etter hvor mye entydig bruk hele paradigmet har (`PRIOR_ALPHA`). Medianen ble 15,6–19,5 pp (mot 13,9), og *kroner* ble mye verre.
+- Prøvd og fjernet: å regne dominerende delte former som «praktisk entydige» i reglene. Det hadde ingen effekt.
+- OBT-valideringen er kjørt på nytt med de nye standardinnstillingene, og resultatfilene er oppdatert. Ny §10 i `rapport_dekomponering_obt.md`.
+
+### Funn
+- Innholdsord, logreg: median 13,9 → **13,5 pp**, riktig flest 72,9 → **73,4 %**. 74 former ble bedre og 28 verre (> 5 pp).
+- Bedre: *sola, livet, ben, lufta*. Verre: *hendene, skien, hoppe*. Der har det sjeldne lemmaet flere entydige former enn det vanlige.
+- *grunn* og *bein* er ikke løst. Substantivet *grunn* har ingen entydige former; hele paradigmet deles med *ei grunne*. Det krever ekstern frekvensinformasjon.
+- Uendret: «dør», «døde» og «fisker» i bokkorpuset og alle profilene. Decket påvirkes ikke.
+
+### Neste steg
+- Eventuelt en liste over sjeldne ordbokshomografer, eller lemmafrekvenser fra OBT-korpuset, som forhåndsvekt.
+- De tre UTKAST-lysbildene.

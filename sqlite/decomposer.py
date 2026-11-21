@@ -237,11 +237,63 @@ def estimate_logreg(
     return est, f"log-regresjon fra {names} (gullstandard N={n}, {corpus})"
 
 
+# Delte former i paradigmet (logg del 55). Tidligere ble en form som deles av n lemmaer, nedvektet med
+# 1/n² for alle. Da straffer et sjeldent ordbokshomograf (subst. *ei grunne* i «grunnen») det vanlige
+# leksemet like hardt som seg selv. Med SHARE_MODE = "masse" fordeles den delte formen i stedet på
+# lemmaene etter hvor mye entydig bruk hvert av dem har (sum av formene med antall_lemma_id = 1), med
+# et gulv på SHARE_FLOOR / n per lemma. Har ingen av lemmaene entydig bruk (f.eks. subst. *grunn* og
+# *grunne*, som deler hele paradigmet), brukes 1/n² som før; da kan paradigmet ikke skille dem.
+# Testet mot OBT-korpuset (rapport_dekomponering_obt.md §10): gulv 0,1 / 0,3 / 0,6 ga median 13,8 /
+# 13,7 / 13,5 pp mot 13,9 uten; 0,6 er valgt.
+SHARE_MODE = "masse"
+SHARE_FLOOR = 0.6
+
+
+def shared_form_weights(
+    oppslag: str, paradigms: dict[int, list], corpus: str, conn: sqlite3.Connection
+) -> dict[tuple[int, str], tuple[float, float]]:
+    """{(lemma_id, form): (vekt med gulv, ren masseandel)} for delte former i kandidatparadigmene."""
+    shared = sorted({r["oppslag"] for p in paradigms.values() for r in p
+                     if r["antall_lemma_id"] > 1 and r["oppslag"] != oppslag})
+    if not shared:
+        return {}
+    owners: dict[str, set[int]] = {}
+    for i in range(0, len(shared), 500):
+        chunk = shared[i:i + 500]
+        q = f"SELECT DISTINCT oppslag, lemma_id FROM lemma_former WHERE oppslag IN ({','.join('?' * len(chunk))})"
+        for w, lid in conn.execute(q, chunk).fetchall():
+            owners.setdefault(w, set()).add(lid)
+    lemmas = sorted({lid for s in owners.values() for lid in s})
+    unamb_forms: dict[int, set[str]] = {}
+    for i in range(0, len(lemmas), 500):
+        chunk = lemmas[i:i + 500]
+        q = (f"SELECT DISTINCT lf.lemma_id, lf.oppslag FROM lemma_former lf "
+             f"JOIN ordform_flertydighet o ON o.oppslag = lf.oppslag "
+             f"WHERE o.antall_lemma_id = 1 AND lf.lemma_id IN ({','.join('?' * len(chunk))})")
+        for lid, w in conn.execute(q, chunk).fetchall():
+            unamb_forms.setdefault(lid, set()).add(w)
+    freqs = corpus_freqs(sorted({w for s in unamb_forms.values() for w in s}), corpus, conn)
+    mass = {lid: sum(freqs.get(w, 0.0) for w in unamb_forms.get(lid, ())) for lid in lemmas}
+    out: dict[tuple[int, str], tuple[float, float]] = {}
+    for w, lids in owners.items():
+        tot = sum(mass[lid] for lid in lids)
+        if tot <= 0:
+            continue
+        # Gulv: hvert lemma får minst SHARE_FLOOR / n av formen, så leksemer uten entydige former
+        # (f.eks. subst. *tro*) ikke faller helt bort.
+        n = len(lids)
+        for lid in lids:
+            if lid in paradigms:
+                out[(lid, w)] = (SHARE_FLOOR / n + (1 - SHARE_FLOOR) * mass[lid] / tot, mass[lid] / tot)
+    return out
+
+
 def estimate_wordform_shares(
     oppslag: str,
     conn: sqlite3.Connection | None = None,
     corpus: str = "nb_totals",
     method: str = "logreg",
+    share_mode: str | None = None,
 ) -> dict[str, Any]:
     """
     Tar en flertydig ordform `oppslag` og beregner forventet frekvens og prosentandel
@@ -251,6 +303,7 @@ def estimate_wordform_shares(
             gullstandarden for log-regresjonen hentes fra samme korpus.
     method: 'logreg' (standard; faller tilbake på reglene der den ikke kan brukes) eller 'regler'.
     """
+    share_mode = SHARE_MODE if share_mode is None else share_mode
     close = conn is None
     if conn is None:
         conn = get_conn()
@@ -281,6 +334,9 @@ def estimate_wordform_shares(
 
         paradigms = {lid: get_paradigm(lemma_id=lid, conn=conn) for lid in by_lemma}
         freqs = corpus_freqs([oppslag] + [r["oppslag"] for p in paradigms.values() for r in p], corpus, conn)
+        shared_weight = (
+            shared_form_weights(oppslag, paradigms, corpus, conn) if share_mode == "masse" else {}
+        )
         obs_freq = freqs[oppslag]
 
         results = []
@@ -301,7 +357,12 @@ def estimate_wordform_shares(
                 if is_unamb:
                     unamb_total_in_paradigm += fr
                 # Hvis en form deles med andre lemmaer, nedvekter vi den hvis den ikke er entydig
-                eff_fr = fr if is_unamb else (fr / (r["antall_lemma_id"] ** 2))
+                if is_unamb:
+                    eff_fr = fr
+                elif (lid, w) in shared_weight:
+                    eff_fr = fr * shared_weight[(lid, w)][0]
+                else:
+                    eff_fr = fr / (r["antall_lemma_id"] ** 2)
                 if bnr not in slot_info:
                     slot_info[bnr] = {
                         "boy_tekst": r["boy_tekst"],

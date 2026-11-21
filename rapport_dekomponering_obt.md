@@ -5,7 +5,7 @@ gjenskapes med `python -m sqlite.valider_dekomponering_obt`, og resultatene per 
 i `resultater/dekomponering_obt_former.tsv` og `resultater/dekomponering_obt_profiler.tsv`. Arbeidslogg:
 `logg.md`, del 40–42.*
 
-*Oppdatert 2026-11-21 (logg del 52): decomposer har fått adjektivankre, og valideringen er kjørt på nytt. §3–5 er beholdt slik de ble skrevet, med tall fra første kjøring (2026-11-20; TSV-filene fra den kjøringen ligger i commit `390d420`). De nye tallene står i §9, og TSV-filene i `resultater/` er fra den nye kjøringen.*
+*Oppdatert 2026-11-21 (logg del 52): decomposer har fått adjektivankre, og valideringen er kjørt på nytt. §3–5 er beholdt slik de ble skrevet, med tall fra første kjøring (2026-11-20; TSV-filene fra den kjøringen ligger i commit `390d420`). De nye tallene står i §9, og nedvekting av sjeldne homografer (logg del 55) i §10. TSV-filene i `resultater/` er fra kjøringen i §10.*
 
 ---
 
@@ -278,4 +278,36 @@ De fleste har svært lite grunnlag. Det støtter anbefaling 2 (vise grunnlaget, 
 - Ingen av de andre utvalgte formene eller profilene er endret.
 
 **Konklusjon.** Adjektivankrene gir den forbedringen anbefaling 1 ventet for vanlige adjektiv. Men decomposer må få kontroll på sjeldne adjektivhomografer med lite grunnlag, før adjektivandelene kan brukes ukritisk.
+
+## 10. Nedvekting av sjeldne homografer (2026-11-21)
+
+**Problemet.** En form som deles av n lemmaer, ble nedvektet med 1/n² for alle lemmaene når den brukes som grunnlag for et anslag. Et sjeldent ordbokshomograf straffer da det vanlige leksemet like hardt som seg selv. *liv* deler for eksempel *livet* med det sjeldne verbet *live*, og fikk derfor for lite.
+
+**Endringen** (`decomposer.shared_form_weights`, standard `SHARE_MODE = "masse"`):
+- En delt form fordeles på lemmaene etter hvor mye entydig bruk hvert av dem har, dvs. summen av formene som bare finnes i dette lemmaet.
+- Hvert lemma får et gulv på `SHARE_FLOOR / n`, så leksemer uten entydige former ikke faller helt bort.
+- Har ingen av lemmaene entydig bruk, brukes 1/n² som før.
+
+**Valg av gulv** (innholdsord, logreg):
+
+| variant | median avvik | vektet avvik | 90-persentil | riktig flest |
+|---|---|---|---|---|
+| 1/n² (§9) | 13,9 pp | 26,1 pp | 80,7 pp | 72,9 % |
+| masse, gulv 0 | 14,4 pp | 26,8 pp | 87,6 pp | 71,6 % |
+| masse, gulv 0,1 | 13,8 pp | 26,3 pp | 82,9 pp | 73,0 % |
+| masse, gulv 0,3 | 13,7 pp | 26,0 pp | 81,7 pp | 73,2 % |
+| **masse, gulv 0,6 (valgt)** | **13,5 pp** | **25,8 pp** | **80,4 pp** | **73,4 %** |
+
+Uten gulv blir flere kandidater satt til 0 (bl.a. substantivet *tro*), og resultatet blir verre.
+
+**Resultat med gulv 0,6:**
+- 74 former ble mer enn 5 pp bedre og 28 mer enn 5 pp verre.
+- Bedre: *sola*, *livet*, *ben*, *leken*, *lufta*, *telt*.
+- Verre: *hendene*, *skien*, *hoppe*, *leke*, *steg*. Her har det sjeldne lemmaet flere entydige former enn det vanlige (f.eks. *hånd* mot *hende*), så massen peker feil vei.
+- Formene der alle kandidatene er modellert: median 7,4 pp og 80 % riktig (§9: 7,9 pp og 80 %).
+- Uendret: *dør*, *døde*, *fisker*, *kroner*, alle profilene i §5/§9, og dekomponeringen av «dør» og «fisker» i bokkorpuset (63,5 / 36,5 % og 64 / 20 / 15 %).
+
+**Det som ikke løses:** *grunn* (adj. 62 %, OBT 2 %) og *bein* er uendret. Substantivet *grunn* deler hele paradigmet med det sjeldne *ei grunne*, og har ingen entydige former. Da kan ingen metode basert på paradigmet alene avgjøre hvilket av dem som er vanligst. Det krever ekstern kunnskap, f.eks. en frekvens per lemma fra et tagget korpus, eller en liste over sjeldne ordbokshomografer.
+
+**Vurdering.** Forbedringen er reell, men liten (0,4 pp i median). Den største gjenværende feilkilden er fortsatt kandidater uten modell (§9).
 
