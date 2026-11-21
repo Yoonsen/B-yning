@@ -29,6 +29,8 @@ from sqlite.queries import (
 CACHE_DB_PATH = Path(__file__).resolve().parent / "ngram_cache.db"
 DHLAB_BASE_URL = "https://api.nb.no/dhlab"
 SP_NGRAM_URL = "https://www.nb.no/sp_tjenester/beta/ngram_1/ngram/query"
+# Endepunktet bak NB N-gram (app.nb.no/ngram); støtter uni-, bi- og trigrammer (logg del 57)
+NB_NGRAM_URL = "https://api.nb.no/dhlab/nb_ngram/ngram/query"
 
 
 def _get_cache_conn(db_path: Path = CACHE_DB_PATH) -> sqlite3.Connection:
@@ -392,3 +394,51 @@ def compute_paradigm_profile(
         "yearly_slot_counts": {slot_labels[bnr]: yearly_slot_counts[bnr] for bnr in ordered_slots},
         "yearly_word_counts": ts_by_word,
     }
+
+
+def fetch_nb_ngram(
+    terms: list[str],
+    period: tuple[int, int] = (1950, 2020),
+    corpus: str = "bok",
+    lang: str = "nob",
+    use_cache: bool = True,
+) -> dict[str, dict[int, float]]:
+    """
+    Absolutte årsfrekvenser fra NB N-gram (https://api.nb.no/dhlab/nb_ngram/ngram/query) for uni-,
+    bi- og trigrammer, f.eks. «en tro» og «å tro». Maks 10 termer per kall; mellomlagres i
+    ngram_cache.db som korpus «nb_ngram_<corpus>». Merk: korpuset er ikke det samme som
+    `fetch_ngram_dhlab` (ngram_book), så uni- og bigrammer må hentes herfra begge to.
+    """
+    y_from, y_to = period
+    key = f"nb_ngram_{corpus}"
+    conn = _get_cache_conn()
+    terms = list(dict.fromkeys(terms))
+    missing = []
+    for t in terms:
+        row = conn.execute("SELECT year_from, year_to FROM ngram_fetched_ranges WHERE corpus=? AND lang=? AND word=?",
+                           (key, lang, t)).fetchone() if use_cache else None
+        if row is None or row[0] > y_from or row[1] < y_to:
+            missing.append(t)
+    for i in range(0, len(missing), 10):
+        batch = missing[i:i + 10]
+        params = urllib.parse.urlencode({"terms": ",".join(batch), "lang": lang, "case_sens": "0",
+                                         "freq": "abs", "corpus": corpus})
+        req = urllib.request.Request(f"{NB_NGRAM_URL}?{params}", headers={"User-Agent": "Mozilla/5.0 (MONS-Boyningsprofiler)"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            series = json.loads(resp.read().decode("utf-8"))
+        got = {s.get("key"): s.get("values", []) for s in series}
+        for t in batch:
+            for pt in got.get(t, []):
+                yr = int(pt["x"])
+                if y_from <= yr <= y_to:
+                    conn.execute("INSERT OR REPLACE INTO ngram_cache VALUES (?,?,?,?,?)", (key, lang, t, yr, float(pt["f"])))
+            conn.execute("INSERT OR REPLACE INTO ngram_fetched_ranges VALUES (?,?,?,?,?)", (key, lang, t, y_from, y_to))
+        conn.commit()
+    out = {t: {y: 0.0 for y in range(y_from, y_to + 1)} for t in terms}
+    for t in terms:
+        for yr, f in conn.execute("SELECT year, freq FROM ngram_cache WHERE corpus=? AND lang=? AND word=? AND year BETWEEN ? AND ?",
+                                  (key, lang, t, y_from, y_to)):
+            out[t][yr] = f
+    conn.close()
+    return out
+

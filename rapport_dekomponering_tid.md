@@ -57,3 +57,26 @@ Parentes: 80 %-intervall. Kalibrering for hele perioden: «dør» 1,05, «tro» 
 - Adjektivet *tro* har ingen ankre (ubøyelig) og får 0 %. OBT gir det 4 % av «tro».
 - *å trå* bruker reglene; preteritumsformen «tro» er en sjelden variant ved siden av *trådte*, og andelen er trolig overvurdert (OBT: 8 %).
 - Kalibreringen for «tro» er 0,51: anslagene dekker bare halvparten av det observerte, så normaliseringen betyr mye.
+
+## 7. Bigrammer som uavhengig kontroll (lagt til samme dag)
+
+NB N-gram har bigrammer (`api.nb.no/dhlab/nb_ngram`, endepunktet bak app.nb.no/ngram; `ngram.fetch_nb_ngram`). Noen kontekster peker nesten bare på én celle. Vi lærer **kontekstraten** r = andelen av en form som står etter kontekstordene, på de 120 hyppigste entydige ordene per celle, og deler bigramtallene på den: x̂ = B / r (`sqlite/bigram_kontekst.py`).
+
+| Celle | Kontekst (ordet foran) | median r | 10.–90. persentil | sd log r |
+|---|---|---|---|---|
+| subst. ent ub | *en, ei, et, min, sin, din, vår* | 9,0 % | 0,2–30,5 % | 1,26 |
+| verb inf | *å, kan, vil, skal, må* | 56,4 % | 38,1–70,5 % | 0,21 |
+| verb pres | *jeg, han, hun, vi, de, som* | 23,7 % | 13,5–33,7 % | 0,30 |
+
+**Substantivkonteksten er ubrukelig som rate**: abstrakte ord og masseord får sjelden *en*, konkrete tellbare ord ofte. For «dør» overskyter substantivanslaget med faktor 2,6. **Verbkontekstene er stabile.** Vi anslår derfor verbet fra bigrammene og lar resten være substantivet («restmetoden»). Bigrammene gir også sikre grenser: verbet er minst B_V og høyst f(O) − B_subst.
+
+| Form | Verbandel: paradigmet (§5) | Verbandel: bigram, restmetode | Sikre grenser (bigram) | OBT-korpuset |
+|---|---|---|---|---|
+| «dør» | 34–39 % (11–72) | **54 %** (37–78) | 13–81 % | 52 % |
+| «tro» | 45–55 % (17–79) | **54 %** (41–70) | 30–95 % | 60 % |
+
+- Over tid gir restmetoden «tro»: verb 39 % (1950) → 58 % (2020), samme retning som paradigmemetoden. «dør»: verb 51 → 55 %, stabilt.
+- For «dør» ligger bigrammetoden nærmere det taggede korpuset enn paradigmemetoden.
+- De to metodene har uavhengige feilkilder (profilen til ordet mot kontekstraten til ordet). Et vektet snitt i logit-skala (invers varians) gir for «dør» ca. 49 % verb (80 %: ca. 32–67), mot OBT 52 %. Dette er bare regnet for hånd og ikke lagt inn i koden.
+
+**Forbehold.** Bigramtallene er fra NB N-gram, et annet bokkorpus enn `ngram_book`; uni- og bigrammer hentes derfor begge derfra. «en tro» inkluderer adjektivet (*en tro venn*), og *ei tro* kan være nektelse i eldre tekst. Kontekstraten varierer også mellom verb (sd 0,2–0,3 i log-skala), og den er antatt konstant over tid.

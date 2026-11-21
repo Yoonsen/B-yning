@@ -1438,3 +1438,26 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Teste antakelsen om stabil profil, f.eks. per tiår i OBT-korpuset (men se del 45 om støy).
 - Vurdere om figuren skal inn i decket, f.eks. som et eksempel på brukstilfellet.
+
+---
+
+## 2026-11-21 (del 57) — Bigrammer til dekomponering
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Brukeren spurte om bigrammer som «en tro» / «å tro» kan disambiguere.
+- Fant at NB N-gram (app.nb.no/ngram) bruker `https://api.nb.no/dhlab/nb_ngram/ngram/query`, som gir uni-, bi- og trigrammer per år. Det gamle `sp_tjenester`-endepunktet videresender dit. Del 47 var altså feil om at bigrammer ikke er tilgjengelige.
+- `sqlite/ngram.py`: ny `fetch_nb_ngram`, mellomlagret som korpus `nb_ngram_bok`.
+- Ny `sqlite/bigram_kontekst.py`: kontekstrater lært på 120 entydige ord per celle; `decompose` (B/r for alle kandidater) og `decompose_residual` (verbet fra bigrammer, resten til substantivet), med bånd fra spredningen i kontekstraten.
+- Ny §7 i `rapport_dekomponering_tid.md`.
+
+### Funn
+- Kontekstrater: inf 56 % (sd log 0,21) og pres 24 % (0,30) er stabile. Subst. ent ub etter *en/possessiv* er 9 % i median, men 0,2–30 % mellom ord (sd log 1,26), så den er ubrukelig.
+- Restmetoden: «dør» 54 % verb (37–78), «tro» 54 % verb (41–70). OBT gir 52 og 60 %. For «dør» er bigrammene nærmere OBT enn paradigmemetoden (37 %).
+- «tro» over tid: verb 39 → 58 % (1950–2020), samme retning som paradigmemetoden.
+- Et vektet snitt av de to metodene gir «dør» ca. 49 % verb. Det er regnet for hånd og ikke lagt inn i koden.
+
+### Neste steg
+- Kombinere paradigme- og bigramanslaget i `tidsserie.py` (invers varians i logit-skala) og validere på flere former mot OBT.
+- Bigrammer kan også gi adjektivandelen av «døde» (*de/den/det døde* mot *han/hun/som døde*).
