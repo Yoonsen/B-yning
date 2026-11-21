@@ -5,6 +5,8 @@ gjenskapes med `python -m sqlite.valider_dekomponering_obt`, og resultatene per 
 i `resultater/dekomponering_obt_former.tsv` og `resultater/dekomponering_obt_profiler.tsv`. Arbeidslogg:
 `logg.md`, del 40–42.*
 
+*Oppdatert 2026-11-21 (logg del 52): decomposer har fått adjektivankre, og valideringen er kjørt på nytt. §3–5 er beholdt slik de ble skrevet, med tall fra første kjøring (2026-11-20; TSV-filene fra den kjøringen ligger i commit `390d420`). De nye tallene står i §9, og nedvekting av sjeldne homografer (logg del 55) i §10. TSV-filene i `resultater/` er fra kjøringen i §10.*
+
 ---
 
 ## 1. Spørsmål
@@ -54,7 +56,7 @@ Vi spør:
     holder småord som *for*, *men* og *nå* utenfor; decomposer er ikke laget for dem.
   - *Dyp del:* 12 former fra repoet (logg del 40) og profiler for 18 lemmaer.
 
-## 3. Resultater: bred del
+## 3. Resultater: bred del (første kjøring, uten adjektivankre)
 
 | utvalg | former | tokens | metode | median avvik | vektet avvik | 90-persentil | riktig flest |
 |---|---|---|---|---|---|---|---|
@@ -106,7 +108,7 @@ Vi spør:
   *legge* 21 %. Log-regresjonen anslår preteritum av *legge* fra infinitiv og partisipp, men *la* er
   mye hyppigere i fortellende tekst enn gjennomsnittsverbet tilsier.
 
-## 4. Resultater: utvalgte former
+## 4. Resultater: utvalgte former (første kjøring)
 
 Andeler i prosent, OBT mot decomposer (logreg). Avviket er gitt i prosentpoeng.
 
@@ -125,7 +127,7 @@ Andeler i prosent, OBT mot decomposer (logreg). Avviket er gitt i prosentpoeng.
 | *døde* | 1 580 | *dø* 72, *død* (adj) 28 | 100 / 0 | 28,4 | adjektiv umodellert |
 | *tro* | 1 937 | verb 60, subst 28, *trå* 8, adj 4 | 91 / 0 / 9 / 0 | 31,8 | subst og adj får 0 |
 
-## 5. Resultater: profiler
+## 5. Resultater: profiler (første kjøring)
 
 Bøyningsprofiler (kjernekategorier) i tre varianter:
 - *OBT*: fasit fra det taggede korpuset;
@@ -210,7 +212,7 @@ to begrensninger den syntetiske ikke kan se:
 
 ## 8. Anbefalinger
 
-1. **Modellere adjektivkandidater i decomposer.** Det er den største enkeltforbedringen. Det gjelder
+1. **Modellere adjektivkandidater i decomposer.** *Gjennomført for vanlige adjektiv 2026-11-21, se §9.* Det er den største enkeltforbedringen. Det gjelder
    to tredjedeler av forekomstene der decomposer i dag gir en kandidat 0 %, bl.a. *døde*, *hele*,
    *nye* og *stille*.
 2. **Vise grunnlaget.** Summen av anslag mot observert frekvens skiller gode og dårlige anslag (84 mot
@@ -222,3 +224,90 @@ to begrensninger den syntetiske ikke kan se:
    - substantivprofiler (*fisk*, *fisker*, *dør*) er pålitelige etter dekomponering;
    - verbprofiler der konkurrenten er et adjektiv eller adverb (*dø*, *stille*), er det ikke. For
      *dø* holder rekkefølgen, men prosentene gjør det ikke.
+
+## 9. Ny kjøring med adjektivankre (2026-11-21)
+
+**Hva er endret.** Decomposer har nå en gullstandard for adjektiv (`sqlite/adjektiv_gold.py`): vanlige adjektiv der m/f, e-form og nøytrum er entydige. E-formen (*store*) anslås med log-regresjon fra de entydige positivformene. Ett anker er nok for adjektiv. Gullstandarden velges med NBs `nb_totals`, som for substantiv og verb, og frekvensene hentes fra korpuset (`korpus_profiler._corpus_gold_profiles`). Reglene (`regler`) er uendret.
+
+**Bred del, innholdsord (1 721 former), logreg:**
+
+| utvalg | former | median avvik | vektet avvik | 90-persentil | riktig flest |
+|---|---|---|---|---|---|
+| alle innholdsord, før | 1 721 | 18,4 pp | 29,4 pp | 90,4 pp | 69 % |
+| alle innholdsord, nå | 1 721 | **13,9 pp** | **26,1 pp** | **80,7 pp** | **73 %** |
+| alle kandidater modellert, nå | 1 321 (før 1 206) | 7,9 pp | 14,9 pp | 62,3 pp | 80 % |
+| … med grunnlag ≥ 0,5 | 581 | 6,5 pp | 12,9 pp | 52,3 pp | 83 % |
+| … med grunnlag < 0,5 | 740 | 9,1 pp | 15,9 pp | 70,1 pp | 77 % |
+| umodellert ≥ 5 %, nå | 400 (før 515) | 50,0 pp | 57,9 pp | 98,9 pp | 51 % |
+
+- 115 flere former har nå alle kandidatene modellert. Andelen forekomster med en umodellert kandidat (≥ 5 %) er 26 %, mot 31 % før.
+- Avviket endret seg for 149 av 1 775 former. 129 ble mer enn 5 pp bedre, 12 mer enn 5 pp verre.
+- Størst forbedring: *godt* (fra 100 til 0 pp), *gamle*, *syke*, *varm*, *frisk*, *tung*, *trygg*, *internasjonale* og *døde* (fra 28,4 til 1,0 pp).
+
+**Hva som fortsatt ikke modelleres.** 64 % av forekomstene i den umodellerte gruppen har fortsatt et adjektiv som OBTs hovedanalyse. Det gjelder adjektiv uten entydige ankre:
+- ubøyelige adjektiv (*stille*, *få*);
+- uregelrette adjektiv (*liten/lille/litt*, *mye/mer*, *mange/flere*);
+- adjektiv der også m/f og nøytrum er flertydige (*hel/helt*, *ny/nytt*).
+
+Resten er bl.a. «i går» og *sin* i *si*.
+
+**Ny feiltype: sjeldne adjektiv i ordboka får for mye.** Når ordboka har et sjeldent adjektiv med samme form som et vanlig substantiv, kan adjektivet nå ta for stor andel. Det skjer særlig når grunnlaget er lite:
+
+| form | OBT | decomposer nå | grunnlag |
+|---|---|---|---|
+| *grunn* | subst 98, adj 2 | adj 63 / subst 37 | 0,01 |
+| *bein* | subst 97, adj 3 | adj 89 / subst 11 | 0,06 |
+| *faren* | *far* 98, adj 2 | adj 39 / *far* 36 / *fare* 24 | 0,01 |
+| *engelsk* | subst 55, adj 45 | adj 98 / subst 2 | 0,46 |
+| *sikre* | verb 64, adj 36 | adj 83 / verb 17 | 1,26 |
+
+De fleste har svært lite grunnlag. Det støtter anbefaling 2 (vise grunnlaget, eller utelate ord med for lite grunnlag) og anbefaling 3 (nedvekte sjeldne ordbokshomografer).
+
+**Utvalgte former og *dø*.**
+- *døde*: OBT gir *dø* 72 / *død* (adj) 28, og decomposer gir nå 71 / 29 (avvik 1,0 pp, før 28,4). Grunnlaget er bare 0,1, så treffet skyldes delvis normaliseringen. I bokkorpuset gir den samme metoden 57 / 39 (`rapport_verbtyper.md` §7.2 punkt 5).
+- Profilen til *dø*: avviket fra OBT er 6,0 pp (før 11,7), og den er nå bedre enn rå formtall (8,1 pp).
+
+  | | inf/imp | pres | pret | perf-part |
+  |---|---|---|---|---|
+  | OBT | 28 | 15 | 54 | 2 |
+  | decomposer nå | 31 | 9 | 58 | 2 |
+  | naiv | 21 | 22 | 56 | 1 |
+
+  Preteritum ligger fortsatt litt for høyt og presens for lavt, fordi substantivet *dør* overvurderes (71 mot 48 %).
+- *stille* og *få* er uendret (ubøyelige adjektiv).
+- Ingen av de andre utvalgte formene eller profilene er endret.
+
+**Konklusjon.** Adjektivankrene gir den forbedringen anbefaling 1 ventet for vanlige adjektiv. Men decomposer må få kontroll på sjeldne adjektivhomografer med lite grunnlag, før adjektivandelene kan brukes ukritisk.
+
+## 10. Nedvekting av sjeldne homografer (2026-11-21)
+
+**Problemet.** En form som deles av n lemmaer, ble nedvektet med 1/n² for alle lemmaene når den brukes som grunnlag for et anslag. Et sjeldent ordbokshomograf straffer da det vanlige leksemet like hardt som seg selv. *liv* deler for eksempel *livet* med det sjeldne verbet *live*, og fikk derfor for lite.
+
+**Endringen** (`decomposer.shared_form_weights`, standard `SHARE_MODE = "masse"`):
+- En delt form fordeles på lemmaene etter hvor mye entydig bruk hvert av dem har, dvs. summen av formene som bare finnes i dette lemmaet.
+- Hvert lemma får et gulv på `SHARE_FLOOR / n`, så leksemer uten entydige former ikke faller helt bort.
+- Har ingen av lemmaene entydig bruk, brukes 1/n² som før.
+
+**Valg av gulv** (innholdsord, logreg):
+
+| variant | median avvik | vektet avvik | 90-persentil | riktig flest |
+|---|---|---|---|---|
+| 1/n² (§9) | 13,9 pp | 26,1 pp | 80,7 pp | 72,9 % |
+| masse, gulv 0 | 14,4 pp | 26,8 pp | 87,6 pp | 71,6 % |
+| masse, gulv 0,1 | 13,8 pp | 26,3 pp | 82,9 pp | 73,0 % |
+| masse, gulv 0,3 | 13,7 pp | 26,0 pp | 81,7 pp | 73,2 % |
+| **masse, gulv 0,6 (valgt)** | **13,5 pp** | **25,8 pp** | **80,4 pp** | **73,4 %** |
+
+Uten gulv blir flere kandidater satt til 0 (bl.a. substantivet *tro*), og resultatet blir verre.
+
+**Resultat med gulv 0,6:**
+- 74 former ble mer enn 5 pp bedre og 28 mer enn 5 pp verre.
+- Bedre: *sola*, *livet*, *ben*, *leken*, *lufta*, *telt*.
+- Verre: *hendene*, *skien*, *hoppe*, *leke*, *steg*. Her har det sjeldne lemmaet flere entydige former enn det vanlige (f.eks. *hånd* mot *hende*), så massen peker feil vei.
+- Formene der alle kandidatene er modellert: median 7,4 pp og 80 % riktig (§9: 7,9 pp og 80 %).
+- Uendret: *dør*, *døde*, *fisker*, *kroner*, alle profilene i §5/§9, og dekomponeringen av «dør» og «fisker» i bokkorpuset (63,5 / 36,5 % og 64 / 20 / 15 %).
+
+**Det som ikke løses:** *grunn* (adj. 62 %, OBT 2 %) og *bein* er uendret. Substantivet *grunn* deler hele paradigmet med det sjeldne *ei grunne*, og har ingen entydige former. Da kan ingen metode basert på paradigmet alene avgjøre hvilket av dem som er vanligst. Det krever ekstern kunnskap, f.eks. en frekvens per lemma fra et tagget korpus, eller en liste over sjeldne ordbokshomografer.
+
+**Vurdering.** Forbedringen er reell, men liten (0,4 pp i median). Den største gjenværende feilkilden er fortsatt kandidater uten modell (§9).
+

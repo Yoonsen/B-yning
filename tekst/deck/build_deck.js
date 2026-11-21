@@ -159,17 +159,18 @@ s.addNotes("Fyll inn navn på foredragsholdere. Brikkene viser den dominerende f
 // 2 Spørsmålet
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Innledning" });
 s.addText("Hvert leksem har sin favorittform", { placeholder: "title" });
-status(s, "UTKAST");
-s.addText("Verb: inf / pres / pret", { x: MX, y: 1.5, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-chipRow(s, ["gikk 38 %", "går 34 %", "gå 28 %"], MX, 2.05);
-chipRow(s, ["vet 55 %", "visste 26 %", "vite 19 %"], MX, 2.75);
-body(s, [{ text: "Bokkorpuset 1950–2020. «går» inkluderer «i går».", options: {} }], MX, 3.4, 6, 0.4, 12);
-s.addText("Substantiv: ent ub / ent be / fl ub", { x: MX, y: 3.95, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
-chipRow(s, ["epler 45 %", "eple 30 %", "eplet 11 %"], MX, 4.5);
-chipRow(s, ["bussen 42 %", "buss 37 %", "busser 15 %"], MX, 5.2);
-body(s, [{ text: "Andeler av alle fire former; bestemt flertall er ikke vist.", options: {} }], MX, 5.85, 6, 0.4, 12);
-body(s, [{ text: "Spørsmål: Hvor mye av fordelingen skyldes leksemet selv — og er den stabil over tid?", options: { bold: true, color: C.text1 } }], 7.2, 2.05, 5.5, 1.3, 20);
-s.addNotes("Verbtall fra rapport_verbtyper.md §4 (Sett B), substantivtall fra rapport_substantivtyper.md §5. OBS: abstractet sier at infinitiv «vite» dominerer (dataene: vet 55 % > visste 26 % > vite 19 %) og at «eple» dominerer (dataene: epler 45 % > eple 30 %; epla/eplene 14 % > eplet 11 %). Abstract og lysbilde må samkjøres. Alle formene til «buss» kolliderer med subst./verb «busse» i Ordbanken.");
+const CH2 = { w: 2.05, fontSize: 15 }; // lik bredde, så radene får plass ved siden av teksten
+s.addText("Verb: inf / pres / pret", { x: MX, y: 1.35, w: 6, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
+chipRow(s, ["vurdere 70 %", "vurderer 21 %", "vurderte 9 %"], MX, 1.85, CH2);
+chipRow(s, ["vet 55 %", "visste 26 %", "vite 19 %"], MX, 2.5, CH2);
+chipRow(s, ["forsvant 54 %", "forsvinner 29 %", "forsvinne 18 %"], MX, 3.15, CH2);
+s.addText("Substantiv: andel av alle fire former", { x: MX, y: 4.0, w: 6.5, h: 0.45, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true });
+chipRow(s, ["tid 63 %", "tiden/tida 30 %", "tider 6 %"], MX, 4.5, CH2);
+chipRow(s, ["sommeren 69 %", "sommer 26 %", "somre 3 %"], MX, 5.15, CH2);
+chipRow(s, ["epler 45 %", "eple 30 %", "eplet 11 %"], MX, 5.8, CH2);
+body(s, [{ text: "Spørsmål: Hvor mye av fordelingen skyldes leksemet selv — og er den stabil over tid?", options: { bold: true, color: C.text1 } }], 8.5, 1.85, 4.2, 1.6, 20);
+body(s, [{ text: "Alle seks har samme form på topp i alle 71 år (bokkorpuset 1950–2020).", options: {} }], 8.5, 3.6, 4.2, 0.9, 16);
+s.addNotes("Tall fra bokkorpuset 1950–2020: verb fra rapport_verbtyper.md §4, substantiv fra resultater/substantivtyper.tsv (rapport_substantivtyper.md §3–5). For substantiv vises ent ub, ent be og fl ub; bestemt flertall er utelatt (for eple er epla/eplene 14 %, mer enn eplet). vurdere, forsvinne, tid og sommer er helt entydige i Ordbanken. vite og eple er også rene i kjerneformene (sideformen veit = ei veit). Abstractet er samkjørt 2026-11-21: den innsendte versjonen hadde gikk, infinitiv vite, ubestemt entall eple og bussen. Dataene gir vet > visste > vite og epler > eple > eplet; gikk er på topp bare 70 % av årene og «går» inkluderer i går; alle formene til buss kolliderer med busse. Se abstract.md.");
 
 // 3 Data
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Innledning" });
@@ -189,16 +190,10 @@ s.addNotes("Tall fra AGENTS.md (rådatafilene). Sjekk hvilke korpusavgrensninger
 pres.addSection({ title: "Metode" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
 s.addText("Én form, flere leksemer", { placeholder: "title" });
-status(s, "UTKAST");
-chip(s, "fisker", 2.3, 3.4, { w: 1.8, h: 0.75, fontSize: 24, bold: true, fill: C.accent1, color: C.background1 });
-[["å fiske · pres", 1.6], ["en fisker · ent ub", 2.6], ["en fisk · fl ub", 4.2], ["et fiske · fl ub", 5.2]].forEach(([t, y]) => {
-  chip(s, t, 4.9, y, { w: 2.9, h: 0.6, fontSize: 16, italic: false });
-  const ty = y + 0.3, up = ty < 3.775;
-  s.addShape(pres.shapes.LINE, { x: 4.1, y: up ? ty : 3.775, w: 0.8, h: Math.abs(ty - 3.775), line: { color: HEX.dk2, width: 1.25 }, flipV: up, objectName: "kant" });
-});
+s.addImage({ path: FIG("paradigmegraf_fisker.png"), x: MX, y: 1.35, w: 6.66, h: 5.3, altText: "Paradigmegrafen rundt fisker: substantivene fisker, fisk og fiske og verbet fiske deler ordformer; substantivet fiske har ingen entydige former" });
 stat(s, "87,4 %", "av lemmaene i Ordbanken deler ingen form med andre lemmaer", 8.6, 1.6, 4.1);
 stat(s, "97,3 %", "ligger i grupper på høyst fire lemmaer som deler former", 8.6, 4.0, 4.1, C.accent2);
-s.addNotes("Linjene fra «fisker» kan trenge justering. Tall fra rapport_verbtyper.md §7.3 (sqlite/paradigm_graph.py). Vurder en figur av paradigmegrafen.");
+s.addNotes("Figuren lages av python3 -m sqlite.figurer fra paradigmegrafen (sqlite/paradigm_graph.py). Fire lemmaer deler «fisker». I boksene står de entydige formene (ankrene): fisker har tre, fisk har bare fisken, verbet fiske bare s-passiv fiskes (partisippformene er utelatt), og substantivet et fiske har ingen. Det er derfor et fiske ikke kan anslås. Slike firergrupper er sjeldne: 452 komponenter, 1,2 % av lemmaene. 87,4 % av 151 648 lemmaer deler ingen form; 97,3 % ligger i komponenter på høyst fire lemmaer (rapport_verbtyper.md §7.3).");
 
 // 5 Gullstandard
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
@@ -286,8 +281,8 @@ s.addChart(pres.charts.BAR, [
 ], chartOpts({ x: MX, y: 1.5, w: 7.2, h: 4.6, barGrouping: "clustered", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Profilen til verbet dø, bokkorpuset 1950–2020", valAxisMaxVal: 85, valAxisHidden: true, valGridLine: { style: "none" } }));
 stat(s, "64 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene (±10–15 pp)", 8.3, 1.5, 4.4);
 body(s, [{ text: "dø flytter fra type 2B (pret > pres > inf) til 2A (pret > inf > pres).", options: { bold: true, color: C.text1 } }], 8.3, 3.6, 4.4, 1.0, 16);
-missing(s, "«døde» er også adjektivet død. pret er derfor et øvre anslag (64–74 %).", 8.3, 4.8, 4.4, 1.3);
-s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5, regnet om 2026-11-20 med log-regresjon lært i bokkorpuset: estimate_wordform_shares(\"dør\", corpus=\"book\") gir 63,5 % substantiv / 36,5 % verb; summen av de ukappede anslagene er 1,05 × observert. Tidligere tall (faste regler fra nb_totals) var 71 / 29 %. For at pres skulle komme over inf, måtte verbandelen være over 73 %, altså 36 pp feil, mer enn 90-persentilen i valideringen. Med adjektivkorreksjon på 13–38 % av «døde» blir profilen pret 64–71 / inf 19–24 / pres 10–12 %; 2A holder.");
+missing(s, "«døde» er også adjektivet død: 28 % i et tagget korpus. dø er 2A så lenge adjektivet er under 77 % av «døde».", 8.3, 4.8, 4.4, 1.3);
+s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5, regnet om 2026-11-20 med log-regresjon lært i bokkorpuset: estimate_wordform_shares(\"dør\", corpus=\"book\") gir 63,5 % substantiv / 36,5 % verb; summen av de ukappede anslagene er 1,05 × observert. Tidligere tall (faste regler fra nb_totals) var 71 / 29 %. For at pres skulle komme over inf, måtte verbandelen være over 73 %, altså 36 pp feil, mer enn 90-persentilen i valideringen. «døde» er også adjektivet død (rapport §7.2 punkt 5). Dekomponereren har nå adjektivankre, men for «døde» er summen av anslagene bare 0,05 × observert: dødd, dødt og dødene er alle atypisk sjeldne. Adjektivandelen er derfor ikke bestemt; overslagene spenner fra 2 % (alle adjektiv) via 14–35 % (tilstandsadjektiv som syk, blind, gammel) til 46 %. Det gir pret 74–61 / inf 18–26 / pres 9–13 %. 2A holder så lenge adjektivet er under 77 % av «døde». I det OBT-taggede korpuset er 28 % av «døde» adjektivet (rapport_dekomponering_obt.md §9); med 28 % blir profilen pret 67 / inf 22 / pres 11 %.");
 
 // 11 fisker over tid
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
@@ -316,7 +311,7 @@ pres.addSection({ title: "Avslutning" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Avslutning" });
 s.addText("Hva er nytt?", { placeholder: "title" });
 status(s, "UTKAST");
-const refs = [["Fokalformer", "Karlsson 1986; Arppe 2006 (finsk)"], ["Grammatiske profiler", "Janda & Lyashevskaya 2011; Newman 2008"], ["Paradigmer i mentalt leksikon", "Milin, Filipović Đurđević & Baayen 2009"]];
+const refs = [["Skjev frekvens i paradigmet", "Karlsson 1986; Arppe 2006 (finsk)"], ["Grammatiske profiler", "Janda & Lyashevskaya 2011; Newman 2008"], ["Paradigmer i mentalt leksikon", "Milin, Filipović Đurđević & Moscoso del Prado Martín 2009"]];
 refs.forEach(([h, r], i) => {
   const y = 1.6 + i * 1.05;
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: MX, y, w: 5.8, h: 0.9, rectRadius: 0.12, fill: { color: C.background2 }, line: { color: C.background2 }, objectName: `ref ${h}` });
@@ -324,13 +319,24 @@ refs.forEach(([h, r], i) => {
 });
 s.addText("Vårt bidrag", { x: 7.0, y: 1.6, w: 5.7, h: 0.5, fontSize: 20, bold: true, color: C.accent1, margin: 0, isTextBox: true });
 body(s, bullets(["70 år med årlige rangeringer, ikke ett tverrsnitt", "Alle seks rekkefølger av inf/pres/pret", "Profilene brukt baklengs: fordeler rå n-gram på leksemer uten POS-tagget korpus", "Paradigmegraf over et helt nasjonalt ordforråd"]), 7.0, 2.2, 5.7, 3.4, 16);
-s.addNotes("Referansene må sjekkes mot kildene (hull 6). Milin mfl. 2009 er trolig et kapittel i Blevins & Blevins (red.), Analogy in Grammar (OUP), ikke Cognitive Linguistics 20(1).");
+s.addNotes("Fulle referanser i rapport_verbtyper.md §7.1, sjekket 2026-11-21. Karlsson 1986: ZPSK 39(1), 19–28. Arppe 2006: festskrift for Karlsson, 175–189. Janda & Lyashevskaya 2011: Cognitive Linguistics 22(4), 717–762. Milin, Filipović Đurđević & Moscoso del Prado Martín 2009: Journal of Memory and Language 60(1), 50–64 (relativ entropi mellom leksemets og klassens profil, serbisk). «Paradigms bit by bit» er et annet arbeid: Milin, Kuperman, Kostić & Baayen 2009 i Blevins & Blevins (red.), Analogy in Grammar, OUP.");
 
 // 14 Oppsummering
-s = pres.addSlide({ masterName: "TITTEL", sectionTitle: "Avslutning" });
+s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Avslutning" });
 s.addText("Bøyningsprofiler er leksikalske — og stabile", { placeholder: "title" });
-s.addText("1  Verb fordeler seg på seks profiltyper som speiler aksjonsart\n2  Rangeringen holder seg uendret over 70 år\n3  Stabile profiler gjør det mulig å fordele flertydige former på leksemer\n[Substantivfunn og valideringsresultat settes inn]", { placeholder: "body" });
-s.addNotes("Oppsummeringen er et utkast; punkt 3 forutsetter at valideringen (lysbilde 12) gir et akseptabelt resultat.");
+[
+  ["Hvert leksem har sin favorittform", "Alle seks rekkefølger av inf / pres / pret finnes blant 580 verb. Substantiv skiller seg først på tall, så på bestemthet."],
+  ["Profilene står stille i 70 år", "Samme form på topp i alle 71 år for 46 % av verbene og 53 % av substantivene (bokkorpuset 1950–2020)."],
+  ["Profilene kan brukes baklengs", "Flertydige former fordeles på leksemer uten tagget korpus: riktig hovedleksem i om lag 4 av 5 tilfeller. «dør» er 64 % substantiv, og dø blir type 2A."],
+  ["Andelene er usikre", "±10–15 pp. Metoden trenger entydige former i paradigmet og svikter når de mangler (et fiske, døde) eller når sjeldne ordbokshomografer får for stor vekt."],
+].forEach(([head, text], i) => {
+  const x = MX + (i % 2) * 6.2, y = 1.55 + Math.floor(i / 2) * 2.7, w = 5.9, h = 2.45;
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.12, fill: { color: i === 3 ? C.background1 : C.background2 }, line: i === 3 ? { color: HEX.accent3, width: 1.5, dashType: "dash" } : undefined, objectName: `funn ${i + 1}` });
+  s.addText(String(i + 1), { shape: pres.shapes.OVAL, x: x + 0.3, y: y + 0.3, w: 0.6, h: 0.6, fontSize: 20, bold: true, align: "center", valign: "middle", margin: 0, color: C.background1, fill: { color: i === 3 ? C.text2 : C.accent1 }, objectName: `nummer ${i + 1}` });
+  s.addText(head, { x: x + 1.1, y: y + 0.28, w: w - 1.35, h: 0.65, fontSize: 21, bold: true, color: C.text1, valign: "middle", margin: 0, isTextBox: true });
+  s.addText(text, { x: x + 1.1, y: y + 1.0, w: w - 1.35, h: h - 1.2, fontSize: 15, color: C.text2, valign: "top", margin: 0, isTextBox: true });
+});
+s.addNotes("1: lysbilde 6–8 (rapport_verbtyper.md §3, rapport_substantivtyper.md §3). 2: lysbilde 8 og rapportenes §4; 46 % = 260 av 569 Sett A-verb belagt alle 71 år, 53 % = 2 314 av 4 355 substantiv. 3: lysbilde 10–12; ca. 80 % riktig hovedleksem både med kunstige homografer (rapport_dekomponering_validering.md) og for former der alle kandidatene er modellert i det OBT-taggede korpuset (rapport_dekomponering_obt.md §9). 4: et fiske har ingen entydige former (lysbilde 4); for døde er ankrene atypisk sjeldne; sjeldne adjektiv som grunn og bein får for mye. Hovedpoeng: profilene er en egenskap ved leksemet, og nettopp derfor kan de brukes til å fordele rå n-gram.");
 
 (async () => {
   await pres.writeFile({ fileName: OUT });

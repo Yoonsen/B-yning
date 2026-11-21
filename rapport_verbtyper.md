@@ -156,12 +156,30 @@ Når vi tar med **perfektum partisipp (`perf-part`, `boy_nummer = 5`)** og **pre
 Det finnes en sentral internasjonal tradisjon vi kan knytte an til (som gir oss et sterkt teoretisk anker), samtidig som metoden og funnene våre går et langt skritt videre:
 
 ### 7.1 Sentrale referanser i litteraturen
-1. **Fred Karlsson (1985, 1986, 2000) & Antti Arppe (2006) — *Inflectional profiles / Focal forms*:**
-   - Karlsson (1986, *«Frequency considerations in morphology»*, *Zeitschrift für Phonetik, Sprachwissenschaft und Kommunikationsforschung*) påpekte at kasusbøyde substantiv i finsk har bestemte «fokalformer» i paradigmet styrt av semantikk. Karlsson antok imidlertid opprinnelig at verb oppførte seg mer ensartet, noe Arppe (2006) nyanserte for finske verb.
-2. **Laura A. Janda & Olga Lyashevskaya (2011) — *Grammatical profiles*:**
-   - I *«Grammatical profiles and the interaction of the lexicon with aspect, tense, and mood in Russian»* (*Cognitive Linguistics* 22(4), 719–763; jf. også **Newman 2008** om engelske verb) defineres en *grammatical profile* som den relative frekvensfordelingen av et leksems bøyningsformer i et korpus. De viser at bøyningsprofilen speiler verbets aksjonsart/aspekt, og at statistiske uteliggere («outliers») peker på særskilte konstruksjoner.
-3. **Petar Milin, Dušica Filipović Đurđević & R. Harald Baayen (2009) — *Paradigms bit by bit*:**
-   - I *«Paradigms bit by bit: An information theoretic approach to the processing of paradigmatic structure in inflectional morphology»* (*Cognitive Linguistics* 20(1), 215–228) viser de psykolingvistisk (med relativ entropi / Kullback-Leibler-divergens) at språkbrukere mentalt lagrer *både* det enkelte leksemets spesifikke bøyningsprofil *og* ordklassens generelle normalprofil.
+
+*Referansene er sjekket mot forlags- og repositorieoppføringer 2026-11-21 (hull 6). Innholdet i Karlsson 1985/1986 og Arppe 2006 er gjengitt etter sitering i sekundærkilder; fulltekst er ikke lest.*
+
+1. **Fred Karlsson (1985, 1986) og Antti Arppe (2006): frekvens i paradigmet.**
+   - Karlsson viste med finske data at de fleste formene i et paradigme med rik bøyning er sjeldne eller ikke belagt i korpus, og at formfrekvensene er svært skjevt fordelt.
+   - Arppe (2006) tar opp tråden i et festskrift for Karlsson. Tittelen sier poenget: også finske verb skiller seg fra hverandre i hvordan bruken fordeler seg på formene.
+2. **Laura A. Janda og Olga Lyashevskaya (2011): grammatiske profiler.**
+   - En *grammatisk profil* er den relative frekvensfordelingen av et leksems bøyningsformer i et korpus. For russiske verb speiler profilen aspekt, og verb med uvanlige profiler peker på særskilte bruksmønstre.
+   - De bygger på Newman og Rice, som studerte bøyningsformene til engelske verb (Rice & Newman 2005; Newman & Rice 2006; Newman 2008).
+3. **Petar Milin og medarbeidere (2009): paradigmer i det mentale leksikonet.**
+   - Milin, Filipović Đurđević & Moscoso del Prado Martín (2009) viser for serbiske substantiv at jo mer et leksems fordeling over formene avviker fra fordelingen i bøyningsklassen (relativ entropi), desto langsommere gjenkjennes ordet. Språkbrukere er altså følsomme for både leksemets egen profil og klassens profil.
+   - Milin, Kuperman, Kostić & Baayen (2009, «Words and paradigms bit by bit») gir den informasjonsteoretiske rammen.
+
+**Referanser**
+
+- Arppe, Antti. 2006. Frequency considerations in morphology, revisited – Finnish verbs differ, too. I *A Man of Measure: Festschrift in Honour of Fred Karlsson on his 60th Birthday*, 175–189. Turku: Linguistic Association of Finland (SKY Journal of Linguistics 19, spesialsupplement).
+- Janda, Laura A. & Olga Lyashevskaya. 2011. Grammatical profiles and the interaction of the lexicon with aspect, tense, and mood in Russian. *Cognitive Linguistics* 22(4). 717–762. https://doi.org/10.1515/COGL.2011.027
+- Karlsson, Fred. 1985. Paradigms and word forms. *Studia Gramatyczne* 7. 135–154.
+- Karlsson, Fred. 1986. Frequency considerations in morphology. *Zeitschrift für Phonetik, Sprachwissenschaft und Kommunikationsforschung* 39(1). 19–28. https://doi.org/10.1524/stuf.1986.39.14.19
+- Milin, Petar, Dušica Filipović Đurđević & Fermín Moscoso del Prado Martín. 2009. The simultaneous effects of inflectional paradigms and classes on lexical recognition: Evidence from Serbian. *Journal of Memory and Language* 60(1). 50–64. https://doi.org/10.1016/j.jml.2008.08.007
+- Milin, Petar, Victor Kuperman, Aleksandar Kostić & R. Harald Baayen. 2009. Words and paradigms bit by bit: An information-theoretic approach to the processing of inflection and derivation. I James P. Blevins & Juliette Blevins (red.), *Analogy in Grammar: Form and Acquisition*, 214–252. Oxford: Oxford University Press.
+- Newman, John. 2008. Aiming low in linguistics: Low-level generalizations in corpus-based research. *Proceedings of the 11th International Symposium on Chinese Languages and Linguistics (IsCLL-11)*, National Chiao Tung University, Hsinchu, Taiwan.
+- Newman, John & Sally Rice. 2006. Transitivity schemas of English EAT and DRINK in the BNC. I Stefan Th. Gries & Anatol Stefanowitsch (red.), *Corpora in Cognitive Linguistics: Corpus-Based Approaches to Syntax and Lexis*. Berlin: Mouton de Gruyter.
+- Rice, Sally & John Newman. 2005. Inflectional islands. Foredrag, 9th International Cognitive Linguistics Conference, Seoul.
 
 ### 7.2 Vi snur pilen «baklengs» — Glansnummer: Dekomponering av *«dø»* (verb) vs. *«dør»* (substantiv)
 
@@ -193,12 +211,25 @@ Et perfekt demonstrasjonseksempel er verbet **`dø`** (`lemma_id = 13385`) vs. s
    - Når substantivet *en/ei dør* trekkes fra strengen *«dør»*, faller presensandelen til verbet *dø* fra **20,6 %** til **8,7 %** ($\approx 246\,300$ treff mot $492\,694$ for infinitiv *dø*):
      - **Før dekomponering (råtall):** `pret` (64,3 %) > `pres` (20,6 %) > `inf` (15,1 %), som gir **2B (`pret > pres > inf`)**.
      - **Etter dekomponering:** `pret` (**74,0 %**) > `inf` (**17,4 %**) > `pres` (**8,7 %**), som gir **2A (`pret > inf > pres`)**.
-   - **Hvor robust er det?** For at `pres` skal komme over `inf`, måtte verbet stå for over 73 % av «dør», altså 36 pp mer enn anslaget. Det er større enn 90-persentilen for feilen i valideringen (ca. 30 pp).
-5. **Forbehold (lagt til 2026-11-17): også `«døde»` er flertydig — og adjektivet er ikke trukket fra ennå.**
-   - `ordform_flertydighet` gir `døde` **`antall_lemma_id = 3`**: preteritum av *å dø* (13385), bestemt/flertall av adjektivet **`død`** (13386: *de døde, den døde mannen*) og det sjeldne verbet *å døde* (13402). Preteritumstallet over ($2\,100\,037$ i bøker; $12\,621\,972$ i `nb_totals`) inneholder altså også adjektivbruk.
-   - `estimate_wordform_shares("døde")` gir i dag verbet **100 %**, fordi `sqlite/decomposer.py` mangler ankre for adjektiv. Log-regresjonen dekker bare substantiv og verb, og adjektivkandidaten får 0 («ingen andre bøyningsformer»), selv om `dødt` er entydig med $343\,621$ i `nb_totals`. **Dette er en kjent mangel i dekomponereren.**
-   - **Sensitivitetsoverslag:** Forholdet `-e`-form / `-t`-form for entydige, «tilstandsaktige» adjektiv ligger rundt 4,7 (*blinde/blindt*), 9–10 (*nakne/nakent*, *syke/sykt*) og 14 (*gamle/gammelt*). Det gir adjektivet *døde* 13–38 % av treffene. Profilen til *dø* i bokkorpuset (med `pres` = $246\,300$ fra dør-dekomponeringen) blir da `pret` 64–71 % > `inf` 19–24 % > `pres` 10–12 % (uten adjektivkorreksjon 74 / 17 / 9 %). I `nb_totals` blir den 68–75 / 18–23 / 7–9 %.
-   - **Konklusjon:** Rangeringen `pret > inf > pres` (2A) er robust for adjektivkorreksjonen, men prosenttallene i punkt 4 er et øvre anslag for `pret`. Før foredraget bør adjektivandelen beregnes ordentlig (f.eks. med bigrammer *de/den/det døde* vs. *han/hun/som døde*, eller adjektivankre i dekomponereren).
+   - **Hvor robust er det?** For at `pres` skal komme over `inf`, måtte verbet stå for over 73 % av «dør», altså 36 pp mer enn anslaget. Det er større enn 90-persentilen for feilen i valideringen (ca. 30 pp). Adjektivet i «døde» er ikke trukket fra her; se punkt 5.
+5. **Forbehold: også `«døde»` er flertydig (oppdatert 2026-11-20).**
+   - `ordform_flertydighet` gir `døde` **`antall_lemma_id = 3`**: preteritum av *å dø* (13385), bestemt/flertall av adjektivet **`død`** (13386: *de døde, den døde mannen*) og det sjeldne verbet *å døde* (13402). Preteritumstallet over ($2\,100\,037$ i bøker) inneholder altså også adjektivbruk.
+   - **Adjektivankre i dekomponereren:** `sqlite/adjektiv_gold.py` velger 1 840 adjektiv (belagt i bokkorpuset) der m/f, e-form og nøytrum er entydige. Med kryssvalidering anslås e-formen med typisk avvik ×1,67 fra m/f + nøytrum og ×1,91 fra nøytrum alene. For *død* er nøytrum (*dødt*, $69\,425$) eneste anker, fordi «død» også er et substantiv.
+   - **Ankrene bestemmer ikke adjektivandelen.** `estimate_wordform_shares("døde", corpus="book")` gir 57 % *dø* / 39 % *død* / 4 % *døde*, men summen av de ukappede anslagene er bare **0,05 × observert**. Hele ordfamilien har atypiske ankre: *dødd* er sjelden fordi adjektivet overtar partisippets rolle (*han er død*, ikke *han har dødd*), *dødt* er sjelden, og substantivet *død* har nesten ikke flertall (*dødene*: 25 treff). Dekomponeringen av «død» har samme problem (0,19). Dekomponereren skriver nå ut en advarsel når summen / observert ligger utenfor 0,5–2.
+   - **Spennet:** modellen for alle adjektiv gir adjektivet bare ca. 2 % av «døde» (90-persentil 7 %), fordi frekvente *-t*-former ofte er adverb (*godt, sterkt*). Forholdet e-form / *-t*-form for tilstandsadjektiv i bøker (*blind* 4,1, *naken* 6,5, *syk* 9,8, *gammel* 10,5) gir 14–35 %. Det grove overslaget fra 2026-11-17 gikk opp til 46 %.
+   - **Kontroll i et tagget korpus (lagt til 2026-11-21):** i det OBT-taggede korpuset (8,4 mill. ord, `rapport_dekomponering_obt.md` §9) er 28 % av «døde» adjektivet *død*. Det ligger innenfor spennet for tilstandsadjektiv. Med 28 % blir profilen til *dø* i bokkorpuset pret 67 / inf 22 / pres 11 %.
+   - **Profilen til *dø* i bokkorpuset** (med `pres` = $246\,300$ fra dør-dekomponeringen):
+
+     | Adjektivandel av «døde» | pret | inf | pres |
+     | :--- | ---: | ---: | ---: |
+     | 0 % (ingen korreksjon) | 74,0 % | 17,4 % | 8,7 % |
+     | 2 % (alle adjektiv) | 73,6 % | 17,6 % | 8,8 % |
+     | 14–35 % (tilstandsadjektiv) | 71–65 % | 19–23 % | 10–12 % |
+     | 28 % (OBT-tagget korpus) | 67,2 % | 21,9 % | 10,9 % |
+     | 46 % (høyeste overslag) | 60,5 % | 26,3 % | 13,1 % |
+
+   - **Konklusjon:** rangeringen `pret > inf > pres` (2A) holder så lenge adjektivet står for under **77 %** av «døde». Det er langt over alle overslagene. Prosenttallene er usikre, rangeringen er det ikke. En presis adjektivandel krever kontekst (*de/den/det døde* mot *han/hun/som døde*), og bigrammer var ikke tilgjengelige fra API-ene vi bruker.
+   - **Sjekk av «dør»:** *dødd* er også anker for verbet i dør-dekomponeringen. Med bare infinitiv som anker blir verbandelen av «dør» 34,8 % i stedet for 36,5 %, så dør-resultatet påvirkes knapt.
 6. **Språklig tolkning:**
    - Og dette gir umiddelbart dyp språklig mening: Mens *forsvinne*, *ankomme* og *omkomme* (som er 100 % kollisjonsfrie i Sett A og blir stående i **2B**) sjelden brukes etter modalverb eller *å*, snakker vi på norsk svært ofte om *«å dø»* i infinitiv (*frykten for å dø, i ferd med å dø, skal dø, må dø, heller dø enn...*), mens pågående nåtid (*«han dør nå»*) er langt sjeldnere enn både fortid (*døde*) og infinitiv (*å dø*)!
 

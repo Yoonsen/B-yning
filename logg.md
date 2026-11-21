@@ -1131,3 +1131,380 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Neste steg**
 - Marie fletter når kollegaen har gitt klarsignal.
 - Etter flettingen bør `main` flettes inn i `figurer-deck` før nye loggoppføringer skrives der, så nummereringen fortsetter fra del 45 og vi unngår konflikt i `logg.md`.
+
+---
+
+## 2026-11-20 (del 45) — Stabilitet over tid: n-gram for bøker med flertydige former fordelt etter OBT per tiår
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- PR #5 (`multitagger-oppsett` → `main`) ble flettet av Marie etter klarsignal fra kollegaen. `multitagger-oppsett` og `notebook-dataoppslag` (helt inneholdt i `main`) er slettet. `rapport-verbtyper` og `figurer-deck` er kollegaens og er ikke rørt.
+- Ny gren `stabilitet-obt-fordeling`. Navnet viser at dette er én mulig analyse av stabilitet, basert på taggingen.
+- Metode, avtalt med Marie:
+  - Entydige former hentes rett fra NBs n-gram for bøker (bokmål, 1950–2020).
+  - Flertydige former fordeles med andelen leksemet har av formen i det OBT-taggede korpuset, regnet per tiår fra bøkene (skjønn- og faglitteratur).
+  - Aviser er holdt utenfor foreløpig: n-gram for aviser har ikke bokmålsfilter (*ikkje* ≈ 10 % av *ikke* + *ikkje* mot under 2 % i bøkene), mens OBT-andelene er fra bokmålsaviser.
+- Ny modul `sqlite/stabilitet_obt.py` (`python -m sqlite.stabilitet_obt`):
+  - Eksempellemmaer: substantiv *fisk*, *fisker*, *dør*, *krone*; verb *dø*, *gå*, *svare*, *sette*, *bygge*.
+  - Andeler per tiår med Wilson-intervall. Under 30 koblede forekomster i tiåret brukes andelen for hele perioden.
+  - Fire varianter: `obt_tiaar`, `obt_fast` (én andel for hele perioden), `decomposer` (regler, per tiår på n-gram-tallene) og `naiv` (rå formtall).
+  - Stabilitetsmål: gjennomsnittlig endring mellom påfølgende tiår og største avvik fra snittprofilen (pp).
+  - Skriver `resultater/stabilitet_obt_andeler.tsv` og `resultater/stabilitet_obt_profiler.tsv`.
+
+**Funn**
+- **Former der ett leksem dominerer** (*går* 91–96 % *gå*, *kroner* 96–99 % *krone*, *sett* 0 % *sette*, *svarer* 98–100 %): variantene gir nesten samme profil, og stabilitetsbildet er robust.
+  - *gå*: preteritum går ned fra 41 % (1950-tallet) til 33 % (1980–90-tallet) og opp igjen til 39 % (2020).
+  - *krone*: flertall ubestemt stiger fra 81 til 89 %.
+  - *fisk*: entall ubestemt er stabil rundt 67–70 % med OBT-fordeling, men 52–61 % med naive tall, fordi *fisker* (flertall) er overtelt.
+- **Former der flere leksemer har store andeler** (*satt*: *sette*/*sitte*; *dør*: *dø*/*dør*; *døde*: *dø*/*død*; *svart*/*svarte*: *svare*/adjektivet *svart*): OBT-andelene per tiår svinger mye (*satt* 19–43 %, *dør* som verb 33–72 %, *døde* 58–87 %).
+  - Svingningene skyldes i stor grad hvilke bøker som er med. Innenfor ett tiår varierer andelen for *satt* fra 6 til 78 % mellom bøkene, og et tiår har bare 6–10 bøker per teksttype.
+  - Variant `obt_tiaar` ser derfor *mindre* stabil ut enn de andre for slike lemmaer (*sette* 10,4 pp per tiår mot 5,3 naivt; *dø* 5,1 mot 2,0). Det er i stor grad målestøy, ikke språkendring.
+  - Wilson-intervallene er regnet per forekomst og er for smale, fordi forekomster i samme bok ikke er uavhengige.
+- **Decomposer** gjentar feilene fra valideringen (del 42): *svart* og *svarte* gis 100 % til *svare* (adjektivet mangler), *kroner* bare 60–64 % til *krone*, og *fisker* 47–61 % til *fisk*.
+
+**Vurdering (Marie og Claude):** Med dagens korpus (6–10 bøker per teksttype og tiår) er fordelingen av flertydige former per tiår for avhengig av enkeltbøker til å gi en god analyse av stabilitet over tid, unntatt for former der ett leksem dominerer. Analysen legges til side inntil videre. Oppsettet kan kjøres på nytt med et større korpus.
+
+**Neste steg** (ikke avtalt)
+- Usikkerhet med bootstrap over dokumenter (boka som enhet), for å skille ekte endring fra utvalgsstøy i andeler og profiler.
+- Alternativt bredere tidsvinduer (f.eks. 20 år) eller et større tagget korpus for formene der flere leksemer har store andeler.
+- Rapport når metoden er avklart.
+
+---
+
+## 2026-11-20 (del 46) — Korpuset utvidet til fem ganger størrelsen, i lag; fulltekster hentet
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+*Merk: del 45 ligger på grenen `stabilitet-obt-fordeling`, som ikke er flettet inn i `main` ennå. Denne grenen (`korpus-utvidelse`) er laget fra `main`.*
+
+**Hva ble gjort**
+- Marie ønsket et større korpus i reserve. Det skal ikke tagges nå; omfanget avgjøres senere sammen med kollegaen.
+- Avtalt: fem ganger så stort, trukket i fire nye lag. Hvert lag er balansert som det opprinnelige (3 teksttyper × 8 tiår, ca. 417 000 ord per celle), slik at man kan tagge bare noen lag.
+- `sqlite/korpusutvalg.py`:
+  - ny funksjon `utvid_korpus` og valgene `--utvid` / `--nye-lag`, og ny kolonne `lag` (det opprinnelige korpuset = lag 1);
+  - ingen dokumenter trekkes to ganger;
+  - bøker: maks én bok per forfatter per celle i hele korpuset (alle lag), for å få mange ulike forfattere;
+  - aviser: maks 3 numre per tittel per celle i hvert lag;
+  - dhlabid sammenlignes som tekst.
+  - Eksempelet «liten prøve» i dokumentasjonen er rettet (`--totalt 2400000`). Med 240 000 ord blir maksgrensen per dokument (35 % av cellemålet) lavere enn `MIN_ORD_BOK`, så ingen bøker kan velges.
+- Kjørt: `python -m sqlite.korpusutvalg --utvid korpus/korpusoversikt.tsv --nye-lag 4 --ut korpus/korpusoversikt.tsv` (via en midlertidig fil, kontrollert før den erstattet oversikten).
+- Fulltekstene er hentet med `hent_fulltekster.py` (utenfor repoet) til samme mappe som før, utenfor repoet og OneDrive.
+
+**Funn**
+- `korpus/korpusoversikt.tsv`: 1 097 dokumenter, 53 588 547 ord.
+
+  | lag | dokumenter | ord |
+  |---|---|---|
+  | 1 | 224 | 10 724 916 |
+  | 2 | 219 | 10 655 322 |
+  | 3 | 222 | 10 686 218 |
+  | 4 | 211 | 10 698 299 |
+  | 5 | 221 | 10 823 792 |
+
+- Kontroller:
+  - alle 120 celler (lag × teksttype × tiår) har nådd ordmålet (minst 416 686 ord);
+  - lag 1 er uendret felt for felt;
+  - ingen duplikater (dhlabid, URN);
+  - ingen forfatter mer enn én gang per celle;
+  - maks 2 numre per avistittel per celle og lag (4 totalt);
+  - bokmålsandel ≥ 0,95 for alle med nok markørord (6 bøker uten nok markørord, som i det opprinnelige utvalget).
+- Per celle over alle lag: 32–39 skjønnlitterære bøker, 35–47 faglitterære bøker og 40–88 avisnumre.
+- Fulltekster: 1 097/1 097 hentet, 267 MB. Antall ord er identisk med `n_ord` for alle.
+
+**Neste steg**
+- Marie kopierer de nye tekstene til Linux-maskinen.
+- Tagging venter på avklaring med kollegaen: for eksempel lag 2 for et dobbelt så stort korpus, eller alle lag.
+  - Med `tagg` hoppes allerede taggede dokumenter over.
+  - Databasen blir ca. 1,5 GB ved alle lag, noe som påvirker deling via Git LFS.
+
+---
+
+## 2026-11-20 (del 47) — Adjektivet i «døde» (hull 5)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny `sqlite/adjektiv_gold.py`: gullstandard for adjektiv, dvs. 1 852 lemmaer i `boy_gruppe 'adjektiv'` der m/f, e-form og nøytrum er innbyrdes ulike og helt entydige. 1 840 av dem er belagt i bokkorpuset. Skriptet kryssvaliderer log-regresjonen for e-formen.
+- `sqlite/decomposer.py`:
+  - `GOLD_SLOTS["adjektiv"] = (1, 2, 4)`; kategori 3 (be ent) slås sammen med 2 (fl) via `SLOT_ALIAS`.
+  - Adjektiv kan bruke ett anker (`MIN_ANCHORS_BY_BG`), fordi paradigmet bare har to mulige ankre.
+  - Nytt felt `calibration` (sum ukappede anslag / observert). CLI-et gir advarsel utenfor 0,5–2 (`CALIBRATION_OK`).
+- `rapport_verbtyper.md` §7.2 punkt 5 er skrevet om med tabell. Ny tekst om adjektiv i `rapport_dekomponering_validering.md` §6. Lysbilde 11 (boks og notat) og plan (hull 5, rad 10) er oppdatert.
+- Bigrammer (*den døde* / *han døde*) ble prøvd: bok-API-et gir 0 treff for flerordsuttrykk, og n-gram-viewer-endepunktet (`fetch_ngram_sp`) svarer med 301 / HTML. Tomme bigramrader i den lokale cachen er slettet.
+
+### Funn
+- Adjektivmodellen: typisk avvik ×1,67 (m/f + nøyt) og ×1,91 (bare nøyt) i bøker, uten skjevhet.
+- «døde» i bøker: 57 % *dø* / 39 % *død* / 4 % *døde*, men sum / obs. er **0,05**. Ankrene i ordfamilien er atypiske: *dødd* er sjelden (adjektivet tar partisippets plass: *er død*), *dødt* er sjelden, og *dødene* har 25 treff. «død» har samme problem (0,19). **Adjektivandelen er ikke bestemt av ordboksankrene.**
+- Overslag for adjektivandelen: 2 % (alle adjektiv; frekvente *-t*-former er ofte adverb) til 14–35 % (tilstandsadjektiv *blind, naken, syk, gammel*) og 46 % (grovt overslag fra del 17). *dø* er 2A så lenge adjektivet er under **76,5 %** av «døde». Profil: pret 74–61 / inf 18–26 / pres 9–13 %.
+- «dør» er robust for at *dødd* er atypisk. Med bare infinitiv som verbanker blir verbandelen 34,8 % i stedet for 36,5 %.
+
+### Neste steg
+- En presis adjektivandel krever kontekstdata (bigrammer eller konkordanser fra DH-lab). Det er ikke nødvendig for foredraget.
+- Referanser (hull 6) og figur for paradigmegrafen.
+
+---
+
+## 2026-11-21 (del 48) — Referansene sjekket (hull 6)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Alle referansene i `rapport_verbtyper.md` §7.1 er sjekket mot forlags- og repositorieoppføringer, og Janda & Lyashevskaya også mot sin egen referanseliste. §7.1 er skrevet om og har nå en full referanseliste.
+- Lysbilde 14 «Hva er nytt?» har fått rettet etikett og Milin-referanse og nytt talenotat. Planen er oppdatert (rad 13 og hull 6).
+
+### Funn
+- **Feil i rapporten:** «Paradigms bit by bit» er ikke av Milin, Filipović Đurđević & Baayen i *Cognitive Linguistics* 20(1). Det er Milin, Kuperman, Kostić & Baayen 2009 i Blevins & Blevins (red.), *Analogy in Grammar*, OUP, s. 214–252. Funnet om relativ entropi mellom leksemets og klassens profil er Milin, Filipović Đurđević & Moscoso del Prado Martín 2009, *Journal of Memory and Language* 60(1), 50–64 (serbiske substantiv).
+- Janda & Lyashevskaya 2011 har sidene 717–762 (ikke 719–763; det var manuskriptversjonen). DOI 10.1515/COGL.2011.027.
+- Newman 2008 er «Aiming low in linguistics», et konferansebidrag til IsCLL-11 i Hsinchu. Janda & Lyashevskaya siterer også Newman & Rice 2006 og Rice & Newman 2005.
+- Karlsson 1986 er bekreftet: ZPSK 39(1), 19–28. Karlsson 1985 er «Paradigms and word forms», *Studia Gramatyczne* 7. «Karlsson 2000» fant jeg ikke, så den er tatt ut.
+- Arppe 2006 er «Frequency considerations in morphology, revisited – Finnish verbs differ, too», i festskriftet for Karlsson, s. 175–189.
+- Innholdet i Karlsson- og Arppe-arbeidene er bare kjent gjennom sekundærkilder. Begrepet «fokalformer» er derfor ikke lenger tilskrevet Karlsson.
+
+### Neste steg
+- Les Karlsson 1986 og Arppe 2006 i fulltekst om lysbilde 14 skal si noe mer spesifikt om dem.
+- Figur for paradigmegrafen og oppsummeringslysbildet. Abstractet må samkjøres med dataene for *vite* og *eple*.
+
+---
+
+## 2026-11-21 (del 49) — Figur av paradigmegrafen
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/figurer.py`: ny `fig_paradigm_graph()` → `tekst/figurer/paradigmegraf_fisker.png`.
+  - Figuren tegner komponenten rundt «fisker» rett fra `paradigm_graph.inspect_component`, uten hardkodede former.
+  - Noder er lemmaer, med de entydige kjerneformene (ankrene) inne i boksen. Partisippformer på *-ende/-ede/-ete* er utelatt.
+  - Kantene er merket med de delte formene, og linjetykkelsen viser antallet.
+  - Fontvarslene fra matplotlib er dempet.
+- Lysbilde 4 viser figuren i stedet for de håndtegnede boksene, har nytt talenotat og er ikke lenger merket UTKAST. Planen (rad 4, hull 2) er oppdatert.
+
+### Funn
+- Komponenten er en komplett graf (K4): alle fire lemmaene deler minst «fisker» med hverandre.
+- Ankrene er svært ujevnt fordelt:
+  - *fisker* (subst.) har tre: *fiskere, fiskeren, fiskerne*.
+  - *fisk* har bare *fisken*.
+  - Verbet *fiske* har bare s-passiv *fiskes*; *fisk* (imp.), *fiske*, *fisker*, *fiska* og *fisket* deles.
+  - Substantivet *et fiske* har **ingen** entydige former. Det kan derfor ikke anslås med ankre.
+- Firergrupper som denne er sjeldne: 452 komponenter, 1,2 % av 151 648 lemmaer.
+
+### Neste steg
+- Oppsummeringslysbildet (rad 14).
+- Samkjøre abstractet med dataene for *vite* og *eple*.
+
+---
+
+## 2026-11-21 (del 50) — Abstractet samkjørt med dataene
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `abstract.md`: revidert versjon øverst, med en endringstabell og den innsendte versjonen uendret nederst.
+- Lysbilde 2 har nye eksempler: tre verb og tre substantiv med ulik form på topp. Chipsene har lik bredde, og UTKAST-merket er fjernet. Talenotatet forklarer endringene. Planen er oppdatert.
+
+### Funn / beslutninger
+- *vite* og *eple* er beholdt med riktig retning: **vet** 55 % og **epler** 45 % er formene på topp, og begge har samme toppform alle 71 år.
+- *gå* er erstattet med *forsvinne* (pret 54 %, topp alle 71 år). *gikk* er på topp bare 70 % av årene, og «går» inkluderer *i går*.
+- *buss* er erstattet med *sommer* (ent be 69 %). Alle formene til *buss* kolliderer med *busse* i Ordbanken.
+- *vurdere* (inf 70 %) og *tid* (ent ub 63 %) er lagt til, slik at hver kategori har et eksempel.
+- Abstractet nevner nå valideringen (riktig hovedleksem i om lag fire av fem kunstige homografer).
+- Merk: den reviderte teksten er ikke sendt til konferansen. Om den skal brukes i programmet, må det avgjøres av forfatterne.
+
+### Neste steg
+- Oppsummeringslysbildet (rad 14).
+- Sjekke merge-konflikter og åpne pull requests (brukerens ønske).
+
+---
+
+## 2026-11-21 (del 51) — `main` flettet inn i `figurer-deck`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `origin/main` er flettet inn i `figurer-deck`, slik at PR 6 kan flettes uten konflikt. Det inkluderer PR 5 (`multitagger-oppsett`).
+- Eneste konflikt var `logg.md`: begge grenene hadde brukt del 21–24. Konflikten er løst ved å bruke `main` sin logg uendret. Oppføringene fra `figurer-deck` (adjektivet i «døde», referanser, paradigmegraf og abstract) er lagt til etter del 44 som **del 47–50**. Del 45 og 46 er holdt av til oppføringene på `stabilitet-obt-fordeling` og `korpus-utvidelse`, som ikke er flettet ennå.
+- Etter flettingen er det kontrollert at `python3 -m sqlite.decomposer dør --korpus book` gir de samme tallene som før (63,5 / 36,5 %).
+
+### Åpent spørsmål
+- `rapport_dekomponering_obt.md` (del 42) ble kjørt før dekomponereren fikk adjektivankre (del 47). Gruppen «umodellert ≥ 5 %» består mest av former der OBT gir et adjektiv. De tallene vil trolig endre seg ved en ny kjøring av `python3 -m sqlite.valider_dekomponering_obt`. Rapporten er ikke endret; det bør avtales med den som skrev den.
+
+---
+
+## 2026-11-21 (del 52) — OBT-valideringen kjørt på nytt med adjektivankre
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/korpus_profiler.py`: `_corpus_gold_profiles` bygger nå også adjektiv-gullstandarden. Utvalget gjøres med Ordbankens ekte `nb_totals`, som for substantiv og verb, og frekvensene hentes fra korpuset. Uten denne endringen hadde `decomposer.gold_profiles` valgt adjektivene med korpusets frekvenser.
+- `python3 -m sqlite.valider_dekomponering_obt` er kjørt på nytt (ca. 30 sek). `resultater/dekomponering_obt_former.tsv` og `_profiler.tsv` er overskrevet; de gamle filene ligger i commit `390d420`.
+- `rapport_dekomponering_obt.md`: ny §9 med de nye tallene. §3–5 er beholdt slik de ble skrevet og merket «første kjøring». Anbefaling 1 er merket som gjennomført for vanlige adjektiv.
+- OBT-andelen for «døde» er lagt inn i `rapport_verbtyper.md` §7.2 punkt 5, i lysbilde 11 (boks og notat) og i planen (hull 5).
+
+### Funn
+- Innholdsord, logreg: medianavviket gikk fra 18,4 til **13,9 pp**, og riktig leksem størst fra 69 til **73 %**.
+- 1 321 former har nå alle kandidatene modellert (før 1 206). 129 former ble mer enn 5 pp bedre, 12 mer enn 5 pp verre.
+- **«døde»:** OBT gir 72 % *dø* / 28 % *død* (adj.), og decomposer gir nå 71 / 29 (før 100 / 0). Grunnlaget er bare 0,1. OBT-tallet (28 %) er den beste empiriske kontrollen av adjektivandelen og ligger innenfor spennet for tilstandsadjektiv (14–35 %).
+- Profilen til *dø* avviker 6,0 pp fra OBT (før 11,7) og er nå bedre enn rå formtall (8,1 pp).
+- **Ny feiltype:** sjeldne adjektiv i ordboka tar for mye når grunnlaget er lite: *grunn* (adj 63 %, OBT 2 %), *bein*, *faren*, *maken*, *engelsk*, *sikre*.
+- Fortsatt umodellert: ubøyelige adjektiv (*stille*, *få*), uregelrette (*liten/lille/litt*, *mange/flere*) og adjektiv med flertydige ankre (*hel/helt*, *ny/nytt*).
+
+### Neste steg
+- Nedvekte sjeldne ordbokshomografer, eller la grunnlaget styre (anbefaling 2–3 i OBT-rapporten).
+- Oppsummeringslysbildet.
+
+---
+
+## 2026-11-21 (del 53) — Oppsummeringslysbildet
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Lysbilde 15 «Bøyningsprofiler er leksikalske — og stabile» er skrevet om fra en plassholder til fire nummererte kort på innholdslayouten. Planen (rad 14) er oppdatert.
+  1. *Hvert leksem har sin favorittform:* alle seks rekkefølger blant 580 verb; substantiv skiller seg først på tall.
+  2. *Profilene står stille i 70 år:* samme toppform alle 71 år for 46 % av verbene og 53 % av substantivene.
+  3. *Profilene kan brukes baklengs:* riktig hovedleksem i om lag 4 av 5 tilfeller; «dør» 64 % substantiv; *dø* blir 2A.
+  4. *Andelene er usikre:* ±10–15 pp; metoden svikter uten entydige former eller når sjeldne ordbokshomografer får for stor vekt.
+- Talenotatet viser hvor hvert tall kommer fra.
+
+### Neste steg
+- Gå gjennom hele decket for UTKAST-merker og «mangler»-bokser som gjenstår.
+- Nedvekte sjeldne ordbokshomografer i dekomponereren (OBT-rapporten §9).
+
+---
+
+## 2026-11-21 (del 54) — Maries grener flettet inn i `figurer-deck`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `stabilitet-obt-fordeling` (del 45) og `korpus-utvidelse` (del 46) er flettet inn i `figurer-deck`, slik at de følger med PR 6 til `main`.
+- Eneste konflikt var `logg.md`. Oppføringene er satt inn i nummerrekkefølge: del 45 og 46 kommer etter del 44 og før del 47. Ingen tekst er endret.
+- Nye filer fra grenene: `sqlite/stabilitet_obt.py`, `resultater/stabilitet_obt_profiler.tsv` og utvidet `sqlite/korpusutvalg.py` og `korpus/korpusoversikt.tsv` (1 097 dokumenter i fem lag).
+
+### Observasjoner
+- Det utvidede korpuset er ikke tagget (del 46). `korpus/obt_frekvenser.db` er uendret, så OBT-valideringen fra del 52 gjelder fortsatt. Den bør kjøres på nytt hvis flere lag tagges.
+- Del 45 legger stabilitetsanalysen per tiår til side: med 6–10 bøker per teksttype og tiår er fordelingen av flertydige former for avhengig av enkeltbøker. Analysen ble kjørt før adjektivankrene, så decomposer-tallene for *svart/svarte* der er utdatert.
+
+### Neste steg
+- Møte mandag: gå gjennom PR 6, de tre UTKAST-lysbildene og hvor mye av det utvidede korpuset som skal tagges.
+
+---
+
+## 2026-11-21 (del 55) — Sjeldne homografer vektet ned i dekomponereren
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `sqlite/decomposer.py`: ny `shared_form_weights` og konstantene `SHARE_MODE = "masse"` og `SHARE_FLOOR = 0.6`.
+  - En form som deles av flere lemmaer, ble før nedvektet med 1/n² for alle.
+  - Nå fordeles den etter hvor mye entydig bruk hvert lemma har, med et gulv på 0,6/n.
+- Prøvd og forkastet: et tillegg etter hvor mye entydig bruk hele paradigmet har (`PRIOR_ALPHA`). Medianen ble 15,6–19,5 pp (mot 13,9), og *kroner* ble mye verre.
+- Prøvd og fjernet: å regne dominerende delte former som «praktisk entydige» i reglene. Det hadde ingen effekt.
+- OBT-valideringen er kjørt på nytt med de nye standardinnstillingene, og resultatfilene er oppdatert. Ny §10 i `rapport_dekomponering_obt.md`.
+
+### Funn
+- Innholdsord, logreg: median 13,9 → **13,5 pp**, riktig flest 72,9 → **73,4 %**. 74 former ble bedre og 28 verre (> 5 pp).
+- Bedre: *sola, livet, ben, lufta*. Verre: *hendene, skien, hoppe*. Der har det sjeldne lemmaet flere entydige former enn det vanlige.
+- *grunn* og *bein* er ikke løst. Substantivet *grunn* har ingen entydige former; hele paradigmet deles med *ei grunne*. Det krever ekstern frekvensinformasjon.
+- Uendret: «dør», «døde» og «fisker» i bokkorpuset og alle profilene. Decket påvirkes ikke.
+
+### Neste steg
+- Eventuelt en liste over sjeldne ordbokshomografer, eller lemmafrekvenser fra OBT-korpuset, som forhåndsvekt.
+- De tre UTKAST-lysbildene.
+
+---
+
+## 2026-11-21 (del 56) — Leksemandeler over tid med usikkerhet: «dør» og «tro»
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Brukstilfelle (fra brukeren): en ordbokbruker ser et paradigme og vil se kurven for ordet, ikke for overflateformen.
+- `sqlite/decomposer.py`:
+  - Flertydighet telles per leksem (`LEXEME_LEVEL`), og homografe oppslag av samme leksem slås sammen.
+  - Valgfri ekstern fordeling av delte ankerformer (`set_anchor_split`, `obt_anchor_split`), med pooling over former som har samme lemmasett, og kategorier med OBT-andel ≥ 95 % som anker (`EXT_ANCHOR_MIN`).
+  - Resultatet har nå `anchor_weights` og `method_used` per kandidat.
+- Ny `sqlite/tidsserie.py`: stabil profil (xᵢ(t) = x̂ᵢ/Rᵢ · Rᵢ(t)) og Monte Carlo-bånd med σ kalibrert på de kunstige homografene (logreg 0,78, regler 0,93). Rapporterer både nivå og endring.
+- Ny figur `tekst/figurer/dor_tro_over_tid.png` (`figurer.fig_time_decomposition`). Ny rapport `rapport_dekomponering_tid.md`.
+- OBT-valideringen er kjørt med leksemnivå (uten OBT-ankre): riktig flest 74,0 %, median 13,7 pp, 90-persentil 78,8 pp. Resultatfilene i `resultater/` er ikke overskrevet; tallene står i rapporten §4.
+
+### Funn
+- «dør»: *en dør* ca. 63–66 % gjennom hele perioden. Endringen 1950–2020 er +3 pp (80 %: +1 til +3).
+- «tro»: *en tro* går fra 47 til 33 %, og *å tro* fra 45 til 55 %. Endringen er −14 pp (−15 til −7) for substantivet.
+- Nivåene har ±25–30 pp usikkerhet; endringene er mye sikrere fordi profilfeilen er felles for alle år.
+- «grunn» med OBT-ankre: subst. 91 %, mot adjektiv 75 % uten.
+- Uendret: «dør», «døde» og «fisker» i bokkorpuset uten OBT-ankre (decket påvirkes ikke).
+
+### Neste steg
+- Teste antakelsen om stabil profil, f.eks. per tiår i OBT-korpuset (men se del 45 om støy).
+- Vurdere om figuren skal inn i decket, f.eks. som et eksempel på brukstilfellet.
+
+---
+
+## 2026-11-21 (del 57) — Bigrammer til dekomponering
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Brukeren spurte om bigrammer som «en tro» / «å tro» kan disambiguere.
+- Fant at NB N-gram (app.nb.no/ngram) bruker `https://api.nb.no/dhlab/nb_ngram/ngram/query`, som gir uni-, bi- og trigrammer per år. Det gamle `sp_tjenester`-endepunktet videresender dit. Del 47 var altså feil om at bigrammer ikke er tilgjengelige.
+- `sqlite/ngram.py`: ny `fetch_nb_ngram`, mellomlagret som korpus `nb_ngram_bok`.
+- Ny `sqlite/bigram_kontekst.py`: kontekstrater lært på 120 entydige ord per celle; `decompose` (B/r for alle kandidater) og `decompose_residual` (verbet fra bigrammer, resten til substantivet), med bånd fra spredningen i kontekstraten.
+- Ny §7 i `rapport_dekomponering_tid.md`.
+
+### Funn
+- Kontekstrater: inf 56 % (sd log 0,21) og pres 24 % (0,30) er stabile. Subst. ent ub etter *en/possessiv* er 9 % i median, men 0,2–30 % mellom ord (sd log 1,26), så den er ubrukelig.
+- Restmetoden: «dør» 54 % verb (37–78), «tro» 54 % verb (41–70). OBT gir 52 og 60 %. For «dør» er bigrammene nærmere OBT enn paradigmemetoden (37 %).
+- «tro» over tid: verb 39 → 58 % (1950–2020), samme retning som paradigmemetoden.
+- Et vektet snitt av de to metodene gir «dør» ca. 49 % verb. Det er regnet for hånd og ikke lagt inn i koden.
+
+### Neste steg
+- Kombinere paradigme- og bigramanslaget i `tidsserie.py` (invers varians i logit-skala) og validere på flere former mot OBT.
+- Bigrammer kan også gi adjektivandelen av «døde» (*de/den/det døde* mot *han/hun/som døde*).
+
+---
+
+## 2026-11-21 (del 58) — Kjønnstilpassede substantivkontekster i bigrammetoden
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Brukeren spurte om alle formene *en N, ei N, et N* var sjekket.
+  - *en/ei/et* var med for alle substantiv.
+  - Eiendomsordene var bare i hankjønnsform; *mitt/sitt/ditt/vårt* og *mi/si/di* manglet.
+- `sqlite/bigram_kontekst.py`: substantivkontekstene tilpasses nå kjønnet (fra `ordklasser` i Ordbanken: mask/fem/nøyt), pluss de kjønnsnøytrale *hans/hennes/deres* (`cues_for`, `noun_gender`).
+- §7 i `rapport_dekomponering_tid.md` er oppdatert.
+
+### Funn
+- Spredningen i substantivraten endres lite: sd log 1,26 → 1,22, og medianen går fra 9,0 til 9,9 %.
+- For intetkjønnsord blir raten riktigere (median 14 → 20 %), men bare 6 av de 120 hyppigste gullstandardordene er rene intetkjønnsord.
+- Variasjonen skyldes betydningen: månedsnavn og masseord ligger på 0 %, *serie/følelse/bedrift* på 38–48 %. Flertallsandelen korrelerer med raten (0,72), men senker sd bare til 1,05.
+- Restmetoden er uendret: «dør» 54 % verb og «tro» 54 % verb. Bare den øvre grensen fra substantivbigrammene er litt strammere.
+
+### Neste steg
+- Kombinere paradigme- og bigramanslaget og validere mot OBT (se del 57).
+
+---
+
+## 2026-11-21 (del 59) — Paradigme og bigram kombinert og validert mot OBT
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny `sqlite/kombinert.py`:
+  - `paradigm_estimate`, `bigram_estimate`, `combine` (invers varians i logit-skala), `best_estimate` (anbefalt) og `validate`.
+  - Valideringen bruker de 150 hyppigste substantiv/verb-homografene i OBT-korpuset (verb i inf/pres) og skriver `resultater/kombinert_validering.tsv`.
+- `sqlite/bigram_kontekst.py`: *det/den* lagt til som presenskontekst; celler uten kontekster gir tom liste.
+- Ny figur `tekst/figurer/dor_tro_metoder.png` (`figurer.fig_methods_over_time`). Ny §8 i `rapport_dekomponering_tid.md`.
+
+### Funn
+- Median avvik mot OBT: paradigme 9,7 pp, bigram **5,0 pp**, kombinert 5,4 pp. Riktig flertallsleksem: 79 / **95** / 93 %.
+- 80 %-intervallene var for smale: fasiten lå innenfor for bare 42–46 % av formene. Faktor 2,3 (paradigme) og 4,3 (bigram) gir 80 % dekning, men det er tilpasset på de samme formene.
+- Med kalibrert usikkerhet blir kombinasjonen dårligere enn bigrammene alene. Bigrammene er derfor hovedmetode, med paradigmet som reserve.
+- Empirisk usikkerhet for bigrammene: ±15 pp generelt, ±29 pp for jevnt fordelte former.
+- «dør» 51 % verb (OBT 52), «tro» 54 % verb (OBT 68 av substantiv + verb).
+
+### Neste steg
+- Flere kontekster, f.eks. høyrekontekst (*tro på*, *dør av*), for å stramme inn usikkerheten.
+- Bruke bigrammer for adjektivandelen av «døde».
+- Teste usikkerheten på et utvalg som ikke er brukt til å kalibrere den.

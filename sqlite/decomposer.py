@@ -137,9 +137,17 @@ def estimate_from_slots(
 # som reserve når mål-kategorien ikke finnes i gullstandarden (imperativ, s-passiv, adjektiv osv.)
 # eller når kandidaten mangler entydige ankre.
 
-GOLD_SLOTS = {"substantiv": (1, 2, 3, 4), "verb, normal": (1, 2, 4, 5)}
+GOLD_SLOTS = {"substantiv": (1, 2, 3, 4), "verb, normal": (1, 2, 4, 5), "adjektiv": (1, 2, 4)}
+# Adjektiv: kategori 2 (fl) og 3 (be ent) har samme form (*store*) og behandles som én «e-form» (2).
+SLOT_ALIAS = {"adjektiv": {3: 2}}
 BOOK_PERIOD = (1950, 2020)
 MIN_ANCHORS = 2  # minst to helt entydige ankerkategorier for å bruke log-regresjon
+# Adjektivparadigmet har bare to mulige ankre (m/f og nøytrum). For *død* er «død» også et substantiv,
+# så nøytrum (*dødt*) er eneste anker. Kryssvalidert feil med bare nøytrum: se sqlite/adjektiv_gold.py.
+MIN_ANCHORS_BY_BG = {"adjektiv": 1}
+# Sum ukappede anslag / observert utenfor dette intervallet gir advarsel i CLI-et. I valideringen
+# (kunstige homografer, log-regresjon) lå medianen på 0,9–1,0.
+CALIBRATION_OK = (0.5, 2.0)
 _GOLD_CACHE: dict[tuple[str, str], list[dict[int, float]]] = {}
 _MODEL_CACHE: dict[tuple, tuple[np.ndarray, int]] = {}
 
@@ -172,6 +180,10 @@ def gold_profiles(bg: str, corpus: str, conn: sqlite3.Connection) -> list[dict[i
             from sqlite.substantivtyper import load_noun_forms, select_gold
 
             gold, _ = select_gold(load_noun_forms(conn))
+        elif bg == "adjektiv":
+            from sqlite.adjektiv_gold import select_adjective_gold
+
+            gold = select_adjective_gold(conn)
         else:
             from sqlite.verbtyper import load_verbs, select_sets
 
@@ -204,6 +216,8 @@ def estimate_logreg(
         return None
     # Mål-kategorier utenfor gullstandarden (f.eks. adjektivisk partisipp som deler form med pret/perf-part)
     # ignoreres; finnes ingen mål-kategori i gullstandarden, brukes reglene.
+    alias = SLOT_ALIAS.get(bg, {})
+    tslots = {alias.get(t, t) for t in tslots}
     targets = sorted(t for t in tslots if t in slots)
     if not targets:
         return None
@@ -211,16 +225,138 @@ def estimate_logreg(
     # entydige kategorier) ble anslagene åpenbart gale (f.eks. «landet» 63 % verb), så da brukes reglene.
     anchors = tuple(
         s for s in slots
-        if s not in tslots and s in slot_info and slot_info[s]["max_lem_cnt"] == 1 and slot_info[s]["freq"] > 0
+        if s not in tslots and s in slot_info and slot_info[s]["freq"] > 0
+        and (slot_info[s]["max_lem_cnt"] == 1 or slot_info[s].get("min_ext_weight", 0.0) >= EXT_ANCHOR_MIN)
     )
-    if len(anchors) < MIN_ANCHORS:
+    if len(anchors) < MIN_ANCHORS_BY_BG.get(bg, MIN_ANCHORS):
         return None
     est = 0.0
     for t in targets:
         beta, n = fit_logreg(bg, t, anchors, corpus, conn)
-        est += float(np.exp(beta @ np.array([1.0] + [np.log(slot_info[a]["freq"]) for a in anchors])))
+        est += float(np.exp(beta @ np.array([1.0] + [np.log(slot_info[a]["eff_freq"]) for a in anchors])))
     names = "+".join(slot_info[a]["boy_tekst"] for a in anchors)
     return est, f"log-regresjon fra {names} (gullstandard N={n}, {corpus})"
+
+
+# Flertydighet regnes per leksem (grunnform + ordklasse), ikke per lemma_id (logg del 56). Homografe
+# oppslag av samme leksem i Ordbanken (f.eks. to oppføringer for subst. *tro*, to for *far*) deler alle
+# former; med antall_lemma_id ble de regnet som flertydige, slik at leksemet mistet ankrene sine.
+LEXEME_LEVEL = True
+
+
+def _amb_count(r) -> int:
+    return r["antall_leksem_pos"] if LEXEME_LEVEL else r["antall_lemma_id"]
+
+
+# Delte former i paradigmet (logg del 55). Tidligere ble en form som deles av n lemmaer, nedvektet med
+# 1/n² for alle. Da straffer et sjeldent ordbokshomograf (subst. *ei grunne* i «grunnen») det vanlige
+# leksemet like hardt som seg selv. Med SHARE_MODE = "masse" fordeles den delte formen i stedet på
+# lemmaene etter hvor mye entydig bruk hvert av dem har (sum av formene med antall_lemma_id = 1), med
+# et gulv på SHARE_FLOOR / n per lemma. Har ingen av lemmaene entydig bruk (f.eks. subst. *grunn* og
+# *grunne*, som deler hele paradigmet), brukes 1/n² som før; da kan paradigmet ikke skille dem.
+# Testet mot OBT-korpuset (rapport_dekomponering_obt.md §10): gulv 0,1 / 0,3 / 0,6 ga median 13,8 /
+# 13,7 / 13,5 pp mot 13,9 uten; 0,6 er valgt.
+SHARE_MODE = "masse"
+SHARE_FLOOR = 0.6
+
+
+# Valgfri ekstern kilde for hvordan delte former fordeles på lemmaer (logg del 56): en funksjon
+# form -> {lemma_id: antall}. `set_anchor_split(obt_anchor_split())` bruker det OBT-taggede korpuset.
+# Gjelder bare formene i resten av paradigmet (ankrene), aldri selve oppslagsordet.
+ANCHOR_SPLIT = None
+EXT_ANCHOR_MIN = 0.95  # OBT-andel som gjør en delt kategori brukbar som anker i log-regresjonen
+ANCHOR_SPLIT_MIN_N = 5  # færre OBT-forekomster av formen enn dette: bruk entydig bruk (masse) i stedet
+
+
+def set_anchor_split(provider) -> None:
+    global ANCHOR_SPLIT
+    ANCHOR_SPLIT = provider
+
+
+def obt_anchor_split(db_path: str | None = None):
+    """Leverandør for set_anchor_split: OBT-fordelingen av en form på lemma_id i korpus/obt_frekvenser.db."""
+    from sqlite.korpus_profiler import DEFAULT_SHARED_DB, _ro_uri, form_split
+
+    k = sqlite3.connect(_ro_uri(db_path or DEFAULT_SHARED_DB), uri=True)
+    k.row_factory = sqlite3.Row
+    cache: dict[str, dict[int, float]] = {}
+
+    def split(form: str) -> dict[int, float]:
+        if form not in cache:
+            out: dict[int, float] = {}
+            for r in form_split(k, form):
+                if r["lemma_id"] is not None:
+                    out[r["lemma_id"]] = out.get(r["lemma_id"], 0.0) + r["n"]
+            cache[form] = out
+        return cache[form]
+
+    return split
+
+
+def shared_form_weights(
+    oppslag: str, paradigms: dict[int, list], corpus: str, conn: sqlite3.Connection
+) -> dict[tuple[int, str], tuple[float, float]]:
+    """{(lemma_id, form): (vekt med gulv, ren masseandel)} for delte former i kandidatparadigmene."""
+    shared = sorted({r["oppslag"] for p in paradigms.values() for r in p
+                     if _amb_count(r) > 1 and r["oppslag"] != oppslag})
+    if not shared:
+        return {}
+    owners: dict[str, set[int]] = {}
+    for i in range(0, len(shared), 500):
+        chunk = shared[i:i + 500]
+        q = f"SELECT DISTINCT oppslag, lemma_id FROM lemma_former WHERE oppslag IN ({','.join('?' * len(chunk))})"
+        for w, lid in conn.execute(q, chunk).fetchall():
+            owners.setdefault(w, set()).add(lid)
+    lemmas = sorted({lid for s in owners.values() for lid in s})
+    unamb_forms: dict[int, set[str]] = {}
+    for i in range(0, len(lemmas), 500):
+        chunk = lemmas[i:i + 500]
+        q = (f"SELECT DISTINCT lf.lemma_id, lf.oppslag FROM lemma_former lf "
+             f"JOIN ordform_flertydighet o ON o.oppslag = lf.oppslag "
+             f"WHERE o.antall_lemma_id = 1 AND lf.lemma_id IN ({','.join('?' * len(chunk))})")
+        for lid, w in conn.execute(q, chunk).fetchall():
+            unamb_forms.setdefault(lid, set()).add(w)
+    freqs = corpus_freqs(sorted({w for s in unamb_forms.values() for w in s}), corpus, conn)
+    mass = {lid: sum(freqs.get(w, 0.0) for w in unamb_forms.get(lid, ())) for lid in lemmas}
+    out: dict[tuple[int, str], tuple[float, float]] = {}
+    lexeme = {}
+    if ANCHOR_SPLIT is not None:
+        q = f"SELECT lemma_id, MIN(grunnform), MIN(pos) FROM lemma_former WHERE lemma_id IN ({','.join('?' * len(lemmas))}) GROUP BY lemma_id"
+        lexeme = {lid: (g, pos) for lid, g, pos in conn.execute(q, lemmas).fetchall()}
+    pooled: dict[frozenset, dict[int, float]] = {}
+    if ANCHOR_SPLIT is not None:
+        # Sjeldne former arver fordelingen fra de andre formene med samme sett av lemmaer
+        # (f.eks. *troa*, *troer* fra *troen*: subst. *tro* mot *troe*)
+        for w, lids in owners.items():
+            acc = pooled.setdefault(frozenset(lids), {})
+            for lid, n in ANCHOR_SPLIT(w).items():
+                if lid in lids:
+                    acc[lid] = acc.get(lid, 0.0) + n
+    for w, lids in owners.items():
+        if ANCHOR_SPLIT is not None:
+            ext = ANCHOR_SPLIT(w)
+            n_ext = sum(ext.get(lid, 0.0) for lid in lids)
+            if n_ext < ANCHOR_SPLIT_MIN_N:
+                ext = pooled.get(frozenset(lids), {})
+                n_ext = sum(ext.values())
+            if n_ext >= ANCHOR_SPLIT_MIN_N:
+                for lid in lids:
+                    if lid in paradigms:
+                        # Leksemnivå: homografe oppslag av samme leksem regnes sammen
+                        same = [o for o in lids if lexeme.get(o) == lexeme.get(lid)]
+                        sh = sum(ext.get(o, 0.0) for o in same) / n_ext
+                        out[(lid, w)] = (sh, sh)
+                continue
+        tot = sum(mass[lid] for lid in lids)
+        if tot <= 0:
+            continue
+        # Gulv: hvert lemma får minst SHARE_FLOOR / n av formen, så leksemer uten entydige former
+        # (f.eks. subst. *tro*) ikke faller helt bort.
+        n = len(lids)
+        for lid in lids:
+            if lid in paradigms:
+                out[(lid, w)] = (SHARE_FLOOR / n + (1 - SHARE_FLOOR) * mass[lid] / tot, mass[lid] / tot)
+    return out
 
 
 def estimate_wordform_shares(
@@ -228,6 +364,7 @@ def estimate_wordform_shares(
     conn: sqlite3.Connection | None = None,
     corpus: str = "nb_totals",
     method: str = "logreg",
+    share_mode: str | None = None,
 ) -> dict[str, Any]:
     """
     Tar en flertydig ordform `oppslag` og beregner forventet frekvens og prosentandel
@@ -237,6 +374,7 @@ def estimate_wordform_shares(
             gullstandarden for log-regresjonen hentes fra samme korpus.
     method: 'logreg' (standard; faller tilbake på reglene der den ikke kan brukes) eller 'regler'.
     """
+    share_mode = SHARE_MODE if share_mode is None else share_mode
     close = conn is None
     if conn is None:
         conn = get_conn()
@@ -267,6 +405,9 @@ def estimate_wordform_shares(
 
         paradigms = {lid: get_paradigm(lemma_id=lid, conn=conn) for lid in by_lemma}
         freqs = corpus_freqs([oppslag] + [r["oppslag"] for p in paradigms.values() for r in p], corpus, conn)
+        shared_weight = (
+            shared_form_weights(oppslag, paradigms, corpus, conn) if share_mode == "masse" else {}
+        )
         obs_freq = freqs[oppslag]
 
         results = []
@@ -275,6 +416,7 @@ def estimate_wordform_shares(
             # Vi skiller mellom helt entydige ankerformer (antall_lemma_id == 1) og delte former.
             slot_info: dict[int, dict[str, Any]] = {}
             unamb_total_in_paradigm = 0.0
+            anchor_weights: dict[str, float] = {}  # form -> vekt brukt i anslaget (1 = entydig)
             seen: set[tuple[int, str]] = set()
             for r in paradigms[lid]:
                 bnr = r["boy_nummer"]
@@ -283,24 +425,35 @@ def estimate_wordform_shares(
                     continue
                 seen.add((bnr, w))
                 fr = freqs[w]
-                is_unamb = r["antall_lemma_id"] == 1
+                amb = _amb_count(r)
+                is_unamb = amb == 1
                 if is_unamb:
                     unamb_total_in_paradigm += fr
                 # Hvis en form deles med andre lemmaer, nedvekter vi den hvis den ikke er entydig
-                eff_fr = fr if is_unamb else (fr / (r["antall_lemma_id"] ** 2))
+                if is_unamb:
+                    eff_fr = fr
+                elif (lid, w) in shared_weight:
+                    eff_fr = fr * shared_weight[(lid, w)][0]
+                else:
+                    eff_fr = fr / (amb ** 2)
                 if bnr not in slot_info:
                     slot_info[bnr] = {
                         "boy_tekst": r["boy_tekst"],
                         "freq": 0,
                         "eff_freq": 0.0,
-                        "min_lem_cnt": r["antall_lemma_id"],
-                        "max_lem_cnt": r["antall_lemma_id"],
+                        "min_lem_cnt": amb,
+                        "max_lem_cnt": amb,
                         "forms": [],
                     }
                 slot_info[bnr]["freq"] += fr
                 slot_info[bnr]["eff_freq"] += eff_fr
-                slot_info[bnr]["min_lem_cnt"] = min(slot_info[bnr]["min_lem_cnt"], r["antall_lemma_id"])
-                slot_info[bnr]["max_lem_cnt"] = max(slot_info[bnr]["max_lem_cnt"], r["antall_lemma_id"])
+                anchor_weights[w] = (eff_fr / fr) if fr > 0 else (1.0 if is_unamb else 0.0)
+                # Vekt fra ekstern kilde (OBT): kategorien kan brukes som anker hvis alle formene
+                # nesten bare tilhører dette leksemet
+                ext_w = shared_weight[(lid, w)][0] if (lid, w) in shared_weight and ANCHOR_SPLIT is not None else (1.0 if is_unamb else 0.0)
+                slot_info[bnr]["min_ext_weight"] = min(slot_info[bnr].get("min_ext_weight", 1.0), ext_w)
+                slot_info[bnr]["min_lem_cnt"] = min(slot_info[bnr]["min_lem_cnt"], amb)
+                slot_info[bnr]["max_lem_cnt"] = max(slot_info[bnr]["max_lem_cnt"], amb)
                 slot_info[bnr]["forms"].append(f"{w} ({fr:,.0f}{'*' if is_unamb else ''})")
 
             tslots = set(meta["target_slots"])
@@ -329,10 +482,24 @@ def estimate_wordform_shares(
                     "boy_tekst": "/".join(meta["target_labels"]),
                     "raw_est": capped_est,
                     "uncapped_est": est_freq,
+                    "anchor_weights": anchor_weights,
+                    "method_used": "logreg" if lr is not None else "regler",
                     "anchor_explanation": anchor_explanation,
                     "paradigm_rest": anchor_summary,
                 }
             )
+
+        if LEXEME_LEVEL:
+            # Homografe oppslag av samme leksem slås sammen: leksemet telles én gang (største anslag)
+            by_lex: dict[tuple[str, str], dict[str, Any]] = {}
+            for r in results:
+                key = (r["grunnform"], r["pos"])
+                if key not in by_lex or r["uncapped_est"] > by_lex[key]["uncapped_est"]:
+                    lids = by_lex[key]["lemma_ids"] if key in by_lex else []
+                    by_lex[key] = {**r, "lemma_ids": lids + [r["lemma_id"]]}
+                else:
+                    by_lex[key]["lemma_ids"].append(r["lemma_id"])
+            results = list(by_lex.values())
 
         total_est = sum(r["raw_est"] for r in results)
         total_uncapped = sum(r["uncapped_est"] for r in results)
@@ -346,6 +513,9 @@ def estimate_wordform_shares(
             "obs_freq": obs_freq,
             "total_raw_est": total_est,
             "total_uncapped_est": total_uncapped,
+            # Sum av ukappede anslag / observert. Langt unna 1 betyr at ankrene er atypiske for minst én
+            # kandidat, og da er andelene lite pålitelige (f.eks. «døde»: 0,05, se rapport_verbtyper.md §7.2).
+            "calibration": (total_uncapped / obs_freq) if obs_freq > 0 else None,
             "candidates": results,
         }
     finally:
@@ -367,6 +537,9 @@ if __name__ == "__main__":
         print(f"\n======================================================================================")
         print(f"ORDFORM: «{word}» (Observert i {args.korpus}: {res['obs_freq']:,.0f} | Sum uavh. paradigme-est.: {res['total_raw_est']:,.0f})")
         print(f"======================================================================================")
+        cal = res.get("calibration")
+        if cal is not None and not (CALIBRATION_OK[0] <= cal <= CALIBRATION_OK[1]):
+            print(f"  ADVARSEL: sum ukappede anslag / observert = {cal:.2f}. Ankrene passer dårlig; andelene er usikre.")
         for c in res["candidates"]:
             print(
                 f"  -> {c['share']*100:5.1f}% ({c['norm_est']:10,.0f}) | "

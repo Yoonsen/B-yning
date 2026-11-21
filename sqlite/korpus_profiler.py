@@ -610,11 +610,12 @@ _CORPUS_GOLD: dict[tuple[str, str], list[dict[int, float]]] = {}
 def _corpus_gold_profiles(dconn: sqlite3.Connection, ordbank_path: str | Path) -> dict[tuple[str, str], list]:
     """
     Gullstandardprofiler for decomposerens log-regresjon, med frekvenser fra KORPUSET.
-    Utvalget av gullstandardlemmaer (substantiv- og verbgullstandarden, Sett A) gjøres som i
+    Utvalget av gullstandardlemmaer (substantiv- og verbgullstandarden, Sett A, adjektiv) gjøres som i
     decomposer.py med Ordbankens ekte nb_totals (terskelen på 100 000 kan ikke brukes på et korpus på
     8 mill. ord), mens kategorifrekvensene hentes fra korpuset via `dconn` (der nb_totals er
     korpus-viewet). Bare lemmaer med alle fire kategorier > 0 i korpuset brukes, som i decomposer.py.
     """
+    from sqlite.adjektiv_gold import select_adjective_gold
     from sqlite.decomposer import GOLD_SLOTS, corpus_freqs
     from sqlite.substantivtyper import load_noun_forms, select_gold
     from sqlite.verbtyper import load_verbs, select_sets
@@ -625,8 +626,10 @@ def _corpus_gold_profiles(dconn: sqlite3.Connection, ordbank_path: str | Path) -
     oconn = sqlite3.connect(_ro_uri(ordbank_path), uri=True)
     oconn.row_factory = sqlite3.Row
     try:
+        # Adjektiv (logg del 47): utvalg med Ordbankens ekte nb_totals, som for substantiv og verb
         gold = {"substantiv": select_gold(load_noun_forms(oconn))[0],
-                "verb, normal": select_sets(load_verbs(oconn))[0]["580"]}
+                "verb, normal": select_sets(load_verbs(oconn))[0]["580"],
+                "adjektiv": select_adjective_gold(oconn)}
     finally:
         oconn.close()
     out = {}
