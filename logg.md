@@ -1483,3 +1483,28 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Neste steg
 - Kombinere paradigme- og bigramanslaget og validere mot OBT (se del 57).
+
+---
+
+## 2026-11-21 (del 59) — Paradigme og bigram kombinert og validert mot OBT
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny `sqlite/kombinert.py`:
+  - `paradigm_estimate`, `bigram_estimate`, `combine` (invers varians i logit-skala), `best_estimate` (anbefalt) og `validate`.
+  - Valideringen bruker de 150 hyppigste substantiv/verb-homografene i OBT-korpuset (verb i inf/pres) og skriver `resultater/kombinert_validering.tsv`.
+- `sqlite/bigram_kontekst.py`: *det/den* lagt til som presenskontekst; celler uten kontekster gir tom liste.
+- Ny figur `tekst/figurer/dor_tro_metoder.png` (`figurer.fig_methods_over_time`). Ny §8 i `rapport_dekomponering_tid.md`.
+
+### Funn
+- Median avvik mot OBT: paradigme 9,7 pp, bigram **5,0 pp**, kombinert 5,4 pp. Riktig flertallsleksem: 79 / **95** / 93 %.
+- 80 %-intervallene var for smale: fasiten lå innenfor for bare 42–46 % av formene. Faktor 2,3 (paradigme) og 4,3 (bigram) gir 80 % dekning, men det er tilpasset på de samme formene.
+- Med kalibrert usikkerhet blir kombinasjonen dårligere enn bigrammene alene. Bigrammene er derfor hovedmetode, med paradigmet som reserve.
+- Empirisk usikkerhet for bigrammene: ±15 pp generelt, ±29 pp for jevnt fordelte former.
+- «dør» 51 % verb (OBT 52), «tro» 54 % verb (OBT 68 av substantiv + verb).
+
+### Neste steg
+- Flere kontekster, f.eks. høyrekontekst (*tro på*, *dør av*), for å stramme inn usikkerheten.
+- Bruke bigrammer for adjektivandelen av «døde».
+- Teste usikkerheten på et utvalg som ikke er brukt til å kalibrere den.

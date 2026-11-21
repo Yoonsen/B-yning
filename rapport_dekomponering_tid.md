@@ -80,3 +80,21 @@ NB N-gram har bigrammer (`api.nb.no/dhlab/nb_ngram`, endepunktet bak app.nb.no/n
 - De to metodene har uavhengige feilkilder (profilen til ordet mot kontekstraten til ordet). Et vektet snitt i logit-skala (invers varians) gir for «dør» ca. 49 % verb (80 %: ca. 32–67), mot OBT 52 %. Dette er bare regnet for hånd og ikke lagt inn i koden.
 
 **Forbehold.** Bigramtallene er fra NB N-gram, et annet bokkorpus enn `ngram_book`; uni- og bigrammer hentes derfor begge derfra. «en tro» inkluderer adjektivet (*en tro venn*), og *ei tro* kan være nektelse i eldre tekst. Kontekstraten varierer også mellom verb (sd 0,2–0,3 i log-skala), og den er antatt konstant over tid.
+
+## 8. Paradigme, bigram eller begge? Validering mot OBT (logg del 59)
+
+`python3 -m sqlite.kombinert` sammenligner tre anslag for verbandelen på de 150 hyppigste substantiv/verb-homografene i OBT-korpuset. Utvalget er former der ett substantiv og ett verb til sammen står for minst 90 %, og verbet er i infinitiv eller presens. Fasiten er OBTs verbandel av de to. Paradigmeanslaget kjøres her uten OBT-ankre, så valideringen ikke blir sirkulær. Resultatene per form står i `resultater/kombinert_validering.tsv`.
+
+| metode | median avvik | 80-persentil | 90-persentil | riktig flertallsleksem |
+|---|---|---|---|---|
+| paradigme (bokkorpuset) | 9,7 pp | 37,4 pp | 50,9 pp | 79 % |
+| bigram, restmetode (NB N-gram) | **5,0 pp** | **14,5 pp** | **24,5 pp** | **95 %** |
+| kombinert (invers varians, kalibrert) | 5,4 pp | 15,4 pp | 31,5 pp | 93 % |
+
+- *det/den* er lagt til som presenskontekst. Uten dem bommet bigrammene på *det dreier seg*, *det koster* og *den virker*. Medianen for bigrammene gikk fra 6,0 til 5,0 pp, og riktig flertallsleksem fra 93 til 95 %.
+- **Usikkerheten var for smal.** Med de opprinnelige standardavvikene lå OBT-fasiten innenfor 80 %-intervallet for bare 42–46 % av formene. Det krever faktor 2,3 (paradigme) og 4,3 (bigram) på standardavviket for å nå 80 %. Noe av dette er forskjell mellom korpusene, ikke feil i metoden.
+- **Kombinasjonen hjelper ikke** når usikkerheten er kalibrert. Paradigmeanslaget har tunge haler og trekker anslaget feil oftere enn det retter det.
+- **Anbefaling** (`kombinert.best_estimate`): bruk bigrammene når verbet har infinitiv- eller presenskontekster, og paradigmet ellers. Usikkerheten oppgis empirisk: ±15 pp generelt og **±29 pp** for jevnt fordelte former (OBT-verbandel 20–80 %, N = 47, median avvik 12,8 pp).
+- «dør»: 51 % verb (22–80). «tro»: 54 % verb (25–83). OBT gir 52 og 68 % (60 av 88; adjektiv og *trå* holdes utenfor).
+
+Figur `tekst/figurer/dor_tro_metoder.png` viser verbandelen per år med begge metodene. For «tro» er paradigmeanslaget der kjørt med OBT-ankre (§4), og da går de to metodene sammen: verbet øker fra ca. 40–50 % til ca. 60 %. For «dør» ligger bigrammene på 45–54 %, på nivå med OBT, mens paradigmet ligger på 32–41 %.

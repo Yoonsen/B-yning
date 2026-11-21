@@ -13,6 +13,7 @@ resultater/verbtyper.tsv (skrives av `python3 -m sqlite.verbtyper`).
 3. fisker_over_tid.png   – ordformen «fisker» fordelt på tre leksemer per år, to sett forholdstall
 4. paradigmegraf_fisker.png – komponenten rundt «fisker» i paradigmegrafen (sqlite/paradigm_graph.py)
 5. dor_tro_over_tid.png  – «dør» og «tro» fordelt på leksemer per år, med usikkerhetsbånd (sqlite/tidsserie.py)
+6. dor_tro_metoder.png   – verbandelen av «dør» og «tro» per år: bigrammer (hovedmetode) mot paradigmet
 """
 
 import contextlib
@@ -351,6 +352,54 @@ def fig_time_decomposition(forms: tuple[str, ...] = ("dør", "tro")) -> Path:
     return out
 
 
+def fig_methods_over_time() -> Path:
+    """Verbandel per år for «dør» og «tro»: bigrammer (heltrukket, bånd = empirisk 80 %-avvik) og paradigmet (stiplet)."""
+    from sqlite.bigram_kontekst import EXAMPLES, cue_rates, decompose_residual
+    from sqlite.kombinert import BIGRAM_ERR_PP
+    from sqlite.tidsserie import decompose_over_time
+
+    rates = cue_rates()
+    obt = {"dør": 0.52, "tro": 0.60 / 0.88}  # OBT-verbandel av substantiv + verb (tro: 60 av 88)
+    verb_of = {"dør": "dø", "tro": "tro"}
+    fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.6), sharey=True)
+    for ax, form in zip(axes, ("dør", "tro")):
+        b = decompose_residual(form, EXAMPLES[form], rates)
+        par = decompose_over_time(form)
+        yrs = np.array(b["years"])
+        vb = 100 * _smooth5(b["verb_share_t"])
+        half = BIGRAM_ERR_PP["jevne"][1]
+        ax.fill_between(yrs, np.clip(vb - half, 0, 100), np.clip(vb + half, 0, 100), color=FORM_COLOR["inf"], alpha=0.12, lw=0)
+        ax.plot(yrs, vb, color=FORM_COLOR["inf"], lw=2.4)
+        idx = {(c["grunnform"], c["pos"]): i for i, c in enumerate(par["candidates"])}
+        iv, i_n = idx[(verb_of[form], "verb")], idx[(form, "subst")]
+        vp = 100 * par["share"][iv] / (par["share"][iv] + par["share"][i_n])
+        ax.plot(yrs, vp, color=MUTED, lw=1.6, ls="--")
+        ax.hlines(100 * obt[form], yrs[0], yrs[-1], color=INK, lw=0.8, ls=":")
+        ax.text(yrs[-1] + 1.5, vb[-1], "bigram", color=FORM_COLOR["inf"], fontsize=12, fontweight="bold", va="center")
+        gap = vp[-1] - vb[-1]
+        y_par = vp[-1] if abs(gap) >= 7 else vb[-1] + (7 if gap >= 0 else -7)
+        ax.text(yrs[-1] + 1.5, y_par, "paradigme", color=MUTED, fontsize=11, va="center")
+        ax.text(yrs[0] + 1, 100 * obt[form] + 2.5, "tagget korpus (OBT)", color=INK, fontsize=9.5)
+        ax.set_title(f"«{form}»: andel å {verb_of[form]}", fontsize=15, loc="left", color=INK)
+        ax.set_xlim(yrs[0], yrs[-1] + 15)
+        ax.set_ylim(0, 100)
+        ax.set_xticks([1950, 1970, 1990, 2010])
+        ax.yaxis.grid(True, color=GRID, lw=0.8)
+        ax.set_axisbelow(True)
+    axes[0].set_ylabel("verbandel av formen (%)")
+    fig.text(0.01, -0.02, "Bigram: verbet anslått fra «å/kan/vil … tro» og «jeg/han/som/det … dør», resten er substantiv. "
+             "Bånd: ±29 pp, typisk avvik mot OBT for jevnt fordelte former. 5-årig glidende snitt.", fontsize=10, color=MUTED)
+    out = OUT_DIR / "dor_tro_metoder.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
+def _smooth5(v):
+    v = np.asarray(v, float)
+    return np.convolve(np.pad(v, 2, mode="edge"), np.ones(5) / 5, mode="valid")
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     verbs = load_verbs()
@@ -359,6 +408,7 @@ def main() -> None:
     print(f"Skrev {fig_fisker()}")
     print(f"Skrev {fig_paradigm_graph()}")
     print(f"Skrev {fig_time_decomposition()}")
+    print(f"Skrev {fig_methods_over_time()}")
 
 
 if __name__ == "__main__":

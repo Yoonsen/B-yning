@@ -37,7 +37,7 @@ N_DRAWS = 2000
 CUES = {
     ("subst", 1): ["en", "ei", "et", "min", "sin", "din", "vår"],  # ent ub etter ubestemt artikkel/possessiv
     ("verb", 1): ["å", "kan", "vil", "skal", "må"],  # infinitiv
-    ("verb", 2): ["jeg", "han", "hun", "vi", "de", "som"],  # presens
+    ("verb", 2): ["jeg", "han", "hun", "vi", "de", "som", "det", "den"],  # presens; det/den lagt til i del 59 (*det dreier seg*)
 }
 CELL_LABEL = {("subst", 1): "ent ub", ("verb", 1): "inf", ("verb", 2): "pres"}
 # Substantiv: kontekstene tilpasses kjønnet (logg del 58). Kjønnsnøytrale eiendomsord gjelder alle.
@@ -59,7 +59,7 @@ def noun_gender(grunnform: str, conn=None) -> set[str]:
 def cues_for(cell: tuple[str, int], grunnform: str | None = None) -> list[str]:
     if cell == ("subst", 1) and grunnform is not None:
         return sorted({c for g in noun_gender(grunnform) for c in NOUN_CUES_BY_GENDER[g]} | set(NOUN_CUES_NEUTRAL))
-    return CUES[cell]
+    return CUES.get(cell, [])  # celler uten kontekster (f.eks. subst. fl ub) bidrar ikke med bigrammer
 
 
 def _total(series: dict[int, float]) -> float:
