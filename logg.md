@@ -529,7 +529,612 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-20 (del 21) — Adjektivet i «døde» (hull 5)
+## 2026-11-14 (del 21) — Oppstart av OBT-tagging: ny gren, testtekst og miljø på Linux-maskin
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Opprettet feature-branch `multitagger-oppsett` fra `main` for arbeidet med å tagge tekst med Oslo-Bergen-taggeren (OBT).
+- Lagt til testtekst `tekster/test-tekst-bokselskap.txt` (åpent publisert NB-tekst om Sigrid Undset fra bokselskap.no, ca. 5 000 tegn, UTF-8). Brukes kun til å sjekke at taggeroppsettet virker.
+- Lagt til `paradigmevenv/` i `.gitignore` (prosjektets Python-miljø på Linux-maskinen ligger i repo-roten).
+
+### Tekniske observasjoner
+- **OBT består av tre trinn:** (1) multitaggeren `mtag` (tokenisering + oppslag i Norsk Ordbank, gir *alle* mulige analyser), (2) Constraint Grammar-disambiguering (VISL CG-3 + regelfiler i OBT-repoet), (3) statistisk disambiguering OBT-Stat (kun bokmål). For å skille f.eks. *en fisker* / *flere fisker* / *han fisker* trengs hele kjeden, ikke bare `mtag`.
+- **Kilder:** https://github.com/noklesta/The-Oslo-Bergen-Tagger (hovedrepo, kjørbare skript `tag-bm.sh`, `tag-nostat-bm.sh`), https://github.com/textlab/mtag, https://github.com/textlab/OBT-Stat. Docker-bilde `textlab/obt:1.0` anbefales i README.
+- **Avhengigheter:** shell-skript, VISL CG-3, Ruby (OBT-Stat), Python (`mtag`, testet med Python ≤ 3.6; README advarer om mulige problemer med spesialtegn i ≥ 3.7). Kjøres derfor på Linux; Windows-maskinen mangler WSL/Docker/Ruby og administratorrettigheter.
+- **Lisenser:** OBT/OBT-Stat: GPL v3 eller senere (modelldata kun til bruk med OBT+Stat). `mtag`: MIT; Norsk Ordbank-data: CC BY. VISL CG-3 og hunpos: ikke sjekket ennå.
+- Linux-maskinen har Python 3.12.3 og Git LFS 3.7.0; repoet er klonet der og `sqlite/ordbank.db` er hentet via LFS.
+
+### Neste steg
+- Kartlegge verktøy på Linux-maskinen (Docker, Ruby, `vislcg3`, gcc/cmake) og velge Docker-bildet eller lokal installasjon av OBT.
+- Lage et lite Python-skript som kjører en tekstfil gjennom OBT og leser resultatet inn i en tabell (ordform, lemma, ordklasse, morfologiske trekk), og teste det på testteksten.
+
+---
+
+## 2026-11-14 (del 22) — OBT installert på Linux-maskin og Python-modul `sqlite/obt_tagger.py`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- **OBT installert uten root på Linux-maskinen** (brukeren har ikke Docker-tilgang og ikke `sudo`):
+  - VISL CG-3 1.4.6 (GPLv3+) hentet som Ubuntu-pakker uten installasjon: `apt download cg3 libcg3-1` + `dpkg -x` til `~/opt/cg3/root`; `PATH` og `LD_LIBRARY_PATH` satt i `~/.bashrc`.
+  - OBT klonet til `~/opt/obt` (https://github.com/noklesta/The-Oslo-Bergen-Tagger), med `mtag` (https://github.com/textlab/mtag) og `OBT-Stat` (https://github.com/textlab/OBT-Stat) klonet *inn i* OBT-mappen (skriptene finner dem via `$(dirname $0)/mtag` og `$(dirname $0)/OBT-Stat`).
+  - Systemets Python 3.12, Ruby 3.2 og Perl brukes direkte av skriptene (ikke `paradigmevenv`).
+  - Testet `./tag-nostat-bm.sh` (mtag + CG) og `./tag-bm.sh` (mtag + CG + OBT-Stat) på `tekster/test-tekst-bokselskap.txt` – begge virker.
+- **Ny modul `sqlite/obt_tagger.py`** (kun standardbiblioteket):
+  - `run_obt(fil, obt_dir, stat)` kjører OBT-skriptet (finner installasjonen via `$OBT_DIR`, ellers `~/opt/obt`).
+  - `parse_obt_output(tekst)` leser OBT-formatet (`<word>…</word>`, `"<form>"`, innrykkede analyser `"lemma" pos trekk…`) til tokens med liste av analyser (lemma, ordklasse, morfologiske trekk, ekstra OBT-markører som `<*>`, `<+ledd>`, `samset-analyse`).
+  - `to_rows`, `summarize`, `write_tsv` og kommandolinje: `python -m sqlite.obt_tagger FIL --out ut.tsv` (`--nostat`, `--parse-only` for å lese en eksisterende OBT-fil).
+  - Parseren er testet på utdrag av OBT-utdata (med og uten OBT-Stat); hele kjøringen via `run_obt` er ennå ikke testet på Linux-maskinen.
+
+### Tekniske observasjoner
+- OBT-formatet: én blokk per token – originalordet i `<word>`, ordformen med små bokstaver i `"<…>"`, og én innrykket linje per gjenværende analyse.
+- **Uten OBT-Stat** står det igjen flertydighet etter CG, f.eks. *betydning* (fem/mask – reell valgfrihet i bokmål) og *for* (konj/prep). **Med OBT-Stat** står det én analyse igjen for begge (*betydning* → fem, *for* → prep).
+- `mtag` gir `SyntaxWarning: invalid escape sequence` under Python 3.12 (gamle strengliteraler). Ufarlig: strengene har samme verdi, og advarslene går til stderr.
+- OBT-Stat skriver `model loaded` / `tagger compiled` til stderr.
+- Ordklasse- og trekknavn følger OBT/Norsk Ordbank-notasjon (`subst appell mask be ent`, `adj ub m/f ent pos`), som ligner, men ikke er identisk med, `boy_tekst` i `ordbank.db`.
+
+### Neste steg
+- Kjøre `python -m sqlite.obt_tagger tekster/test-tekst-bokselskap.txt --out …` på Linux-maskinen for å teste hele kjeden fra Python.
+- Lage en testtekst med de aktuelle flertydighetene (*fisker*, *møter*, *dør*, *hoppet/hoppa* …) og sjekke hvordan OBT skiller dem.
+- Koble OBT-analysene til `lemma_id`/`boy_nummer` i `ordbank.db` (mapping fra OBT-trekk til bøyningskategorier).
+- Bestemme hvor taggede filer skal ligge, og om de skal i Git.
+
+---
+
+## 2026-11-14 (del 23) — Hele OBT-kjeden testet fra Python; rettelse av taggsortering i `sqlite/obt_tagger.py`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Kjørte `python -m sqlite.obt_tagger tekster/test-tekst-bokselskap.txt --out /tmp/test.tsv` på Linux-maskinen: 872 tokens, 0 flertydige etter OBT-Stat, 0 uten analyse. Hele kjeden virker fra Python.
+- Rettet hvordan `parse_obt_output` sorterer taggene:
+  - Ordklasse er nå første tagg som *ikke* er en markør. Tidligere ble første tagg brukt uansett, så tegnsetting fikk f.eks. `<komma>` som ordklasse.
+  - Tegnsetting (OBT-lemma som starter med `$`, f.eks. `"$," <komma>`) får `pos = "tegn"`, med markøren i `ekstra`.
+  - `flerord-ledd1/2/3` (flerordsuttrykk som *litteratur- og samfunnshistorie*) flyttes fra `trekk` til `ekstra`, sammen med `samset-…` og `<…>`-markører.
+- Testet rettelsen mot faktiske OBT-linjer (komma, parentes, flerord, `ukjent`, egennavn).
+
+### Tekniske observasjoner
+- OBT skriver tegnsetting uten ordklasse: `"$," <komma>`, `"$(" <parentes-beg>`. Setningsgrenser står som `clb`.
+- Ord som ikke finnes i Norsk Ordbank får ordklassen `ukjent`, f.eks. eldre rettskrivning *aar* (= *år*) i testteksten. Det er relevant for eldre tekster: de vil få flere `ukjent`.
+
+### Neste steg
+- Som i del 22: testtekst med de aktuelle flertydighetene, og kobling av OBT-analyser til `lemma_id`/`boy_nummer` i `ordbank.db`.
+
+---
+
+## 2026-11-14 (del 24) — Forslag til analysekode for OBT-tagget korpus: `sqlite/korpus_profiler.py`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny modul `sqlite/korpus_profiler.py` for paradigmeanalyse av et OBT-tagget korpus (f.eks. rettighetsbelagte bøker fra samlingen). **Lagrer kun telletall, aldri tekst**, i en egen database `sqlite/korpus.db` (ignoreres av Git via `*.db`).
+  1. **Telling:** `add_obt_files` (rå OBT-utdata) eller `tag_and_add` (tagger tekstfiler direkte via `obt_tagger.run_obt` uten å skrive OBT-utdata til disk). Tabell `obt_typer(doc_id, form, lemma, pos, trekk, partisipp, n)`. Tokens med flere gjenværende analyser deles likt (1/k). Tegnsetting, `clb` og `symb` telles ikke.
+  2. **Kobling til Ordbanken** (`map_types`): hver analysetype kobles til `(lemma_id, boy_nummer)` ved å sammenligne OBT-trekkene med `fullformsliste.tag` for samme ordform og grunnform. `fullformsliste.tag` bruker samme notasjon som OBT (f.eks. `subst mask appell ent ub`), så trekkene sammenlignes som mengder (rekkefølge og `<…>`-markører ignoreres, unntatt `<perf-part>`/`<pres-part>`). Status: `eksakt`, `flertydig` (passer like godt på flere celler/lemmaer → vekt deles), `delvis` (beste overlapp i trekk), `ingen` (ikke i Ordbanken: egennavn, sammensetninger, ukjente ord). Tabell `type_kobling`, view `v_celle_frekvens`.
+  3. **Profiler:** `paradigm_profile(grunnform=…, pos=…, per_doc=…, slots=…)` gir frekvens og andel for alle cellene i paradigmet (også de med 0), for hele korpuset eller per dokument.
+  4. **Flertydige former:** `form_split(form)` gir den OBT-baserte fordelingen av en form på lemma/celle. `compare_with_decomposer(form)` kjører `decomposer.estimate_wordform_shares` på de *samme* korpustallene (en midlertidig `nb_totals`-view i en egen tilkobling skygger for Ordbankens tabell, så `decomposer.py` er uendret) og stiller estimatet ved siden av OBT-fordelingen.
+  - Kommandolinje: `python -m sqlite.korpus_profiler [--db …] legg-til | tagg | koble | profil | form | sammenlign | ukoblet`.
+- Testet på et lite konstruert OBT-utdrag (to «dokumenter» med *fisker* som subst. *fisker*, subst. *fisk* og verb *fiske*, *hoppet/hoppa*, *år* ent/fl, egennavn, tegnsetting). Ikke testet på ekte tagget tekst.
+
+### Tekniske observasjoner
+- OBT skiller synkretiske celler som Ordbanken ikke kan skille på form, f.eks. *år* `ent ub` vs. `fl ub` → riktige profiler for slike ord.
+- Variantformer i samme celle (*hoppet/hoppa* i `pret`) slås sammen i profilen. Fordelingen mellom variantene finnes per form i `obt_typer`.
+- Verbparadigmene i Ordbanken inneholder også partisipp-adjektivcellene (`boy_nummer` 6–10). Bruk `slots=` for å avgrense, f.eks. `(1, 2, 4)` for inf/pres/pret.
+- Usikkert: nøyaktig OBT-notasjon for s-passiv (testdataene brukte `verb inf pass`; Ordbanken har `inf pres pass`) – ga status `delvis`, men riktig celle. Må sjekkes mot ekte OBT-utdata.
+- `compare_with_decomposer` krever `numpy` (importeres av `decomposer.py`), som må installeres i `paradigmevenv` på Linux-maskinen. Resten bruker bare standardbiblioteket.
+- **Rettigheter:** rå OBT-utdata inneholder hele teksten og må ikke legges i repoet. `tag_and_add` unngår å skrive dem til disk. Hvor OBT-utdata eventuelt lagres, og om noe annet enn `*.db` bør legges i `.gitignore`, er ikke avklart.
+
+### Neste steg
+- Teste på ekte OBT-utdata (testteksten og en testtekst med *fisker/møter/dør/hoppet*) og se på `ukoblet` for å forbedre koblingen.
+- Avklare lagring av rettighetsbelagte tekster og OBT-utdata (utenfor repoet).
+- Kontrollere OBT for hånd på et utvalg flertydige former før OBT-fordelingen brukes som fasit mot `decomposer.py`.
+
+---
+
+## 2026-11-14 (del 25) — `*.log` i `.gitignore` (mtag.py.log)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- La til `*.log` i `.gitignore`.
+
+### Tekniske observasjoner
+- OBT-multitaggeren (`mtag.py`) skriver en loggfil `mtag.py.log` i *arbeidsmappen* ved hver kjøring, så den dukker opp i repo-roten når OBT kjøres derfra (f.eks. via `sqlite/obt_tagger.py`). Fila kan inneholde ord fra den taggede teksten og skal ikke deles, særlig ikke ved tagging av rettighetsbelagte bøker. Den lages på nytt ved hver kjøring og kan slettes.
+
+### Neste steg
+- Uendret fra del 24.
+
+---
+
+## 2026-11-17 (del 26) — `main` flettet inn i `multitagger-oppsett`; OBT-oppføringene omnummerert
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Flettet `main` (PR #4: MONS-plan, presentasjonsskjelett, forbehold om *døde*) inn i `multitagger-oppsett`. Eneste konflikt var `logg.md`, fordi begge grenene hadde lagt til oppføringer på slutten.
+- **Omnummerering:** OBT-oppføringene som ble skrevet på `multitagger-oppsett` 2026-11-14 som del 13–17, heter nå **del 21–25** og står etter del 13–14 fra `main` (2026-11-17). Oppføringene fra `main` er ikke endret, siden de allerede er delt. Datoene er beholdt, så rekkefølgen i loggen er her ikke kronologisk.
+- Oppdaterte henvisninger til delnumre i de omnummererte oppføringene og i `sqlite/obt_tagger.py` (docstring: «del 21–22»).
+- Normaliserte linjeskift i `logg.md` til LF (slik fila er lagret i Git).
+
+### Tekniske observasjoner
+- Når flere jobber på hver sin gren, kolliderer nummereringen i `logg.md` lett. Et alternativ er å bruke dato + kort tittel som nøkkel i stedet for løpenummer, eller å avtale at nummereringen fastsettes ved fletting til `main`.
+
+### Neste steg
+- OBT-arbeidet: se del 24. Grenen kan flettes til `main` via pull request når dere har testet `korpus_profiler.py` på ekte OBT-utdata, eller tidligere hvis dere vil dele oppsettet.
+
+---
+
+## 2026-11-17 (del 27) — Renskrevne notater fra samarbeidsøkt
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Renskrev håndskrevne notater fra samarbeidsøkta 2026-11-17 til `notater/2026-11-17_samarbeidsokt.md` (ny mappe `notater/` for møtenotater). Merknader lagt til ved renskrivingen står i [hakeparentes].
+- Lagt på `multitagger-oppsett` (ikke egen gren) for å unngå enda en kollisjon i nummereringen i `logg.md`.
+- Notatet ble deretter lest over og justert av Marie (overskrift «Powerpoint», språklige rettelser, «bilder» → «foto» i *gulne*-punktet).
+
+### Hovedpunkter fra økta
+- **MONS-presentasjonen:** tydeliggjøre datakildene (Norsk Ordbank + NB n-gram), graf over *fisk* tidlig, referanse til Tromsø-miljøet (profiler i taggede korpus) og vårt bidrag om stabilitet over tid, slide med entydige verb, «substantiv velger tall før bestemthet», enkeltbok-poenget som spørsmål til publikum, fylle inn grafene.
+- **Ideer som krever tagging:** forholdet mellom ordfrekvens og antall brukte former; prediksjon av flertydige former ut fra tre entydige former i paradigmet, sjekket mot tagget tekst.
+- **Infinitiv + *å*/hjelpeverb:** *å gå* er langt hyppigere enn hjelpeverb + infinitiv; *kan/skal* > *vil/må* > *burde* (både *gå* og *spise*). Kan disambiguere infinitivsformer som er flertydige med andre ordklasser (*å tro* / *en tro*).
+- **Enkeltord:** *gulne* (skifte fra *gulner* til *gulnet* som hyppigste form; hypotese om bilder/avispapir; konkordanser viser to bruksgrupper), *jakter* (antatt mest verb; testes med tagging).
+- **Varianter:** OR-søk (*hoppet OR hoppa*) i appen; *a*-formene ser ut til å være så infrekvente i moderne bokmål at de kan ses bort fra.
+
+### Neste steg
+- Følge opp punktene i notatet og `tekst/mons_presentasjon_plan.md`.
+
+---
+
+## 2026-11-18 (del 28) — Korpusutvalg: balansert bokmålskorpus 1950–2026 (`sqlite/korpusutvalg.py`, `korpus/korpusoversikt.tsv`)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Ny modul `sqlite/korpusutvalg.py` som trekker et korpus fra NBs samling med `dhlab` (Python-pakke, MIT-lisens, v2.41.0) og lagrer **kun en korpusoversikt** (metadata, URN, antall ord), ikke fulltekster. Fulltekstene hentes separat fra URN-ene og skal ikke i repoet.
+- **Design (avtalt med Marie):** 3 teksttyper (skjønnlitteratur og faglitteratur fra `digibok`, aviser fra `digavis`) × 8 tiår (1950–59 … 2020–26), omtrent like mange ord i hver av de 24 cellene, ca. 10 mill. ord totalt. Oversettelser utelates.
+- **Filtre:** bøker må ha `langs == "nob"` (utelater oversettelser og bøker med blandet språk) og minst 20 000 ord (utelater hefter og barnebøker). Aviser må ha minst 3 000 ord. Alle dokumenter må ha bokmålsandel ≥ 0,95, målt med markørpar (*ikke/ikkje, jeg/eg, hva/kva, hvordan/korleis, noen/nokon, mye/mykje, hvem/kven*). Maks én bok per forfatter og maks tre numre per avistittel per celle. Ingen dokumenter større enn 35 % av cellemålet.
+- Antall ord per dokument regnes ut fra dhlab-frekvens-API-et: frekvens / relativ frekvens for et vanlig ord.
+- **Resultat:** `korpus/korpusoversikt.tsv` med 224 dokumenter og 10 724 916 ord: 58 skjønnlitterære bøker (3,6 M), 64 fagbøker (3,7 M) og 102 avisnumre fra 80 titler (3,5 M). Alle celler har 418 000–547 000 ord. Trukket 2026-11-18.
+
+### Tekniske observasjoner
+- `Corpus(lang="nob")` filtrerer ikke strengt: første trekning hadde 10 bøker med `langs == "nob"` som var nynorsk eller dialekt (bokmålsandel 0,00–0,93, f.eks. *Om distrikts- og regionalpolitikken*, *Breheimen til framtida*, *Jærsk humor*). Språksjekken gjelder derfor nå også bøker, og korpuset ble trukket på nytt.
+- Aviser har ikke språk i metadata (`lang="nob"` gir 0 treff), så språksjekken er eneste filter for dem.
+- **Svakheter i metadataene som ikke fanges automatisk** (sett i første trekning): feil `literaryform` (f.eks. *Nye forstads- og tunnelbaner i Oslo* og *Etnopolitikk som skolepolitikk* merket som skjønnlitteratur), oversettelser uten originalspråk i metadata (*Ponson du Terrail*, trolig også flere westernhefter fra 1950–80-tallet) og nyutgivelser av eldre verk som havner i feil tiår (*Amalie Skram*, utgave 1993).
+- Utvalget trekkes tilfeldig av dhlab-API-et og kan ikke gjenskapes ved ny kjøring. Den lagrede oversikten er den reproduserbare definisjonen av korpuset.
+
+### Neste steg
+- Gå gjennom `korpus/korpusoversikt.tsv` for hånd og merke dokumenter som bør ut (feil sjanger, oversettelser, nyutgivelser). Eventuelt legge inn en ekskluderingsliste som skriptet bruker til å fylle cellene opp igjen.
+- Hente fulltekstene fra URN-ene til Linux-maskinen (utenfor repoet), og starte med en pilot på ca. 10 bøker for å måle hvor lang tid OBT bruker.
+
+---
+
+## 2026-11-18 (del 29) — Fulltekster hentet for korpusoversikten (utenfor repoet)
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Hentet fulltekstene for alle 224 dokumentene i `korpus/korpusoversikt.tsv` fra Språkbankens interne teksttjeneste (kun tilgjengelig på NBs nettverk) med et lite skript som ligger **utenfor repoet**. Tekstene er lagret lokalt utenfor repoet og OneDrive, én fil per dokument med navn `<dhlabid>.txt`. De skal overføres til Linux-maskinen for tagging og slettes lokalt etterpå.
+- Tekstene er rettighetsbelagte og skal ikke inn i repoet. Adressen til tjenesten står heller ikke i repoet.
+
+### Tekniske observasjoner
+- 224/224 hentet uten feil, til sammen ca. 55 MB (UTF-8 ren tekst).
+- Antall ord i tekstene (mellomromsdelt) er **identisk** med `n_ord` i korpusoversikten for alle dokumenter (10 724 916 ord). Tjenesten leverer altså samme tekst som dhlab teller på.
+- Tekstene er allerede tokenisert (tegnsetting er skilt fra ord med mellomrom, f.eks. `Co . Pty . Ltd .`), og linjeskift følger OCR-linjene. OBT tokeniserer selv. Forkortelser og orddeling ved linjeskift kan gi noen ekstra feil eller `ukjent`; sjekkes i piloten.
+- Filnavnet (`dhlabid`) blir `doc_id` i `sqlite/korpus_profiler.py`, så telletallene kan kobles direkte til korpusoversikten.
+
+### Neste steg
+- Overføre tekstene til Linux-maskinen (utenfor repoet).
+- Pilot: tagge ca. 10 dokumenter (blandet teksttype og tiår), måle tidsbruk, og sjekke `koble` / `ukoblet` i `korpus_profiler.py`.
+
+---
+
+## 2026-11-18 (del 30) — Pilot: 10 korpusdokumenter tagget med OBT; rettelser i koblingen
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Valgte 10 pilotdokumenter fra `korpus/korpusoversikt.tsv` (dokumentet nærmest medianlengden i hver celle): skjønnlitteratur og faglitteratur fra 1950-, 1980- og 2010-tallet, aviser fra 1950-, 1980-, 2010- og 2020-tallet. Til sammen 432 414 ord. dhlabid: 100529224 100354617 100212799 100554427 100113405 100410017 202147427 204377691 201547312 204608626.
+- Marie tagget dem på Linux-maskinen med `python -m sqlite.korpus_profiler --db /tmp/pilot.db tagg …` og kjørte `koble` og `ukoblet`.
+- Rettelser etter piloten:
+  - `clb` (OBTs setningsgrensemarkør) behandles som markør, ikke som trekk: i `obt_tagger._is_marker` og i `korpus_profiler._core_tags`. OBT setter `clb` både på setningsavsluttende tegn (`"$." clb <punkt>` → nå `pos = "tegn"`) og på konjunksjoner (*og*, *men*, *for*), som derfor bare ble `delvis` koblet.
+  - `koble --på-nytt` kobler alt på nytt (trengs etter endringer i koblingsreglene, uten å tagge på nytt).
+  - `koble` viser i tillegg koblingen per ordklasse for `subst` (uten egennavn), `verb` og `adj` (`mapping_report_by_pos`).
+
+### Viktige funn
+- **Tid:** ca. 4 minutter for 432 000 ord (ca. 1 800 ord/s). Hele korpuset (10,7 M ord) anslås til 1½–2 timer.
+- **Kobling (før rettelsen, alle ordklasser):** eksakt 75,8 %, `ingen` 18,5 %, delvis 2,9 %, flertydig 2,8 %. Nesten alt i `ingen` er ord uten paradigme: ubøyelige ord der OBT og Ordbanken bruker ulik ordklasse (*ut, opp, inn, ned, her, der, hjem, tilbake, frem* er `prep` hos OBT, adverb i Ordbanken; *å* er `inf-merke`), tall, egennavn (*Truls, Aagot, Gud, Norge*) og høflighets-*De*. Det påvirker ikke paradigmeprofilene.
+- **OCR-feil gir falske bøyningsformer:** *seiv* er tagget 524 ganger som preteritum av *sive*. Det er nesten sikkert OCR-feil for *selv* (*l* lest som *i*). Slike feil kan blåse opp enkeltceller i paradigmer (jf. *katt/hatt* i del 7) og må holdes øye med i profilene.
+
+### Neste steg
+- Marie: `git pull`, kjøre `koble --på-nytt` på pilotdatabasen og se på koblingen for subst/verb/adj, og kjøre linjeskifttesten (sammenligning av tagging med og uten linjeskift).
+- Deretter tagge hele korpuset (i bakgrunnen, f.eks. med `nohup`).
+
+---
+
+## 2026-11-18 (del 31) — Pilotresultater etter rettelsen; klargjøring for tagging av hele korpuset
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Marie kjørte `koble --på-nytt` på pilotdatabasen (10 dokumenter) og linjeskifttesten.
+- `korpus_profiler.tag_and_add` / `tagg` hopper nå over dokumenter som allerede finnes i databasen, så en avbrutt kjøring kan startes på nytt med samme kommando. Skriver framdrift med tid per dokument.
+- `ukoblet` har fått valgene `--status` (f.eks. `flertydig`), `--pos` og `--antall`, og viser hvilke celler (`lemma_id:boy_nummer`) en analysetype er koblet til. Antall regnes nå med vekt, så flertydige typer ikke telles dobbelt.
+
+### Viktige funn
+- **Kobling per ordklasse etter rettelsen** (pilot, 432 000 ord):
+
+  | Ordklasse | eksakt | flertydig | delvis | ingen | tokens |
+  |---|---:|---:|---:|---:|---:|
+  | verb | 92,5 % | 5,0 % | 1,1 % | 1,4 % | 66 191 |
+  | adj | 92,7 % | 0,4 % | 0,3 % | 6,6 % | 30 517 |
+  | subst (uten egennavn) | 84,2 % | 1,8 % | 1,6 % | 12,4 % | 65 794 |
+
+  Alle ordklasser samlet: eksakt 78,0 %, `ingen` 18,5 % (tall, egennavn, ubøyelige ord med ulik ordklasse hos OBT og Ordbanken). `ingen` for substantiv er trolig mest sammensetninger som ikke er egne oppslag i Ordbanken, pluss OCR-feil.
+- **5 % `flertydig` for verb** må undersøkes (`ukoblet --status flertydig --pos verb`). Det betyr at analysen passer like godt på flere lemmaer med samme grunnform, og vekten deles likt mellom dem, noe som kan svekke profilen til vanlige verb.
+- **Linjeskifttest** (Smaalenenes Avis 2012, ca. 30 000 tokens): bare 38 av 29 964 tokens (0,13 %) får ulik analyse når linjene slås sammen. Forskjellene er nesten alle ord i starten av en linje (typisk overskrifter: *Undervisning*, *Fjerner*, *Planlegger*), som blir feiltagget som egennavn når linjene slås sammen. **Linjeskiftene hjelper altså, og tekstene tagges som de er.**
+
+### Neste steg
+- Tagge hele korpuset (224 dokumenter, ca. 1½–2 timer) i bakgrunnen til `sqlite/korpus.db`.
+- Undersøke de flertydige verbkoblingene.
+
+---
+
+## 2026-11-18 (del 32) — Tagging av hele korpuset startet
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Marie startet taggingen av alle 224 korpusdokumentene på Linux-maskinen i bakgrunnen: `nohup python -m sqlite.korpus_profiler tagg /home/rosok/dhlab_fulltekster/*.txt > ~/tagging.log 2>&1 &`. Telletallene skrives til `sqlite/korpus.db` (ignoreres av Git).
+
+### Tekniske observasjoner
+- Tempo for de første dokumentene: ca. 1 000 tokens/s (tregere enn anslaget fra piloten). Hele korpuset anslås til ca. 3 timer.
+- Taggingen bruker omtrent 1–2 prosessorkjerner og fortsetter selv om SSH-forbindelsen brytes (`nohup`). Stopper den, kan samme kommando kjøres på nytt, og ferdige dokumenter hoppes over.
+
+### Neste steg
+- Når taggingen er ferdig: `koble`, `ukoblet --status flertydig --pos verb`, og deretter de første paradigmeprofilene og sammenligningen med `decomposer.py`.
+
+---
+
+## 2026-11-19 (del 33) — Taggingen hang på dokument 5; tidsgrense per dokument i OBT-kjøringen
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Sjekket den nattlige taggingen: bare 4 av 224 dokumenter var tagget. Prosessen sto fast på dokument 5 (`100029013`) i nesten 14 timer: `mtag.py` brukte 99,9 % CPU, mens `vislcg3`, OBT-Stat (Ruby) og `perl` sto på 0 % og ventet. Multitaggeren gikk altså i evig løkke på noe i denne teksten.
+- `sqlite/obt_tagger.run_obt` har fått `timeout`. OBT-kjeden kjøres i egen prosessgruppe (`start_new_session=True`), og ved tidsavbrudd stoppes hele gruppa (`os.killpg`) og `ObtTimeout` kastes. `subprocess.run(timeout=…)` ville bare stoppet skallskriptet og latt `mtag.py` fortsette.
+- `sqlite/korpus_profiler.tag_and_add` / `tagg`: dokumenter som feiler eller får tidsavbrudd, noteres i ny tabell `tagging_feil` og hoppes over, så resten av korpuset blir tagget. Nye valg: `--tidsgrense` (standard 900 s) og `--prøv-feilede`. Ny kommando `feilet` lister feilede dokumenter.
+- Logikken (notere, hoppe over, prøve igjen) er testet med simulert tidsavbrudd på Windows. Selve avbruddet av prosessgruppa bruker Linux-funksjoner og må testes på Linux-maskinen.
+
+### Tekniske observasjoner
+- Tempo før stoppen: ca. 1 000 tokens/s. Det største dokumentet (ca. 143 000 ord) bør da ta 2–3 minutter, så 900 s er god margin.
+- Mulig årsak: `mtag`-dokumentasjonen advarer om problemer med ordformer som inneholder spesialtegn for regulære uttrykk under Python ≥ 3.7 (maskinen har 3.12). Ikke bekreftet; `100029013` bør undersøkes for å finne hva som utløser løkka.
+
+### Neste steg
+- Stoppe den hengende prosessen (`kill -- -<PID>`), hente rettelsen, teste tidsgrensen på `100029013` og starte taggingen på nytt.
+- Finne hva i `100029013` som får `mtag.py` til å henge, og om det kan rettes (f.eks. ved å fjerne eller erstatte tegn før tagging).
+
+---
+
+## 2026-11-19 (del 34) — Hele korpuset tagget; kobling mot Ordbanken
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Taggingen av hele korpuset ble fullført på Linux-maskinen (220 dokumenter i denne kjøringen, 149 min; 4 var tagget fra før). 222 av 224 dokumenter er tagget.
+- Kjørte `feilet`, `koble` og `ukoblet --status flertydig --pos verb`.
+
+**Funn**
+- To dokumenter feilet med tidsavbrudd (900 s), begge faglitteratur 1950–1959:
+  `100029013` (*Menn med øreringer i Norge*, 1957, 37 147 ord) og `100496944` (kommunal inndeling i Sør-Trøndelag, 1958, 46 496 ord). Cellen faglitteratur 1950-tallet mister dermed ca. 84 000 av 447 000 ord (ca. 19 %). Godtas foreløpig.
+- Kobling mot `fullformsliste`, vektede tokens:
+
+  | | eksakt | flertydig | delvis | ingen | tokens |
+  |---|---|---|---|---|---|
+  | alle ordklasser | 72,2 % | 2,3 % | 1,0 % | 24,5 % | |
+  | subst (uten prop) | 80,7 % | 1,5 % | 1,4 % | 16,4 % | 1 749 197 |
+  | verb | 91,1 % | 5,2 % | 1,9 % | 1,8 % | 1 418 488 |
+  | adj | 90,2 % | 0,4 % | 0,3 % | 9,1 % | 701 441 |
+
+  Tallene ligger nær piloten. `ingen` for alle ordklasser skyldes særlig egennavn, tall og ubøyelige ord.
+- Verb med status `flertydig` er homografe lemmaer i Ordbanken med samme grunnform og samme celle (f.eks. *være* 80033/80034, *bli* 7528/7530, *la* 81665/82098, *rekke* med tre lemma_id). Formen er ikke flertydig i teksten; vekten deles likt mellom lemma_id-ene.
+  - Konsekvens: `paradigm_profile` med `grunnform` velger ett lemma_id. Når homografene har like paradigmer, blir andelene riktige, men tallene halvert. Når paradigmene er ulike (f.eks. svak/sterk bøyning, *henge*), får celler som bare finnes i det ene paradigmet full vekt, mens delte celler får halv vekt, og profilen blir skjev.
+
+**Neste steg**
+- Slå sammen homografe lemma_id (samme grunnform og pos) i profilene, f.eks. ved å summere per `boy_nummer` over alle kandidatene.
+- Se på `ingen` for substantiv (16 %): sammensetninger, OCR-feil, eldre rettskrivning.
+- Undersøke tidsavbruddene i `mtag.py` bare hvis det blir nødvendig.
+
+---
+
+## 2026-11-19 (del 35) — Homografe lemmaer slås sammen i paradigmeprofilene
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- `paradigm_profile` i `sqlite/korpus_profiler.py` slår nå sammen alle lemma_id med samme grunnform og ordklasse når profilen hentes med `grunnform` (ny parameter `merge_homographs=True`). Frekvensene summeres per `boy_nummer`, og cellene er unionen av paradigmene.
+  - Uten `pos`, og med kandidater i flere ordklasser, velges ordklassen med flest forekomster, fordi `boy_nummer` betyr ulike ting i ulike ordklasser.
+  - `--lemma-id` gir fortsatt ett enkelt lemma_id. `--ikke-slå-sammen` (eller `merge_homographs=False`) gir den gamle oppførselen.
+  - Utdatafeltet `lemma_id` heter nå `lemma_ids`, f.eks. `7528,7530`.
+- Testet på en liten database med konstruerte telletall mot Ordbanken. Ingen andre moduler bruker funksjonen.
+
+**Funn**
+- Med konstruerte tall (blir 100, ble 60, blitt 40) ga den gamle profilen for *bli* (lemma_id 7528) presens 38 %, preteritum 46 % og perfektum partisipp 15 %. Riktig fordeling er 50/30/20 %. *ble* finnes bare i 7528-paradigmet og fikk full vekt, mens *blir* og *blitt* ble delt på to lemma_id. Profilene for homografe verb var altså skjeve før rettelsen, ikke bare halverte.
+
+**Hva sammenslåingen IKKE endrer: ingen data går tapt**
+- Sammenslåingen skjer bare når profilen regnes ut (i `paradigm_profile`). Ingenting i databasen er endret eller slettet.
+- `korpus.db` lagrer fortsatt:
+  - `obt_typer`: hver ordform med lemma, ordklasse og trekk fra OBT, og antall per dokument;
+  - `type_kobling`: én rad per Ordbank-oppføring (lemma_id) som formen kan høre til, med status `flertydig` og vekten den fikk (f.eks. 0,5 + 0,5).
+- Informasjonen om at en form kan høre til flere oppføringer kan derfor alltid hentes ut igjen:
+  - `ukoblet --status flertydig [--pos verb]`: alle former som kan høre til flere oppføringer, med lemma_id og celle (kolonnen `celler`);
+  - `form <ordform>`: fordelingen av én ordform på lemma_id og celle;
+  - `profil <grunnform> --lemma-id N`: profilen for én bestemt oppføring;
+  - `profil <grunnform> --ikke-slå-sammen`: den gamle beregningen;
+  - `lemma_ids` i profilen viser hvilke oppføringer som er slått sammen.
+- Merk: OBT selv skiller ikke mellom homografe oppføringer i Ordbanken. Korpuset har derfor aldri hatt informasjon om *hvilken* oppføring et ord i teksten tilhører, bare om at formen passer med flere. Den likedelte vekten (0,5/0,5) er en teknisk fordeling, ikke en observasjon. Skal homografene skilles (f.eks. *la* «la være» vs. *la* «lade»), trengs betydningsanalyse eller manuell gjennomgang. Da er `type_kobling` utgangspunktet.
+
+**Neste steg**
+- Kjøre profiler på det ekte korpuset, f.eks. `python -m sqlite.korpus_profiler profil bli --pos verb`, og sammenligne med n-gram-profilene.
+
+---
+
+## 2026-11-19 (del 36) — Første korpusprofil (*bli*) og profiler per tiår/teksttype
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie kjørte `profil bli --pos verb` på det taggede korpuset (lemma_id 7528 og 7530 slått sammen).
+- Nye funksjoner i `sqlite/korpus_profiler.py`:
+  - `load_metadata`: leser `korpus/korpusoversikt.tsv`; doc_id i `korpus.db` er dhlabid.
+  - `profile_by_group(conn, grunnform, pos, by=("tiaar",) …)`: paradigmeprofil per gruppe av dokumenter (kolonner i korpusoversikten, f.eks. `tiaar`, `teksttype`). Bygger på `paradigm_profile(per_doc=True)` og summerer per gruppe.
+  - Felter per gruppe og celle: `n`, `andel`, `n_lemma`, `per_mill` (lemmaets forekomster per million tokens) og `n_dok`.
+- Kommandolinje:
+  - `profil bli --pos verb --etter tiaar [teksttype]` gir en tabell med én linje per gruppe og andel per celle (celler som er tomme overalt, utelates).
+  - `--celler 1 2 4 5` begrenser til bestemte bøyningsnumre; andelene regnes da innenfor dem. `--celler` virker også uten `--etter`.
+- Testet med konstruerte telletall på ekte dhlabid-er fra oversikten. Dokumenter som mangler i oversikten havner i gruppen `ukjent`.
+
+**Funn**
+- *bli* i hele korpuset: 55 282 forekomster.
+
+  | celle | andel |
+  |---|---|
+  | pret (ble/blei/bleiv/blev) | 48,6 % |
+  | pres | 24,2 % |
+  | inf | 17,3 % |
+  | perf-part | 9,7 % |
+  | imp | 0,2 % (128) |
+
+  - S-passiv og partisippformene brukt som adjektiv er tomme.
+  - Imperativ kommer trolig fra kontekstdisambigueringen («Bli her!»).
+
+**Neste steg**
+- Kjøre `profil bli --pos verb --etter tiaar teksttype` på korpuset og vurdere stabiliteten over tid.
+- Sammenligne med n-gram-profilen (`compute_paradigm_profile`) for samme periode.
+
+---
+
+## 2026-11-19 (del 37) — Profilen for *bli* per tiår og teksttype
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie kjørte `profil bli --pos verb --etter tiaar`, `--etter teksttype` og `--etter tiaar teksttype --celler 1 2 4 5` på det taggede korpuset (222 dokumenter).
+
+**Funn** (andeler av inf/pres/pret/perf-part)
+- **Per tiår er profilen ganske stabil.** inf 0,14–0,19, pret 0,44–0,59, perf-part 0,08–0,12. Presens varierer mest (0,18–0,30). Det er ingen tydelig trend over tid på tvers av teksttypene.
+- **Teksttype betyr mer enn tiår:**
+  - faglitteratur har mest preteritum (0,56) og minst infinitiv (0,13), trolig *ble*-passiv;
+  - skjønnlitteratur har mest infinitiv (0,22) og perf-part (0,13);
+  - aviser har mest presens (0,29).
+- **Celler med få dokumenter styres av enkeltdokumenter.** Eksempler:
+  - faglitteratur 1980-tallet: pret 0,71 og 11 149 forekomster per million, nesten dobbelt så høyt som ellers, trolig én eller to bøker med mye passiv;
+  - skjønnlitteratur 2020-tallet: pres 0,32 og pret 0,30, trolig romaner skrevet i presens.
+  - I skjønnlitteratur avhenger pres/pret mye av hvilken tid fortellingen står i.
+- **Aviser (10–20 dokumenter per tiår) er jevnest og viser en mulig trend:**
+  - presens øker fra 0,23 (1950-tallet) til 0,33–0,34 (1980-tallet og senere), og preteritum går ned fra 0,53 til ca. 0,40;
+  - samtidig synker forekomster per million fra 8 131 til 4 745.
+  - Det kan tyde på mer presens i nyhetsspråket og/eller mindre *bli*-passiv, men er foreløpig ikke testet mot variasjonen mellom dokumenter.
+
+**Neste steg**
+- Måle variasjonen mellom dokumenter (dokumentet er utvalgsenheten): spredning per celle, f.eks. bootstrap over dokumenter, så vi ser hvilke forskjeller mellom tiår og teksttyper som er større enn støyen.
+- Finne dokumentene som driver avvikene (faglitteratur 1980-tallet, skjønnlitteratur 2020-tallet) med `profil … --per-dok`.
+- Sammenligne med n-gram-profilen for *bli*.
+
+---
+
+## 2026-11-19 (del 38) — Telletallene fra OBT-taggingen deles i repoet (Git LFS)
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie ønsker at kollegaen skal kunne analysere resultatet av taggingen. Fulltekstene deles ikke. Det som deles, er en kopi av korpusdatabasen med bare telletall (ca. 300 MB): `korpus/obt_frekvenser.db`.
+- `.gitattributes`: `korpus/obt_frekvenser.db` spores med Git LFS (som `sqlite/ordbank.db`).
+- `.gitignore`: unntak `!korpus/obt_frekvenser.db` fra regelen `*.db`. `sqlite/korpus.db` (den lokale arbeidsdatabasen) er fortsatt ignorert, så lokale databaser ikke kolliderer ved `git pull`.
+- Ny kommando `eksporter` (`export_shared`) i `sqlite/korpus_profiler.py`: kopierer databasen, erstatter `kilde` (lokal filsti til fulltekstene) med filnavnet og kjører VACUUM.
+
+**Innholdet i `korpus/obt_frekvenser.db`** (ingen tekst; teksten kan ikke gjenskapes)
+- `obt_typer`: (doc_id, form, lemma, pos, trekk, partisipp, n) per dokument, der n er vektet antall.
+- `type_kobling`: koblingen av hver analysetype til Ordbank-celler (lemma_id, boy_nummer, vekt, status). Homografe lemmaer ligger som egne rader med status `flertydig` (se del 35).
+- `dokumenter`: doc_id (= dhlabid i `korpus/korpusoversikt.tsv`), filnavn og antall tokens.
+- `tagging_feil`: de to dokumentene som fikk tidsavbrudd (del 34).
+
+**Bruk**
+- Alle kommandoene tar `--db korpus/obt_frekvenser.db`, f.eks.:
+  `python -m sqlite.korpus_profiler --db korpus/obt_frekvenser.db profil bli --pos verb --etter tiaar`
+- Ordbanken (`sqlite/ordbank.db`) må også være hentet med Git LFS.
+- Oppdatering etter ny tagging eller ny kobling: kjør `eksporter` på nytt, og commit og push.
+
+**Funn / merknader**
+- Hver ny versjon av fila legges til i LFS-lagringen på GitHub og teller på kvoten til eieren av repoet.
+
+**Neste steg**
+- Marie lager fila på Linux-maskinen (`git pull`, `eksporter`, `git add`, commit, push).
+
+---
+
+## 2026-11-19 (del 39) — Ordformer vs. lemmaer: morfologisk variasjon i korpuset
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie lastet opp `korpus/obt_frekvenser.db` (LFS, se del 38). Den er hentet lokalt på Windows-maskinen.
+- Overordnede oppgaver avklart med Marie:
+  1. validere decomposer mot den taggede fordelingen;
+  2. undersøke om bøyningsprofilene er stabile over tid, for utvalgte eksempelparadigmer.
+- Først besvares et spørsmål fra kollegaen: hvor mye endrer antallet seg når bøyningsformene slås sammen til lemma?
+- Ny modul `sqlite/morfologisk_variasjon.py`:
+  - tokens, formtyper, lemmatyper (OBT-lemma + ordklasse), former per lemma og andel bøyde tokens (form ≠ lemma);
+  - tallene gis per ordklasse, per lemmafrekvens og per tiår og teksttype;
+  - typer sammenlignes ved likt antall tokens (eksakt rarefaction).
+  - Kjøres med `python -m sqlite.morfologisk_variasjon [--db …] [--utvalg 200000]`.
+- Rapport: `rapport_morfologisk_variasjon.md`.
+
+**Funn**
+- Ca. 2 % av tokens (9 % av formtypene) har tegn i starten eller slutten fra tokenisering eller OCR, f.eks. «er.», «er|», «_vært», «kl.». Disse renses (`clean_form`) før telling. Uten rensingen blir forholdet former/lemma for høyt.
+- Alle ord: 410 711 formtyper og 363 042 lemmaer, altså 1,13 former per lemma. Men 30 % av tokens står i en annen form enn lemmaet (58 % for substantiv, verb og adjektiv; 79 % for verb).
+- Det lave forholdet former/lemma skyldes sjeldne lemmaer, egennavn og ukjente ord. Egennavn og ukjente ord er 13 % av tokens, men 49 % av formtypene. Lemmaer med over 1 000 forekomster har over 6 former (substantiv, verb) og 5,2 former (adjektiv).
+- Etter teksttype: skjønnlitteratur har mest bøyning (andel bøyd 0,32; subst/verb/adj 0,64) og aviser minst (0,26 / 0,52). Over tid er tallene stabile samlet sett.
+- Aviser: andelen bøyde ord faller fra 0,28 til 0,23 fra 1950-tallet til 2020-tallet. Det skyldes dels flere egennavn (14 % → 21 %) og færre verb, men andelen faller også innenfor subst/verb/adj (0,55 → 0,49).
+
+**Neste steg**
+- Validere decomposer (oppgave 1) og velge eksempelparadigmer for stabilitetsanalysen (oppgave 2).
+
+---
+
+## 2026-11-19 (del 40) — Første sammenligning av decomposer med OBT-fordelingen
+
+**Dato/agent:** 2026-11-19, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie ønsker å validere decomposer på et utvalg flertydige former med paradigmer som er brukt i repoet, ikke på alle lemmaer.
+- Kjørte `compare_with_decomposer` (uendret, korpustallene fra `korpus/obt_frekvenser.db` brukes som `nb_totals`) på 12 former: fisker, dør, døde, går, hatt, kroner, dager, ønsker, møter, viser, landet, tro. Ingen kode er endret.
+
+**Funn** (andel per kandidat i prosent, decomposer / OBT; antall forekomster i korpuset i parentes)
+- God overensstemmelse (1–4 prosentpoeng):
+  - *hatt* (2 843): ha 95/95, hatt 5/5;
+  - *ønsker* (2 044): verb 94/92;
+  - *møter* (978): verb 68/72;
+  - *landet* (2 099): land 85/83;
+  - *dager* (2 570): dag 98/100.
+- Middels:
+  - *viser* (2 649): vise verb 99/93, subst *vise* 0/6;
+  - *fisker* (367): fiske verb 58/68, fisker 20/17, fisk 21/7.
+- Dårlig:
+  - *dør* (628): subst 67/48, verb 33/51;
+  - *kroner* (2 943): verb *krone* 26/1, fordi verbets egne former (inf *krone*) også er flertydige;
+  - *døde* (1 580): adj *død* 0/28, den kjente adjektivmangelen (rapport_verbtyper §7.2);
+  - *går* (8 486): subst *går* («i går») 0/15;
+  - *tro* (1 932): verb 96/59, subst 0/14, adj 0/4.
+- Mønster: decomposer svikter når en kandidat mangler regler eller andre former å regne ut fra (adjektiv, *går*, *tro*), og når ankerformene selv er flertydige (*krone*).
+- Forbehold:
+  - noen former er sjeldne i korpuset;
+  - OBT er ikke fasit (*tro* som pret av *trå* 160 ganger virker mistenkelig);
+  - 0–7 % av forekomstene er ukoblet;
+  - homografe oppføringer (f.eks. subst *tro* 71278/71279) er ikke slått sammen i `compare_with_decomposer`.
+
+**Neste steg** (foreslått, venter på Maries svar)
+- Fast ordliste på ca. 20 former: de 12 over pluss «støykandidatene» fra rapport_verbtyper (stille, fiske, svare, selge, leve, vinne, legge, bygge, sette, tape).
+- Liten modul som slår sammen homografer på begge sider og gir et avviksmål per form.
+- Stikkprøver av OBT-analyser for mistenkelige tilfeller.
+- Rapport `rapport_decomposer_validering.md`.
+
+---
+
+## 2026-11-20 (del 41) — `figurer-deck` flettet inn i `multitagger-oppsett`; lognumre ordnet; sammenligningen tilpasset ny decomposer
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Flettet `origin/figurer-deck` (som inneholder `rapport-verbtyper`) inn i `multitagger-oppsett`, fordi kollegaens arbeid med decomposer hører sammen med valideringen mot OBT. Med i flettingen:
+  - substantivprofiler, `sqlite/verbtyper.py` og figurer til decket;
+  - `sqlite/valider_dekomponering.py` og `rapport_dekomponering_validering.md`;
+  - log-regresjon som standard i `sqlite/decomposer.py`.
+- **Omnummerering av loggen:** Kollegaens oppføringer (del 15–20, 2026-11-17–20) er ikke endret og står etter del 14. Oppføringene fra `multitagger-oppsett` (tidligere del 15–34) heter nå **del 21–40**. Henvisninger til lognumre i `.gitignore`, `rapport_morfologisk_variasjon.md`, `sqlite/korpus_profiler.py`, `sqlite/morfologisk_variasjon.py` og `sqlite/obt_tagger.py` er oppdatert tilsvarende. Datoene er beholdt, så rekkefølgen er ikke helt kronologisk.
+- **`compare_with_decomposer`** i `sqlite/korpus_profiler.py` er tilpasset den nye decomposer:
+  - Ny parameter `method` med `logreg` (standard) eller `regler`.
+  - Problemet: Log-regresjonen lærer på gullstandarden, som velges med terskelen 100 000 i `nb_totals`. Med korpustallene (8,4 mill. ord) ble gullstandarden tom, og `numpy.linalg.lstsq` feilet.
+  - Løsningen: Gullstandardlemmaene velges med Ordbankens ekte `nb_totals`, mens kategorifrekvensene hentes fra korpuset (`_corpus_gold_profiles`). Det gir 1 916 substantiv og 459 verb med alle fire kategorier > 0.
+  - Decomposerens modellbuffere byttes ut midlertidig og settes tilbake etterpå. `decomposer.py` er ikke endret.
+
+**Funn**
+- Med `method="regler"` blir resultatene identiske med del 40. Med `logreg` endres lite for formene som er testet så langt:
+  - *hatt*: ha 92 % (regler 95 %, OBT 95 %);
+  - *dør*: subst 71 % (regler 67 %, OBT 47 %);
+  - *fisker* og *kroner*: praktisk talt uendret.
+
+**Neste steg**
+- Fast ordliste og valideringsmodul (del 40, neste steg), og kjøre begge metodene.
+
+---
+
+## 2026-11-20 (del 42) — Validering av decomposer mot det OBT-taggede korpuset
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Avklart med Marie: validering i to deler.
+  1. Bred og automatisk: alle aktuelle flertydige former.
+  2. Dyp: utvalgte former og profiler.
+- `sqlite/korpus_profiler.py`: ny klasse `DecomposerSession`. Den gjenbruker én tilkobling med en indeksert temp-tabell `nb_totals` (korpusets formtall) og gullstandarden for log-regresjonen, så mange former kan kjøres raskt (under 1 ms per form etter ca. 20 s oppstart). `compare_with_decomposer` bruker den.
+- Ny modul `sqlite/valider_dekomponering_obt.py` (`python -m sqlite.valider_dekomponering_obt`, ca. 1,5 min):
+  - sammenligner per leksem (grunnform + ordklasse; homografer slått sammen);
+  - mål: avvik i pp (total variasjonsavstand), riktig flest, umodellert andel og grunnlag (sum anslag / observert);
+  - varianter: `regler`, `logreg` og `logreg_hom` (homografe lemma_id telles én gang);
+  - profiler i tre varianter: OBT, decomposer (formfrekvens × andel) og naiv (rå formfrekvens);
+  - skriver `resultater/dekomponering_obt_former.tsv` og `resultater/dekomponering_obt_profiler.tsv`.
+- Rapport: `rapport_dekomponering_obt.md`.
+
+**Funn**
+- Utvalg: 1 775 former med ≥ 100 forekomster og ≥ 2 leksemer blant subst/verb/adj. Av dem gir OBT ≥ 90 % subst/verb/adj for 1 721.
+- Når alle kandidatene er modellert (1 206 former), gir decomposer riktig leksem størst andel i 80 % av formene, med medianavvik 7,9 pp (logreg) / 7,8 pp (regler). Med grunnlag ≥ 0,5: 84 % og 5,7 pp. Det stemmer med kollegaens syntetiske test (ca. 80 %, 10–15 pp).
+- Største feilkilde er umodellerte kandidater: 515 former (31 % av forekomstene) har ≥ 5 % på et leksem decomposer gir 0 %. Medianavviket er 50 pp, og riktig leksem får størst andel i 44 %. To tredjedeler av forekomstene er adjektiver (*hele*, *nye*, *godt*, *litt*, *døde*, *få*).
+- Regler og logreg gir nesten samme resultat, fordi logreg krever to entydige ankerkategorier og bare brukes i 566 av 2 962 kandidatanslag (19 %).
+- Homografe lemma_id telles dobbelt i decomposer (*la*, *rekke*), men å telle dem én gang endrer medianavviket bare fra 7,9 til 8,1 pp.
+- Andre feiltyper:
+  - lite grunnlag (*fall*: sum anslag 17 mot 1 738 observert);
+  - delte ankre behandles ulikt for verb og substantiv (*arbeid*, *livet* dras mot verbet);
+  - idiosynkratiske profiler (*la*/*legge*).
+- Profiler:
+  - substantiv blir klart bedre med decomposer: *fisker* 1,4 pp mot naiv 37,6; *fisk* 4,5 mot 23,2;
+  - verb blir blandet: bedre for *sette*, *svare*, *bygge*; verre enn naiv for *dø* (11,7 mot 8,1) og *legge* (23,9 mot 11,0); dårlig begge veier for *stille* og *tape*.
+  - *dø*: rekkefølgen pret > inf > pres holder, men decomposer undervurderer presens (8 mot 15 %) og overvurderer preteritum (66 mot 54 %).
+
+**Neste steg**
+- Dele rapporten med kollegaen.
+- Anbefalingene til decomposer (adjektivkandidater, vise grunnlaget, delte ankre) er hans modul, så de må avtales med ham.
+- Eventuelt stikkprøver av OBT (*tro*/*trå*, *å*).
+
+---
+
+## 2026-11-20 (del 43) — Testteksten for OBT fjernet
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Slettet mappen `tekster/` med `test-tekst-bokselskap.txt` (del 21). Teksten ble bare brukt til å teste OBT-oppsettet før de ekte fulltekstene var på plass, og mappenavnet var lett å forveksle med `tekst/`.
+- Bruksexemplene i `sqlite/obt_tagger.py` bruker nå en generell sti (`/sti/til/tekst.txt`). Ingen kode var avhengig av filen.
+- Eldre loggoppføringer som nevner filen (del 21–24), er ikke endret.
+
+**Neste steg**
+- Trengs en testtekst igjen, kan en kort, åpen tekst legges til på nytt.
+
+---
+
+## 2026-11-20 (del 44) — Pull request: `multitagger-oppsett` inn i `main`
+
+**Dato/agent:** 2026-11-20, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie opprettet en pull request på GitHub fra `multitagger-oppsett` til `main` (via nettleseren, siden GitHub CLI ikke er installert). Claude skrev tittel og beskrivelse.
+- Pull requesten inneholder også `figurer-deck` og `rapport-verbtyper` (flettet inn i del 41).
+
+**Neste steg**
+- Marie fletter når kollegaen har gitt klarsignal.
+- Etter flettingen bør `main` flettes inn i `figurer-deck` før nye loggoppføringer skrives der, så nummereringen fortsetter fra del 45 og vi unngår konflikt i `logg.md`.
+
+---
+
+## 2026-11-20 (del 45) — Adjektivet i «døde» (hull 5)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -554,7 +1159,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-21 (del 22) — Referansene sjekket (hull 6)
+## 2026-11-21 (del 46) — Referansene sjekket (hull 6)
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -576,7 +1181,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-21 (del 23) — Figur av paradigmegrafen
+## 2026-11-21 (del 47) — Figur av paradigmegrafen
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -603,7 +1208,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-21 (del 24) — Abstractet samkjørt med dataene
+## 2026-11-21 (del 48) — Abstractet samkjørt med dataene
 
 **Agent:** Claude Code (Claude Opus 5.5)
 
@@ -622,3 +1227,17 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Oppsummeringslysbildet (rad 14).
 - Sjekke merge-konflikter og åpne pull requests (brukerens ønske).
+
+---
+
+## 2026-11-21 (del 49) — `main` flettet inn i `figurer-deck`
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- `origin/main` er flettet inn i `figurer-deck`, slik at PR 6 kan flettes uten konflikt. Det inkluderer PR 5 (`multitagger-oppsett`).
+- Eneste konflikt var `logg.md`: begge grenene hadde brukt del 21–24. Konflikten er løst ved å bruke `main` sin logg uendret. Oppføringene fra `figurer-deck` (adjektivet i «døde», referanser, paradigmegraf og abstract) er lagt til etter del 44 som **del 45–48**, slik del 44 ba om.
+- Etter flettingen er det kontrollert at `python3 -m sqlite.decomposer dør --korpus book` gir de samme tallene som før (63,5 / 36,5 %).
+
+### Åpent spørsmål
+- `rapport_dekomponering_obt.md` (del 42) ble kjørt før dekomponereren fikk adjektivankre (del 45). Gruppen «umodellert ≥ 5 %» består mest av former der OBT gir et adjektiv. De tallene vil trolig endre seg ved en ny kjøring av `python3 -m sqlite.valider_dekomponering_obt`. Rapporten er ikke endret; det bør avtales med den som skrev den.

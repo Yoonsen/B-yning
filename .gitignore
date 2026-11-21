@@ -4,6 +4,8 @@
 20220201_norsk_ordbank_nob_2005/
 *.db
 !sqlite/ordbank.db
+# Delt kopi av telletallene fra OBT-taggingen (kun frekvenser, ingen tekst; Git LFS, logg del 38)
+!korpus/obt_frekvenser.db
 *.sqlite
 *.sqlite3
 *.db-wal
@@ -21,6 +23,10 @@ __pycache__/
 .venv/
 venv/
 env/
+paradigmevenv/
+# Loggfiler, bl.a. mtag.py.log som OBT-multitaggeren skriver i arbeidsmappen
+# (kan inneholde ord fra taggede, ev. rettighetsbelagte tekster)
+*.log
 .ipynb_checkpoints/
 .pytest_cache/
 .ruff_cache/
