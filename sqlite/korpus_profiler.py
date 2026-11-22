@@ -745,13 +745,36 @@ def compare_with_decomposer(
 # Kommandolinje
 # ---------------------------------------------------------------------------
 
-def export_shared(conn: sqlite3.Connection, target: str | Path = DEFAULT_SHARED_DB) -> Path:
+SHARED_DB_LAYERS = {"1"}  # lagene som delingsdatabasen i repoet (Git LFS) skal inneholde
+
+
+def docs_outside_shared_layers(conn: sqlite3.Connection, oversikt: str | Path = DEFAULT_OVERSIKT) -> list[str]:
+    """Dokumenter i databasen som ikke hører til SHARED_DB_LAYERS i korpusoversikten (eller mangler der)."""
+    meta = load_metadata(oversikt)
+    docs = [r[0] for r in conn.execute("SELECT doc_id FROM dokumenter")]
+    return [d for d in docs if (meta.get(d) or {}).get("lag", "1") not in SHARED_DB_LAYERS]
+
+
+def export_shared(conn: sqlite3.Connection, target: str | Path = DEFAULT_SHARED_DB, force: bool = False) -> Path:
     """
-    Lager en kopi av korpusdatabasen til deling i repoet (Git LFS): kun telletall, ingen tekst.
+    Lager en kopi av korpusdatabasen med kun telletall, ingen tekst.
     Kolonnen `kilde` (lokal filsti til fulltekstene) erstattes med filnavnet, og fila komprimeres
     med VACUUM. En eksisterende målfil overskrives.
+
+    Sperre (logg del 62): delingsdatabasen i repoet (`korpus/obt_frekvenser.db`, Git LFS) skal bare
+    inneholde lag 1. Inneholder databasen dokumenter fra andre lag, nekter funksjonen å skrive til
+    den fila med mindre `force=True` (`--tving`). Den store databasen (alle lag) eksporteres med
+    `--til` til et sted UTENFOR repoet og deles ikke via GitHub.
     """
     target = Path(target)
+    if target.resolve() == Path(DEFAULT_SHARED_DB).resolve() and not force:
+        extra = docs_outside_shared_layers(conn)
+        if extra:
+            raise ValueError(
+                f"Databasen har {len(extra)} dokumenter utenfor lag {', '.join(sorted(SHARED_DB_LAYERS))} "
+                f"og skal ikke skrives til delingsdatabasen i repoet ({DEFAULT_SHARED_DB.name}, Git LFS). "
+                "Bruk --til <sti utenfor repoet>, eller --tving hvis det virkelig er meningen."
+            )
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists():
         target.unlink()
@@ -812,7 +835,11 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("sammenlign", help="OBT-fordeling vs. decomposer.py for en ordform")
     s.add_argument("form")
     s = sub.add_parser("eksporter", help="Lag delingskopi (kun telletall) til repoet, standard korpus/obt_frekvenser.db")
-    s.add_argument("--til", default=str(DEFAULT_SHARED_DB))
+    s.add_argument("--til", default=str(DEFAULT_SHARED_DB),
+                   help="Målfil. Standard er delingsdatabasen i repoet, som bare skal inneholde lag 1; "
+                        "for alle lag: oppgi en sti utenfor repoet")
+    s.add_argument("--tving", action="store_true",
+                   help="Skriv til delingsdatabasen i repoet selv om databasen har dokumenter fra andre lag enn lag 1")
     s = sub.add_parser("ukoblet", help="Hyppigste analyser som ikke ble koblet (eller med annen status)")
     s.add_argument("--status", nargs="+", default=["ingen", "delvis"],
                    help="Koblingsstatus å vise: ingen, delvis, flertydig, eksakt (standard: ingen delvis)")
@@ -852,7 +879,12 @@ def main(argv: list[str] | None = None) -> int:
         _print_rows(compare_with_decomposer(conn, args.form),
                     ["lemma_id", "grunnform", "pos", "boy_tekst", "decomposer_andel", "obt_andel", "obt_n"])
     elif args.cmd == "eksporter":
-        path = export_shared(conn, args.til)
+        try:
+            path = export_shared(conn, args.til, force=args.tving)
+        except ValueError as e:
+            print(f"Stoppet: {e}")
+            conn.close()
+            return 1
         print(f"Skrev {path} ({path.stat().st_size / 1e6:.0f} MB)")
     elif args.cmd == "ukoblet":
         _print_rows(unmatched(conn, limit=args.antall, statuses=args.status, pos=args.pos),

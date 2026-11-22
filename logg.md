@@ -1544,3 +1544,27 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ### Neste steg
 - Trigrammer (*vil ikke X*, *skal vi X*) for å skille avstand fra imperativ i «ustyrt».
 - Profil per verb, koblet til verbtypene.
+
+---
+
+## 2026-11-22 (del 62) — Den store databasen holdes utenfor repoet; sperre i `eksporter`
+
+**Dato/agent:** 2026-11-22, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie skal tagge hele det utvidede korpuset (lag 1–5, 1 097 dokumenter, del 46) på Linux-maskinen over helgen, med lav prioritet (`nice -n 19 ionice -c3`). Taggingen bygger videre på den lokale arbeidsdatabasen `sqlite/korpus.db` og hopper over de 222 dokumentene som allerede er tagget.
+- **Beslutning om deling:**
+  - `korpus/obt_frekvenser.db` (Git LFS) blir liggende uendret med **bare lag 1**. Rapportene og OBT-valideringene er laget med den, så den gjør dem reproduserbare.
+  - Den store databasen (alle lag, anslagsvis 1,5 GB) skal **ikke** i repoet eller på GitHub. Den deles med kollegaen på Linux-maskinen, eksportert med `eksporter --til <sti utenfor repoet>`.
+- **Sperre i `sqlite/korpus_profiler.py`:**
+  - `export_shared` / `eksporter` nekter å skrive til `korpus/obt_frekvenser.db` hvis databasen har dokumenter utenfor lag 1 (ifølge kolonnen `lag` i korpusoversikten).
+  - `--tving` overstyrer.
+  - Ny hjelpefunksjon `docs_outside_shared_layers` og konstanten `SHARED_DB_LAYERS = {"1"}`.
+- Testet på kopier:
+  - en database med ett dokument fra lag 2 stoppes;
+  - `--til` utenfor repoet fungerer;
+  - lag 1-databasen gir 0 dokumenter utenfor;
+  - LFS-fila er uendret.
+
+**Neste steg**
+- Etter taggingen: `koble`, `feilet` og eksport av den store databasen til en delt plass utenfor repoet som kollegaen kan lese.
