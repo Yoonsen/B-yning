@@ -1643,7 +1643,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - `valider_dekomponering_obt` og `stabilitet_obt` med `--ut resultater/alle_lag`.
   - Resultatfilene for lag 1 i `resultater/` er ikke endret.
 - `valider_dekomponering_obt` er også kjørt på lag 1 med samme kodeversjon (bare til sammenligning, ikke lagret), fordi decomposer er endret siden resultatene for lag 1 ble laget (commit 7c9bde6).
-- Ny rapport: `rapport_utvidet_korpus.md`.
+- Resultatene er rapportert i de enkelte rapportene, se del 66.
 
 **Funn**
 - **Morfologisk variasjon:**
@@ -1662,3 +1662,22 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Neste steg**
 - Bootstrap over dokumenter (boka som enhet) for stabilitetsanalysen, hvis den skal brukes videre.
 - Avtale deling av den store databasen med kollegaen (del 64).
+
+---
+
+## 2026-11-23 (del 66) — Rapportene: resultatene for hele korpuset lagt inn per analyse
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie ønsket at rapportene bare skal inneholde analyseresultater, samlet per analyse, mens informasjon om data og tagging står i loggen (del 64). Et utkast til en samlerapport (`rapport_utvidet_korpus.md`) ble derfor ikke beholdt. Innholdet er fordelt slik:
+  - `rapport_morfologisk_variasjon.md`: nytt avsnitt «Hele korpuset (lag 1–5)» med sammenligning mot lag 1.
+  - `rapport_dekomponering_obt.md`: ny §11 «Hele korpuset (lag 1–5)», etter kollegaens §9–10. Den inneholder sammenligningen med samme kode og samme former, det brede utvalget, utvalgte former og profiler.
+  - Ny `rapport_stabilitet_obt.md`: metoden, et kort notat om at lag 1 var for lite (del 45), og resultatene med alle lag (andeler per tiår, stabilitetsmål, robuste utviklingstrekk, forbehold).
+- Merknader øverst i de to eksisterende rapportene viser til de nye avsnittene.
+
+**Funn**
+- Ingen nye analyser; tallene er fra del 65.
+
+**Neste steg**
+- Pushe grenen og lage pull request.
