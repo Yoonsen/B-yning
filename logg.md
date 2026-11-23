@@ -1702,3 +1702,35 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Gi kollegaen beskjed om plasseringen.
+
+---
+
+## 2026-11-23 (del 68) — Ny master-presentasjon: `tekst/mons_master.pptx`
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Ny gren `presentasjon-master`. Marie ønsket én gjeldende presentasjon som hun og Lars jobber videre med.
+- Sammenligning av de to presentasjonene på `main`:
+  - `mons_presentasjon.pptx` (hoveddecket, 16 lysbilder, sist endret 2026-11-21) er selve MONS-foredraget;
+  - `mons_nytt_siden_fredag.pptx` (12 lysbilder, 2026-11-23) er Lars' arbeidsdeck til møtet, «ikke for MONS».
+- Nytt byggeskript `tekst/deck/build_master.js` → `tekst/mons_master.pptx` (22 lysbilder):
+  - kopi av `build_deck.js`;
+  - fra `build_tillegg.js`: formelen, «døde», kontekstrater og bigramvalideringen;
+  - to nye lysbilder: decomposer mot hele det OBT-taggede korpuset (`rapport_dekomponering_obt.md` §11) og robuste endringer over tid (`rapport_stabilitet_obt.md` §4).
+  - «dør», «fisker», «Hva er nytt?» og oppsummeringen er oppdatert. Ny `note()`-boks («MERK») markerer innhold som er motsagt av nye data.
+  - `build_deck.js` og `build_tillegg.js` er ikke endret og regnes nå som historikk.
+- Overleveringsnotat til agenten som jobber med Lars: `tekst/deck/HANDOVER_master.md` (lysbildekart, åpne spørsmål, bygging).
+- Verktøy på Maries Windows-maskin, utenfor repoet:
+  - bærbar Node.js 20.18.0 (MIT) i `C:\Users\marier\opt\node-v20.18.0-win-x64`;
+  - pptxgenjs 3.12.0 (MIT) i `C:\Users\marier\opt\node_pakker`;
+  - python-pptx (MIT) og defusedxml (PSF) i Python-miljøet.
+- Kontroll: `validate.py` er bestått, og de endrede og nye lysbildene er sett på som PNG eksportert fra PowerPoint. To titler fra tillegget er kortet ned fordi de brøt over to linjer.
+
+**Funn**
+- «dør»: hoveddecket sier 64 % substantiv, mens OBT-korpuset (alle lag) gir 50/50 og bigrammene 51 % verb.
+- «fisker»: figuren viser fisk (flertall) 57–74 %, mens OBT gir 6–20 % i bøkene.
+- Begge er markert med MERK og må avklares før foredraget (HANDOVER §4).
+
+**Neste steg**
+- Lars og Marie avklarer «dør» og «fisker», går gjennom UTKAST-lysbildene og vurderer lengden (22 lysbilder).
