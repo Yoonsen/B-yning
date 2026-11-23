@@ -1592,3 +1592,113 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ### Merknad
 - Frukttallene på lysbilde 9 er fra en rask beregning 21.11. som ikke er lagret som skript.
+
+---
+
+## 2026-11-23 (del 64) — Hele det utvidede korpuset tagget (lag 1–5)
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie tagget lag 2–5 på Linux-maskinen, 22.–23. november, med lav prioritet: `nohup nice -n 19 ionice -c3 python -m sqlite.korpus_profiler tagg /home/rosok/dhlab_fulltekster/*.txt`.
+  - De 222 dokumentene som var tagget fra før, og de 2 som feilet i del 34, ble hoppet over.
+  - Arbeidsdatabasen `sqlite/korpus.db` (ignorert av Git) har nå alle lag. En sikkerhetskopi av lag 1-databasen ligger utenfor repoet.
+- Etterpå ble `feilet` og `koble` kjørt.
+
+**Funn**
+- 873 nye dokumenter: 854 tagget og 19 feilet (tidsavbrudd i `mtag.py` etter 900 s). Kjøretid 768 min, hvorav ca. 4,75 timer gikk med til tidsavbruddene.
+- Totalt er 1 076 av 1 097 dokumenter tagget. De 21 som feilet (1,9 % av dokumentene, 953 045 av 53,6 mill. ord = 1,8 %) er spredt:
+  - 10 aviser, 7 faglitterære og 4 skjønnlitterære bøker;
+  - ingen celle mister mer enn 7,4 % av ordene (skjønnlitteratur 1990-tallet: 2 bøker; faglitteratur 1950-tallet: 4 bøker, 7,1 %).
+- Kobling mot Ordbanken (vektede tokens, alle lag):
+
+  | | eksakt | flertydig | delvis | ingen | tokens |
+  |---|---|---|---|---|---|
+  | alle ordklasser | 72,2 % | 2,3 % | 1,1 % | 24,4 % | |
+  | subst (uten prop) | 80,5 % | 1,5 % | 1,2 % | 16,8 % | 8 919 488 |
+  | verb | 90,6 % | 5,4 % | 2,3 % | 1,7 % | 6 961 639 |
+  | adj | 90,0 % | 0,4 % | 0,3 % | 9,4 % | 3 549 085 |
+
+  Andelene er nesten identiske med lag 1 alene (del 34). De nye lagene oppfører seg som det første.
+
+- Eksport: `eksporter --til ~/dhlab_fulltekster/tagget_korpus/obt_frekvenser_alle_lag.db` (1,37 GB) på Linux-maskinen, utenfor repoet. Hjemmeområdet er ikke lesbart for andre brukere, så databasen er ikke delt ennå.
+
+**Neste steg**
+- Avtale med kollegaen hvor den store databasen skal deles (helst et felles område utenfor hjemmeområdene). Den bør ikke deles fra en mappe inne i `dhlab_fulltekster`, siden det kan gi tilgang til de rettighetsbelagte fulltekstene.
+- Eventuelt finne ut hvorfor `mtag.py` henger (21 dokumenter nå), f.eks. ved å dele en av tekstene i stadig mindre biter.
+- Kjøre analysene (`morfologisk_variasjon`, `valider_dekomponering_obt`, `stabilitet_obt`, kollegaens OBT-validering) på nytt med `--db` mot den store databasen.
+
+---
+
+## 2026-11-23 (del 65) — Analysene kjørt på nytt med hele det taggede korpuset
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie kopierte databasen med alle lag (`obt_frekvenser_alle_lag.db`, 1,37 GB) til Windows-maskinen, utenfor repoet og OneDrive. Integritetssjekken er ok: 1 076 dokumenter, 43,7 mill. tokens.
+- `main` (bl.a. kollegaens arbeidsdeck, del 63) er flettet inn i grenen. Vår oppføring om taggingen er nummerert om fra del 63 til **del 64**, fordi kollegaens oppføring allerede hadde del 63 på `main`.
+- `sqlite/morfologisk_variasjon.py`: strengene interneres ved innlesing (`sys.intern`), så 9,4 mill. rader går greit (ca. 1,6 GB minne).
+- Kjørt med `--db` mot databasen med alle lag:
+  - `morfologisk_variasjon` (utvalg 200 000 og 1 000 000);
+  - `valider_dekomponering_obt` og `stabilitet_obt` med `--ut resultater/alle_lag`.
+  - Resultatfilene for lag 1 i `resultater/` er ikke endret.
+- `valider_dekomponering_obt` er også kjørt på lag 1 med samme kodeversjon (bare til sammenligning, ikke lagret), fordi decomposer er endret siden resultatene for lag 1 ble laget (commit 7c9bde6).
+- Resultatene er rapportert i de enkelte rapportene, se del 66.
+
+**Funn**
+- **Morfologisk variasjon:**
+  - andel bøyde tokens er uendret (0,30; subst/verb/adj 0,58; verb 0,79);
+  - former per lemma synker litt med korpusstørrelsen (1,13 → 1,10), som ventet;
+  - avisenes nedgang i andel bøyde ord bekreftes (0,28 → 0,22).
+- **Decomposer:**
+  - på de samme 1 722 formene og med samme kode er treffsikkerheten nesten uendret (logreg 13,7 → 13,1 pp median, 74 → 75 % riktig);
+  - logreg er nå klart bedre enn regler (13 mot 18 pp);
+  - enkeltformer kan endre seg mye: *kroner* verb 26 → 41 %, *fisker* *fisk* 21 → 50 % (OBT: 10 %).
+- **Stabilitet:** OBT-andelene per tiår er mye mindre støyete (*satt* 29–38 % mot 19–43 %; *dør* som verb 42–53 % mot 33–72 %).
+  - Ekstrastøyen fra fordelingen per tiår er nesten borte for *sette* og *dør*.
+  - For *dø* gjenstår ett avvik: på 2000-tallet står én slektsbok for 57 % av forekomstene av *døde* i bøkene, nesten bare som verb.
+  - Robuste utviklingstrekk (likt i alle fire varianter): *gå* (pret U-form), *krone* (fl ub 81 → 89 %), *dør* subst (ent be opp etter 2000) og *sette*.
+
+**Neste steg**
+- Bootstrap over dokumenter (boka som enhet) for stabilitetsanalysen, hvis den skal brukes videre.
+- Avtale deling av den store databasen med kollegaen (del 64).
+
+---
+
+## 2026-11-23 (del 66) — Rapportene: resultatene for hele korpuset lagt inn per analyse
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie ønsket at rapportene bare skal inneholde analyseresultater, samlet per analyse, mens informasjon om data og tagging står i loggen (del 64). Et utkast til en samlerapport (`rapport_utvidet_korpus.md`) ble derfor ikke beholdt. Innholdet er fordelt slik:
+  - `rapport_morfologisk_variasjon.md`: nytt avsnitt «Hele korpuset (lag 1–5)» med sammenligning mot lag 1.
+  - `rapport_dekomponering_obt.md`: ny §11 «Hele korpuset (lag 1–5)», etter kollegaens §9–10. Den inneholder sammenligningen med samme kode og samme former, det brede utvalget, utvalgte former og profiler.
+  - Ny `rapport_stabilitet_obt.md`: metoden, et kort notat om at lag 1 var for lite (del 45), og resultatene med alle lag (andeler per tiår, stabilitetsmål, robuste utviklingstrekk, forbehold).
+- Merknader øverst i de to eksisterende rapportene viser til de nye avsnittene.
+
+**Funn**
+- Ingen nye analyser; tallene er fra del 65.
+
+**Neste steg**
+- Pushe grenen og lage pull request.
+
+---
+
+## 2026-11-23 (del 67) — Den store databasen delt på Linux-maskinen
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Databasen med alle lag er kopiert til en delt mappe på Linux-maskinen: `/mnt/md0/paradigmeanalyse_tagget_korpus/obt_frekvenser_alle_lag.db` (1,37 GB, rettigheter `-rw-r--r--`). Kopien er kontrollert med `cmp` (identisk).
+- Mappen er eid av Marie (`drwxrwxr-x`). Alle brukere kan lese, bare eieren og gruppen kan skrive. Kollegaen kan dermed lese databasen, men ikke endre den.
+- Kopien på hjemmeområdet er fjernet, så det bare finnes én delt, eksportert versjon.
+- Originalen er fortsatt arbeidsdatabasen `sqlite/korpus.db` i repomappen (ignorert av Git). En ny delt versjon lages med `eksporter --til` samme sti.
+
+**Bruk**
+- `python -m sqlite.<modul> --db /mnt/md0/paradigmeanalyse_tagget_korpus/obt_frekvenser_alle_lag.db` (f.eks. `korpus_profiler`, `morfologisk_variasjon`, `valider_dekomponering_obt`, `stabilitet_obt`).
+
+**Merknader**
+- `/mnt/md0` er skrivbar for alle uten sticky bit, og er trolig ikke sikkerhetskopiert. Databasen kan lages på nytt fra arbeidsdatabasen.
+
+**Neste steg**
+- Gi kollegaen beskjed om plasseringen.

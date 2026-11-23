@@ -7,6 +7,8 @@ i `resultater/dekomponering_obt_former.tsv` og `resultater/dekomponering_obt_pro
 
 *Oppdatert 2026-11-21 (logg del 52): decomposer har fått adjektivankre, og valideringen er kjørt på nytt. §3–5 er beholdt slik de ble skrevet, med tall fra første kjøring (2026-11-20; TSV-filene fra den kjøringen ligger i commit `390d420`). De nye tallene står i §9, og nedvekting av sjeldne homografer (logg del 55) i §10. TSV-filene i `resultater/` er fra kjøringen i §10.*
 
+*Oppdatert 2026-11-23 (logg del 65–66): valideringen er kjørt på hele det taggede korpuset (lag 1–5), se §11. Resultatfilene for den kjøringen står i `resultater/alle_lag/`.*
+
 ---
 
 ## 1. Spørsmål
@@ -311,3 +313,85 @@ Uten gulv blir flere kandidater satt til 0 (bl.a. substantivet *tro*), og result
 
 **Vurdering.** Forbedringen er reell, men liten (0,4 pp i median). Den største gjenværende feilkilden er fortsatt kandidater uten modell (§9).
 
+## 11. Hele korpuset (lag 1–5) (2026-11-23)
+
+**Grunnlag.** Databasen med alle lag (1 076 dokumenter, 43,7 mill. tokens; ligger utenfor repoet, se
+logg del 64). Kjørt med `python -m sqlite.valider_dekomponering_obt --db <alle lag> --ut
+resultater/alle_lag`. Decomposer er i versjonen etter §10, og flertydighet regnes nå per leksem
+(logg del 56).
+
+**Samme former, samme kode.** For å skille effekten av korpusstørrelsen fra endringene i decomposer er
+lag 1 kjørt på nytt med samme kode (ikke lagret). De 1 722 innholdsordformene som finnes i begge
+kjøringene, er sammenlignet:
+
+| | lag 1 | alle lag |
+|---|---|---|
+| median avvik, logreg | 13,7 pp | 13,1 pp |
+| riktig leksem størst, logreg | 74 % | 75 % |
+| median avvik, regler | 18,5 pp | 17,4 pp |
+| riktig leksem størst, regler | 70 % | 70 % |
+
+- **Fem ganger så mye data endrer nesten ikke hvor godt decomposer treffer i gjennomsnitt.**
+- Log-regresjonen er klart bedre enn reglene (13 mot 18 pp). I §3 var de like, fordi log-regresjonen
+  sjelden kunne brukes. Endringene i §9–10 og logg del 56 gjør at den brukes oftere.
+
+**Bredt utvalg med alle lag (logreg):**
+
+| utvalg | former | tokens | median avvik | vektet avvik | 90-persentil | riktig flest |
+|---|---|---|---|---|---|---|
+| innholdsord | 4 170 | 5 711 534 | 16,5 pp | 25,8 pp | 74,1 pp | 73 % |
+| alle kandidater modellert | 3 282 | 4 298 653 | 10,4 pp | 14,7 pp | 59,8 pp | 78 % |
+| … grunnlag ≥ 0,5 | 1 755 | 1 486 098 | 9,6 pp | 13,1 pp | 50,0 pp | 80 % |
+| … grunnlag < 0,5 | 1 527 | 2 812 555 | 11,4 pp | 15,5 pp | 68,3 pp | 74 % |
+| umodellert ≥ 5 % | 888 | 1 412 881 | 50,0 pp | 59,8 pp | 97,8 pp | 54 % |
+
+Med minst 100 forekomster kommer mange flere og sjeldnere former med enn i lag 1 (4 170 mot 1 721).
+Derfor er medianen for alle innholdsord høyere enn i §10. Med minst 500 forekomster (1 679 former,
+omtrent like vanlige som terskelen 100 i lag 1) er medianen 12,5 pp og 75 % riktig.
+
+**Utvalgte former.** Andel i prosent for leksemet OBT gir størst andel; «decomposer lag 1» er kjøringen på lag 1 med samme kode. Både fasiten og decomposer kan flytte seg med mer data:
+
+| form | n (alle lag) | OBT lag 1 | OBT alle lag | decomposer lag 1 | decomposer alle lag | avvik alle lag |
+|---|---|---|---|---|---|---|
+| *hatt* | 13 832 | *ha* 95 | *ha* 95 | 92 | 94 | 1,3 |
+| *ønsker* | 10 542 | verb 93 | verb 91 | 94 | 93 | 1,4 |
+| *dager* | 11 715 | *dag* 100 | *dag* 100 | 96 | 95 | 4,6 |
+| *døde* | 7 940 | verb 72, adj 28 | verb 71, adj 29 | 71 / 29 | 65 / 33 | 5,2 |
+| *landet* | 9 649 | *land* 85 | *land* 87 | 90 | 92 | 5,4 |
+| *viser* | 12 769 | verb 94 | verb 94 | 98 | 99 | 5,9 |
+| *møter* | 4 910 | verb 72 | verb 70 | 65 | 61 | 8,3 |
+| *går* | 39 663 | *gå* 85 | *gå* 85 | 100 | 100 | 15,1 |
+| *dør* | 2 865 | verb 52 | verb 50 | 29 | 24 | 25,1 |
+| *tro* | 9 584 | verb 60 | verb 58 | 89 | 88 | 34,0 |
+| *kroner* | 14 730 | subst 99 | subst 99 | 74 | 59 | 39,7 |
+| *fisker* | 959 | verb 74, *fisker* 19, *fisk* 8 | verb 57, *fisker* 33, *fisk* 10 | verb 59, *fisk* 21 | *fisk* 50, verb 26 | 41,1 |
+
+- OBT-fordelingen er stabil for de hyppige formene. For *fisker* (367 forekomster i lag 1) var den
+  ikke det.
+- Decomposer lærer forholdstallene fra korpuset og bruker korpusets frekvenser for ankerformene. Derfor
+  kan anslagene for enkeltord endre seg mye selv om gjennomsnittet står stille. For *kroner* og
+  *fisker* er de blitt dårligere.
+
+**Profiler (alle lag).** Avvik fra OBT-profilen i pp, decomposer (logreg) mot rå formtall:
+
+| lemma | decomposer | naiv | lemma | decomposer | naiv |
+|---|---|---|---|---|---|
+| *fisker* (subst) | 5,2 | 23,1 | *dø* | 6,5 | 7,4 |
+| *fisk* (subst) | 7,9 | 15,9 | *gå* | 3,4 | 3,4 |
+| *dør* (subst) | 4,5 | 8,3 | *tro* | 7,2 | 9,7 |
+| *krone* (subst) | 2,4 | 1,1 | *svare* | 11,6 | 26,6 |
+| *land* (subst) | 0,5 | 2,4 | *sette* | 13,7 | 37,0 |
+| *bygge* | 3,0 | 9,9 | *legge* | 25,0 | 10,1 |
+| *selge* | 4,4 | 4,6 | *stille* | 41,7 | 37,4 |
+| *leve* | 5,0 | 1,6 | *tape* | 28,6 | 30,3 |
+| *vinne* | 16,4 | 10,0 | *fiske* | 26,6 | 41,7 |
+
+- Substantivprofilene er fortsatt klart bedre med decomposer enn med rå formtall.
+- *dø* er bedre enn rå tall etter adjektivankrene (§9).
+- *legge*, *vinne* og *stille* er fortsatt dårligere.
+
+**Konklusjon.**
+- Med fem ganger så mye data treffer decomposer omtrent like godt i gjennomsnitt (13 pp median, 75 %
+  riktig). Feilkildene er de samme: umodellerte kandidater, lite grunnlag og ord med uvanlige
+  profiler.
+- Enkeltanslag kan endre seg mye med korpuset, så andeler for enkeltord bør vises med usikkerhet.

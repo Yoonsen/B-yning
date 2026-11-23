@@ -4,6 +4,8 @@
 1950–2026). Tallene er laget med `python -m sqlite.morfologisk_variasjon`. Bakgrunn og arbeidslogg:
 `logg.md`, del 34–39.*
 
+*Oppdatert 2026-11-23: analysen er kjørt på nytt med hele det taggede korpuset (lag 1–5, 1 076 dokumenter, 41,3 mill. ord), se avsnittet «Hele korpuset (lag 1–5)» til slutt. Avsnittene før det gjelder lag 1. Logg del 64–66.*
+
 ## Spørsmål
 
 Hvor mye endrer antallet seg når de ulike bøyningsformene av et ord slås sammen til lemma? Er det
@@ -132,3 +134,71 @@ undersøkt nærmere.
   påvirke tallene. Det er ikke regnet usikkerhet.
 - **Skrivevarianter.** Former som *ble/blei* eller *boka/boken* telles som ulike former av samme
   lemma. Målene fanger derfor både bøyning og valgfrihet i rettskrivningen.
+
+## Hele korpuset (lag 1–5)
+
+*2026-11-23. Grunnlag: databasen med alle lag (`obt_frekvenser_alle_lag.db`, 1 076 dokumenter,
+41,3 mill. ord med minst én bokstav; ligger utenfor repoet, se logg del 64). Kjørt med
+`python -m sqlite.morfologisk_variasjon --db <alle lag> --utvalg 200000`, altså samme utvalgsstørrelse
+som tallene for lag 1 over.*
+
+### Lag 1 og alle lag
+
+| | lag 1 (8,4 mill.) | alle lag (41,3 mill.) |
+|---|---|---|
+| former per lemma, alle ord | 1,13 | 1,10 |
+| former per lemma, subst/verb/adj | 1,39 | 1,35 |
+| andel bøyd, alle ord | 0,30 | 0,30 |
+| andel bøyd, subst/verb/adj | 0,58 | 0,58 |
+| andel bøyd, verb | 0,79 | 0,79 |
+| former per lemma, verb | 2,32 | 1,92 |
+| egennavn + ukjente ord: andel av tokens / av formtyper | 13 % / 49 % | 12 % / 52 % |
+| substantivlemmaer som forekommer én gang | 60 % | 61 % |
+
+- **Andelen bøyde ord er helt stabil.** Den avhenger ikke av korpusstørrelsen.
+- **Forholdet former/lemma synker når korpuset vokser.** Stadig nye sjeldne ord, egennavn og ukjente
+  ord med én form kommer til. Nedgangen er størst for verb (2,32 → 1,92): ordforrådet av verb vokser
+  med mange sjeldne verb, mens de hyppige verbene allerede var godt dekket. Tallet må derfor alltid
+  oppgis sammen med korpusstørrelsen og definisjonen (med eller uten egennavn osv.).
+
+### Former per lemma etter hvor hyppig lemmaet er
+
+| forekomster av lemmaet | substantiv | verb | adjektiv |
+|---|---|---|---|
+| 1 | 1,00 | 1,00 | 1,00 |
+| 2–9 | 1,57 | 1,53 | 1,44 |
+| 10–99 | 2,86 | 3,81 | 2,26 |
+| 100–999 | 4,69 | 5,44 | 3,05 |
+| 1000+ | 7,05 (1 288 lemmaer) | 6,69 (567) | 4,76 (446) |
+
+Bildet er det samme som for lag 1: hyppige ord brukes i mange former.
+
+### Per teksttype og tiår
+
+Typer ved 200 000 tokens (alle ord) og 100 000 tokens (subst/verb/adj); lag 1 i parentes.
+
+| teksttype | alle ord: former per lemma | alle ord: andel bøyd | subst/verb/adj: former per lemma | subst/verb/adj: andel bøyd |
+|---|---|---|---|---|
+| avis | 1,11 (1,12) | 0,26 (0,26) | 1,31 (1,31) | 0,52 (0,52) |
+| faglitteratur | 1,18 (1,18) | 0,30 (0,30) | 1,34 (1,36) | 0,57 (0,57) |
+| skjønnlitteratur | 1,25 (1,26) | 0,33 (0,32) | 1,39 (1,39) | 0,64 (0,64) |
+
+- Over tid ligger andelen bøyde ord på 0,29–0,31 og former per lemma på 1,16–1,20 (alle ord) i alle
+  tiår, omtrent som for lag 1.
+- **Aviser:** andelen bøyde ord faller fra 0,28 (1950-tallet) til 0,22 (2020-tallet). Med fem ganger
+  så mange avisnumre er nedgangen fra lag 1 (0,28 → 0,23) bekreftet.
+
+  | tiår | 1950 | 1960 | 1970 | 1980 | 1990 | 2000 | 2010 | 2020 |
+  |---|---|---|---|---|---|---|---|---|
+  | lag 1 | 0,28 | 0,28 | 0,28 | 0,27 | 0,26 | 0,26 | 0,24 | 0,23 |
+  | alle lag | 0,28 | 0,28 | 0,27 | 0,27 | 0,26 | 0,25 | 0,26 | 0,22 |
+
+### Konklusjon
+
+Hovedfunnene for lag 1 står seg med fem ganger så mye tekst:
+- 30 % av alle ord og 79 % av verbene står i en annen form enn oppslagsformen;
+- hyppige ord brukes i mange former;
+- skjønnlitteratur har mest bøyning og aviser minst;
+- i aviser går andelen bøyde ord ned.
+
+Forholdet former/lemma er ikke en fast størrelse: det synker med korpusstørrelsen.
