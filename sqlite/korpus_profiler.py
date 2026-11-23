@@ -745,6 +745,34 @@ def compare_with_decomposer(
 # Kommandolinje
 # ---------------------------------------------------------------------------
 
+DEFAULT_STATUS = Path(__file__).resolve().parent.parent / "korpus" / "tagging_status.tsv"
+STATUS_COLUMNS = ["dhlabid", "lag", "teksttype", "tiaar", "title", "authors", "year", "n_ord",
+                  "status", "antall_tokens", "feilmelding"]
+
+
+def tagging_status(conn: sqlite3.Connection, oversikt: str | Path = DEFAULT_OVERSIKT) -> list[dict[str, Any]]:
+    """
+    Status for hvert dokument i korpusoversikten: `tagget` (finnes i `dokumenter`), `feilet`
+    (i `tagging_feil`, f.eks. tidsavbrudd) eller `ikke tagget`. Én rad per dokument, i samme
+    rekkefølge som oversikten. Inneholder bare metadata og telletall, ingen tekst.
+    """
+    meta = load_metadata(oversikt)
+    tagged = dict(conn.execute("SELECT doc_id, antall_tokens FROM dokumenter").fetchall())
+    failed = {r[0]: f"{r[1]}: {r[2]}" for r in conn.execute("SELECT doc_id, feiltype, melding FROM tagging_feil")}
+    out = []
+    for did, m in meta.items():
+        if did in tagged:
+            status, tokens, msg = "tagget", tagged[did], ""
+        elif did in failed:
+            status, tokens, msg = "feilet", "", failed[did]
+        else:
+            status, tokens, msg = "ikke tagget", "", ""
+        row = {k: m.get(k, "") for k in STATUS_COLUMNS if k in m}
+        row.update(status=status, antall_tokens=tokens, feilmelding=msg)
+        out.append({k: row.get(k, "") for k in STATUS_COLUMNS})
+    return out
+
+
 SHARED_DB_LAYERS = {"1"}  # lagene som delingsdatabasen i repoet (Git LFS) skal inneholde
 
 
@@ -834,6 +862,8 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("form")
     s = sub.add_parser("sammenlign", help="OBT-fordeling vs. decomposer.py for en ordform")
     s.add_argument("form")
+    s = sub.add_parser("status", help="Skriv tagging-status per dokument i korpusoversikten (standard korpus/tagging_status.tsv)")
+    s.add_argument("--til", default=str(DEFAULT_STATUS))
     s = sub.add_parser("eksporter", help="Lag delingskopi (kun telletall) til repoet, standard korpus/obt_frekvenser.db")
     s.add_argument("--til", default=str(DEFAULT_SHARED_DB),
                    help="Målfil. Standard er delingsdatabasen i repoet, som bare skal inneholde lag 1; "
@@ -878,6 +908,15 @@ def main(argv: list[str] | None = None) -> int:
     elif args.cmd == "sammenlign":
         _print_rows(compare_with_decomposer(conn, args.form),
                     ["lemma_id", "grunnform", "pos", "boy_tekst", "decomposer_andel", "obt_andel", "obt_n"])
+    elif args.cmd == "status":
+        import csv
+        rows = tagging_status(conn)
+        with open(args.til, "w", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=STATUS_COLUMNS, delimiter="\t", lineterminator="\n")
+            w.writeheader()
+            w.writerows(rows)
+        counts = Counter(r["status"] for r in rows)
+        print(f"Skrev {args.til}: " + ", ".join(f"{k} {v}" for k, v in sorted(counts.items())))
     elif args.cmd == "eksporter":
         try:
             path = export_shared(conn, args.til, force=args.tving)

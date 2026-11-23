@@ -1734,3 +1734,49 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Lars og Marie avklarer «dør» og «fisker», går gjennom UTKAST-lysbildene og vurderer lengden (22 lysbilder).
+
+---
+
+## 2026-11-24 (del 69) — `rapport_morfologisk_variasjon.md` omstrukturert: hele korpuset som hoveddel
+
+**Dato/agent:** 2026-11-24, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Gjort på grenen `presentasjon-master` (etter ønske fra Marie).
+- Rapporten er skrevet om etter ønske fra Marie:
+  - «Kort svar» og «Data og metode» bruker nå tallene fra hele korpuset (lag 1–5, 41,3 mill. ord).
+  - Det står tydelig at korpuset er tagget i to omganger: først lag 1 (222 dokumenter), så alle fem lag (1 076 dokumenter).
+  - Hoveddelen er «Resultater: hele korpuset (lag 1–5)», med de samme tabellene som lag 1 hadde: hele korpuset, per ordklasse, per lemmafrekvens, per teksttype og per tiår.
+  - Lag 1 har en egen, kortere del til slutt («Lag 1 (første korpus, 2026-11-19)») med en sammenligningstabell.
+  - Lengden er omtrent uendret (182 mot 204 linjer).
+- Nye tall regnet ut for hele korpuset: avisenes sammensetning per tiår (andel egennavn og verb) og andel bøyde former innenfor subst/verb/adj per tiår. Øvrige tall er fra del 65.
+
+**Funn**
+- Avisene med alle lag:
+  - egennavn øker fra 14 til 24 % av tokens, og verb går ned fra 15 til 12 %;
+  - andelen bøyde former innenfor subst/verb/adj faller fra 0,55 til 0,47 (lag 1: 0,55 → 0,49).
+  - Forklaringen fra lag 1 holder: dels sammensetning, dels mindre bøyning innenfor ordklassene.
+
+**Neste steg**
+- Eventuelt samme omstrukturering av `rapport_dekomponering_obt.md` og `rapport_stabilitet_obt.md`, hvis Marie ønsker det.
+
+---
+
+## 2026-11-24 (del 70) — Oversikt over hvilke dokumenter som ble tagget: `korpus/tagging_status.tsv`
+
+**Dato/agent:** 2026-11-24, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie ønsket en oversikt over hvilke dokumenter i korpusoversikten som faktisk ble tagget. Tidligere fantes den bare i databasen (tabellene `dokumenter` og `tagging_feil`).
+- Ny kommando `status` i `sqlite/korpus_profiler.py` (funksjonen `tagging_status`). Den skriver én rad per dokument i korpusoversikten:
+  - kolonner: dhlabid, lag, teksttype, tiår, tittel, forfatter, år, n_ord, status (`tagget` / `feilet` / `ikke tagget`), antall_tokens og feilmelding;
+  - bare metadata og telletall, ingen tekst.
+- Ny fil `korpus/tagging_status.tsv`, laget med `python -m sqlite.korpus_profiler --db <alle lag> status` (Windows-kopien av databasen med alle lag). Statusen holdes adskilt fra `korpus/korpusoversikt.tsv`, som er definisjonen av utvalget.
+
+**Funn**
+- 1 076 tagget og 21 feilet (alle med tidsavbrudd i `mtag.py`).
+  - Lag 1: 2; lag 2: 8; lag 3: 2; lag 4: 4; lag 5: 5.
+  - 10 aviser, 7 faglitterære og 4 skjønnlitterære.
+
+**Neste steg**
+- Kjør `status` på nytt hvis flere dokumenter tagges, f.eks. med `--prøv-feilede`.
