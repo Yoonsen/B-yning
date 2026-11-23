@@ -1571,7 +1571,31 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 ---
 
-## 2026-11-23 (del 63) — Hele det utvidede korpuset tagget (lag 1–5)
+## 2026-11-23 (del 63) — Arbeidsdeck «Nytt siden fredag»
+
+**Agent:** Claude Code (Claude Opus 5.5)
+
+### Hva ble gjort
+- Nytt deck ved siden av hoveddecket: `tekst/mons_nytt_siden_fredag.pptx` (12 lysbilder), bygd av `tekst/deck/build_tillegg.js`. Tema, layouter og hjelpefunksjoner er kopiert fra `build_deck.js`. Hoveddecket er uendret.
+- Innhold:
+  - formelen x = ρ · R;
+  - «døde» og adjektivet (28 %, 2A holder);
+  - dekomponereren mot OBT (median 18,4 → 13,7 pp);
+  - kontekstrater, bigram mot paradigme (5,0 / 9,7 pp);
+  - «dør» og «tro» over tid;
+  - infinitivstyrere;
+  - frukt som telling eller masse;
+  - matbøker (Lars' skjermbilder, lagret som `tekst/figurer/matboker_eple_ppm.png` og `matboker_eple_burstiness.png`);
+  - bestemt entall som felles bakgrunn (Koselleck);
+  - punkter til møtet.
+- Validert med `validate.py`. Lysbildene er sjekket i Keynote, og diagramdataene med python-pptx (Keynote viser native diagrammer blankt).
+
+### Merknad
+- Frukttallene på lysbilde 9 er fra en rask beregning 21.11. som ikke er lagret som skript.
+
+---
+
+## 2026-11-23 (del 64) — Hele det utvidede korpuset tagget (lag 1–5)
 
 **Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
 
