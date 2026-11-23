@@ -1627,3 +1627,38 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - Avtale med kollegaen hvor den store databasen skal deles (helst et felles område utenfor hjemmeområdene). Den bør ikke deles fra en mappe inne i `dhlab_fulltekster`, siden det kan gi tilgang til de rettighetsbelagte fulltekstene.
 - Eventuelt finne ut hvorfor `mtag.py` henger (21 dokumenter nå), f.eks. ved å dele en av tekstene i stadig mindre biter.
 - Kjøre analysene (`morfologisk_variasjon`, `valider_dekomponering_obt`, `stabilitet_obt`, kollegaens OBT-validering) på nytt med `--db` mot den store databasen.
+
+---
+
+## 2026-11-23 (del 65) — Analysene kjørt på nytt med hele det taggede korpuset
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie kopierte databasen med alle lag (`obt_frekvenser_alle_lag.db`, 1,37 GB) til Windows-maskinen, utenfor repoet og OneDrive. Integritetssjekken er ok: 1 076 dokumenter, 43,7 mill. tokens.
+- `main` (bl.a. kollegaens arbeidsdeck, del 63) er flettet inn i grenen. Vår oppføring om taggingen er nummerert om fra del 63 til **del 64**, fordi kollegaens oppføring allerede hadde del 63 på `main`.
+- `sqlite/morfologisk_variasjon.py`: strengene interneres ved innlesing (`sys.intern`), så 9,4 mill. rader går greit (ca. 1,6 GB minne).
+- Kjørt med `--db` mot databasen med alle lag:
+  - `morfologisk_variasjon` (utvalg 200 000 og 1 000 000);
+  - `valider_dekomponering_obt` og `stabilitet_obt` med `--ut resultater/alle_lag`.
+  - Resultatfilene for lag 1 i `resultater/` er ikke endret.
+- `valider_dekomponering_obt` er også kjørt på lag 1 med samme kodeversjon (bare til sammenligning, ikke lagret), fordi decomposer er endret siden resultatene for lag 1 ble laget (commit 7c9bde6).
+- Ny rapport: `rapport_utvidet_korpus.md`.
+
+**Funn**
+- **Morfologisk variasjon:**
+  - andel bøyde tokens er uendret (0,30; subst/verb/adj 0,58; verb 0,79);
+  - former per lemma synker litt med korpusstørrelsen (1,13 → 1,10), som ventet;
+  - avisenes nedgang i andel bøyde ord bekreftes (0,28 → 0,22).
+- **Decomposer:**
+  - på de samme 1 722 formene og med samme kode er treffsikkerheten nesten uendret (logreg 13,7 → 13,1 pp median, 74 → 75 % riktig);
+  - logreg er nå klart bedre enn regler (13 mot 18 pp);
+  - enkeltformer kan endre seg mye: *kroner* verb 26 → 41 %, *fisker* *fisk* 21 → 50 % (OBT: 10 %).
+- **Stabilitet:** OBT-andelene per tiår er mye mindre støyete (*satt* 29–38 % mot 19–43 %; *dør* som verb 42–53 % mot 33–72 %).
+  - Ekstrastøyen fra fordelingen per tiår er nesten borte for *sette* og *dør*.
+  - For *dø* gjenstår ett avvik: på 2000-tallet står én slektsbok for 57 % av forekomstene av *døde* i bøkene, nesten bare som verb.
+  - Robuste utviklingstrekk (likt i alle fire varianter): *gå* (pret U-form), *krone* (fl ub 81 → 89 %), *dør* subst (ent be opp etter 2000) og *sette*.
+
+**Neste steg**
+- Bootstrap over dokumenter (boka som enhet) for stabilitetsanalysen, hvis den skal brukes videre.
+- Avtale deling av den store databasen med kollegaen (del 64).

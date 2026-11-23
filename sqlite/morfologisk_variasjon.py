@@ -68,8 +68,9 @@ def load_counts(conn: sqlite3.Connection) -> list[tuple[str, str, str, str, floa
     ):
         if not any(ch.isalpha() for ch in form):
             continue
-        rows.append((doc, clean_form(form.lower()), f"{clean_form(lemma.lower())}|{pos}",
-                     _pos_group(pos, trekk), n))
+        # sys.intern: samme strenger deles mellom radene (sparer mye minne for store databaser)
+        rows.append((sys.intern(doc), sys.intern(clean_form(form.lower())),
+                     sys.intern(f"{clean_form(lemma.lower())}|{pos}"), _pos_group(pos, trekk), n))
     return rows
 
 
