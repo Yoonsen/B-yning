@@ -1681,3 +1681,24 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Pushe grenen og lage pull request.
+
+---
+
+## 2026-11-23 (del 67) — Den store databasen delt på Linux-maskinen
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Databasen med alle lag er kopiert til en delt mappe på Linux-maskinen: `/mnt/md0/paradigmeanalyse_tagget_korpus/obt_frekvenser_alle_lag.db` (1,37 GB, rettigheter `-rw-r--r--`). Kopien er kontrollert med `cmp` (identisk).
+- Mappen er eid av Marie (`drwxrwxr-x`). Alle brukere kan lese, bare eieren og gruppen kan skrive. Kollegaen kan dermed lese databasen, men ikke endre den.
+- Kopien på hjemmeområdet er fjernet, så det bare finnes én delt, eksportert versjon.
+- Originalen er fortsatt arbeidsdatabasen `sqlite/korpus.db` i repomappen (ignorert av Git). En ny delt versjon lages med `eksporter --til` samme sti.
+
+**Bruk**
+- `python -m sqlite.<modul> --db /mnt/md0/paradigmeanalyse_tagget_korpus/obt_frekvenser_alle_lag.db` (f.eks. `korpus_profiler`, `morfologisk_variasjon`, `valider_dekomponering_obt`, `stabilitet_obt`).
+
+**Merknader**
+- `/mnt/md0` er skrivbar for alle uten sticky bit, og er trolig ikke sikkerhetskopiert. Databasen kan lages på nytt fra arbeidsdatabasen.
+
+**Neste steg**
+- Gi kollegaen beskjed om plasseringen.
