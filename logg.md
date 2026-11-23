@@ -1568,3 +1568,38 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Etter taggingen: `koble`, `feilet` og eksport av den store databasen til en delt plass utenfor repoet som kollegaen kan lese.
+
+---
+
+## 2026-11-23 (del 63) — Hele det utvidede korpuset tagget (lag 1–5)
+
+**Dato/agent:** 2026-11-23, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Marie tagget lag 2–5 på Linux-maskinen, 22.–23. november, med lav prioritet: `nohup nice -n 19 ionice -c3 python -m sqlite.korpus_profiler tagg /home/rosok/dhlab_fulltekster/*.txt`.
+  - De 222 dokumentene som var tagget fra før, og de 2 som feilet i del 34, ble hoppet over.
+  - Arbeidsdatabasen `sqlite/korpus.db` (ignorert av Git) har nå alle lag. En sikkerhetskopi av lag 1-databasen ligger utenfor repoet.
+- Etterpå ble `feilet` og `koble` kjørt.
+
+**Funn**
+- 873 nye dokumenter: 854 tagget og 19 feilet (tidsavbrudd i `mtag.py` etter 900 s). Kjøretid 768 min, hvorav ca. 4,75 timer gikk med til tidsavbruddene.
+- Totalt er 1 076 av 1 097 dokumenter tagget. De 21 som feilet (1,9 % av dokumentene, 953 045 av 53,6 mill. ord = 1,8 %) er spredt:
+  - 10 aviser, 7 faglitterære og 4 skjønnlitterære bøker;
+  - ingen celle mister mer enn 7,4 % av ordene (skjønnlitteratur 1990-tallet: 2 bøker; faglitteratur 1950-tallet: 4 bøker, 7,1 %).
+- Kobling mot Ordbanken (vektede tokens, alle lag):
+
+  | | eksakt | flertydig | delvis | ingen | tokens |
+  |---|---|---|---|---|---|
+  | alle ordklasser | 72,2 % | 2,3 % | 1,1 % | 24,4 % | |
+  | subst (uten prop) | 80,5 % | 1,5 % | 1,2 % | 16,8 % | 8 919 488 |
+  | verb | 90,6 % | 5,4 % | 2,3 % | 1,7 % | 6 961 639 |
+  | adj | 90,0 % | 0,4 % | 0,3 % | 9,4 % | 3 549 085 |
+
+  Andelene er nesten identiske med lag 1 alene (del 34). De nye lagene oppfører seg som det første.
+
+- Eksport: `eksporter --til ~/dhlab_fulltekster/tagget_korpus/obt_frekvenser_alle_lag.db` (1,37 GB) på Linux-maskinen, utenfor repoet. Hjemmeområdet er ikke lesbart for andre brukere, så databasen er ikke delt ennå.
+
+**Neste steg**
+- Avtale med kollegaen hvor den store databasen skal deles (helst et felles område utenfor hjemmeområdene). Den bør ikke deles fra en mappe inne i `dhlab_fulltekster`, siden det kan gi tilgang til de rettighetsbelagte fulltekstene.
+- Eventuelt finne ut hvorfor `mtag.py` henger (21 dokumenter nå), f.eks. ved å dele en av tekstene i stadig mindre biter.
+- Kjøre analysene (`morfologisk_variasjon`, `valider_dekomponering_obt`, `stabilitet_obt`, kollegaens OBT-validering) på nytt med `--db` mot den store databasen.
