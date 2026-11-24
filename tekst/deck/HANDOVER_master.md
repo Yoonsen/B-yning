@@ -67,7 +67,7 @@ Dekomponering (11–20), Avslutning (21–22).
 
 1. **«dør» (lysbilde 12).** Tittelen og 64 % substantiv (paradigmeanslaget i bokkorpuset) er motsagt
    av to uavhengige kilder:
-   - OBT-korpuset med alle lag: 50 % substantiv / 50 % verb (`rapport_dekomponering_obt.md` §11);
+   - OBT-korpuset med alle lag: 50 % substantiv / 50 % verb (`rapport_dekomponering_obt.md` §3);
    - bigrammene: 51 % verb (`rapport_dekomponering_tid.md` §8).
 
    OBT-korpuset er et annet utvalg enn bokkorpuset, men forskjellen er stor. Tittel, stat og
@@ -77,7 +77,7 @@ Dekomponering (11–20), Avslutning (21–22).
    (`rapport_stabilitet_obt.md` §4.1). Med alle lag er fordelingen 57 % å fiske, 33 % en fisker og
    10 % fisk. Nivået i figuren er sannsynligvis feil. Bare retningen kan eventuelt beholdes.
 3. **Lysbilde 19–20 er UTKAST.** Tallene er fra Maries analyser 2026-11-23:
-   - 19: `rapport_dekomponering_obt.md` §11, `resultater/alle_lag/dekomponering_obt_former.tsv`;
+   - 19: `rapport_dekomponering_obt.md` §3, `resultater/alle_lag/dekomponering_obt_former.tsv`;
    - 20: `rapport_stabilitet_obt.md` §4, `resultater/alle_lag/stabilitet_obt_profiler.tsv`, variant
      `obt_tiaar`.
 

@@ -1780,3 +1780,30 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Kjør `status` på nytt hvis flere dokumenter tagges, f.eks. med `--prøv-feilede`.
+
+---
+
+## 2026-11-24 (del 71) — `rapport_dekomponering_obt.md` omstrukturert: hele korpuset som hoveddel
+
+**Dato/agent:** 2026-11-24, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- Gjort på grenen `presentasjon-master`, etter ønske fra Marie: rapporten skal tidlig si at det er tagget et stort korpus, med tall, og legge mer vekt på det.
+- Ny oppbygging:
+  - §2 Data og metode har en tabell over de to taggingene: lag 1–5 med 1 076 dokumenter og 43,7 mill. tokens; lag 1 med 222 dokumenter og 8,8 mill. tokens. Den beskriver også rekkefølgen arbeidet ble gjort i.
+  - §3 Hovedresultater: hele korpuset (tidligere §11).
+  - §4 Forbedringer i decomposer underveis: Lars' tidligere §9 (adjektivankre) og §10 (nedvekting av sjeldne homografer) er beholdt nesten ordrett som §4.1–4.2. Bare henvisningene er endret. §4.3 er en kort omtale av flertydighet per leksem (logg del 56).
+  - §5 Første kjøring på lag 1: kortversjon av tidligere §3–5, med det viktigste som ledet til forbedringene. Fullstendige tall står i logg del 42 og commit `390d420`.
+  - §6–8 (syntetisk sammenligning, forbehold, anbefalinger) er oppdatert med tall fra hele korpuset og status for anbefalingene.
+- Henvisninger til de gamle seksjonsnumrene er oppdatert (§9 → §4.1, §10 → §4.2, §11 → §3) i:
+  - `tekst/deck/build_master.js` (talenotater; `tekst/mons_master.pptx` er bygd på nytt og validert);
+  - `tekst/deck/HANDOVER_master.md`;
+  - en kommentar i `sqlite/decomposer.py`;
+  - `rapport_verbtyper.md` §7.2 punkt 5.
+- `build_deck.js` og `build_tillegg.js` (historikk) er ikke endret og viser fortsatt til de gamle numrene.
+
+**Funn**
+- Ingen nye analyser; tallene er fra del 42, 52, 55–56 og 65.
+
+**Neste steg**
+- Marie leser `rapport_stabilitet_obt.md` før hun avgjør om den skal endres.

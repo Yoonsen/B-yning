@@ -254,7 +254,7 @@ def _amb_count(r) -> int:
 # lemmaene etter hvor mye entydig bruk hvert av dem har (sum av formene med antall_lemma_id = 1), med
 # et gulv på SHARE_FLOOR / n per lemma. Har ingen av lemmaene entydig bruk (f.eks. subst. *grunn* og
 # *grunne*, som deler hele paradigmet), brukes 1/n² som før; da kan paradigmet ikke skille dem.
-# Testet mot OBT-korpuset (rapport_dekomponering_obt.md §10): gulv 0,1 / 0,3 / 0,6 ga median 13,8 /
+# Testet mot OBT-korpuset (rapport_dekomponering_obt.md §4.2): gulv 0,1 / 0,3 / 0,6 ga median 13,8 /
 # 13,7 / 13,5 pp mot 13,9 uten; 0,6 er valgt.
 SHARE_MODE = "masse"
 SHARE_FLOOR = 0.6
