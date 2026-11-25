@@ -27,10 +27,10 @@ CHARTS = {
                        series=[("Andel", [67.1, 16.5, 14.5, 1.9], ACC2)], vmax=80, fmt="{:.1f} %"),
     "bok_verb": dict(size=(5.6, 4.2), dir="col", title="Verb: bøker med bare én form (N = 1 145)",
                      labels=["Global #1", "Global #2", "Global #3"],
-                     series=[("Verb", [57.2, 26.1, 16.7], ACC1)], vmax=70, fmt="{:.1f} %"),
+                     series=[("Verb", [57.2, 26.1, 16.7], ACC1)], vmax=70, fmt="{:.1f} %", tag="Verb"),
     "bok_subst": dict(size=(5.8, 4.2), dir="col", title="Substantiv: bøker med bare én form (N = 813)",
                       labels=["Global #1", "Global #2", "Global #3", "Global #4"],
-                      series=[("Substantiv", [56.0, 32.5, 9.7, 1.8], ACC2)], vmax=70, fmt="{:.1f} %"),
+                      series=[("Substantiv", [56.0, 32.5, 9.7, 1.8], ACC2)], vmax=70, fmt="{:.1f} %", tag="Substantiv"),
     "dor_profil": dict(size=(7.2, 4.6), dir="col", title="Profilen til verbet dø, bokkorpuset 1950–2020",
                        labels=["inf: dø", "pres: dør", "pret: døde"],
                        series=[("Råtall", [15.1, 20.6, 64.3], LIGHT), ("Etter dekomponering", [17.4, 8.7, 74.0], ACC1)],
@@ -114,6 +114,9 @@ def render(cid: str):
     fig, ax = plt.subplots(figsize=(w, h))
     (_lines if spec.get("kind") == "line" else _bars)(ax, spec)
     # Ingen tittel i figuren (lysbildet har overskrift); tittelen brukes som alt-tekst i decket
+    if spec.get("tag"):  # kort etikett når to diagrammer står side om side
+        ax.text(0.98, 0.97, spec["tag"], transform=ax.transAxes, ha="right", va="top", fontsize=15, fontweight="bold",
+                color=spec["series"][0][2])
     legend = len(spec["series"]) > 1
     if legend:
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12 if spec.get("kind") != "line" and spec["dir"] == "col" else -0.08),

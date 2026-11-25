@@ -1867,3 +1867,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Agent:** Claude (Opus 5.5)
 - **Gjort:** `sqlite/deck_figurer.py` tegner ikke lenger tittel inne i figurene, fordi lysbildet har sin egen overskrift. Den gamle tittelen står fortsatt i alt-teksten i decket og i `CHARTS`. Figurene og begge deckene er bygd på nytt og sjekket i Keynote.
 - **Åpent:** På lysbilde 11 skilte titlene de to diagrammene fra hverandre (verb til venstre, substantiv til høyre, og N). Uten titlene vises det bare med farge.
+
+## 2026-11-25 (del 81) — Lysbilde 11: korte etiketter «Verb» og «Substantiv»
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** De to diagrammene har fått en kort etikett øverst til høyre i samme farge som stolpene (`tag` i `CHARTS`, `sqlite/deck_figurer.py`). Begge deckene er bygd på nytt og sjekket i Keynote. Det åpne punktet fra del 80 er løst.
