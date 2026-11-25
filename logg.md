@@ -1844,3 +1844,12 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - **Gjort:** Lysbilde 4 har fått en kort note under hovedbudskapet. Den sier at venstre kolonne teller lemmaer i Ordbanken (typer), og at høyre kolonne er Ordbanken snittet mot de 500 000 hyppigste formene i NB (`nb_totals`), vektet etter forekomster av overflateformene. De to kolonnene er ytterpunkter. Begge deckene er bygd på nytt.
 - **Forbehold (står i talernotatene):** Høyre kolonne er grov. Frekvensen til en form går til alle substantiv, verb og adjektiv som har den. «når» (81 mill., mest subjunksjon) og «nå» (92 mill., mest adverb) teller dermed fullt for verbet *å nå*, og delte former telles hos hvert lemma. Tallet «3,3 % av formene gir 29 % av forekomstene» er mer robust.
 - **Mulig senere:** Ta alle ordklasser med i grafen, eller fordele frekvensen etter OBT. Lars valgte å la tallene stå med noten.
+
+## 2026-11-25 (del 78) — Lysbilde 7: seks stolpediagram for verbtypene, og Keynote viser ikke innebygde diagrammer
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Lysbilde 7 («Seks verbtyper, ikke tre») viser nå et rutenett på 2 × 3 med små stolpediagram (`fig_verb_types` i `sqlite/figurer.py`, `tekst/figurer/verbtyper_seks.png`).
+  - Kolonnene er formen på topp, og radene er A- og B-typen.
+  - Stolpene er snittprofilen inf/pres/pret fra `rapport_verbtyper.md` §3. Hvert diagram viser også andelen av verbene og tre eksempler.
+  - Den gamle liggende søylen er borte. Budskapet om at infinitiv står på 2. plass står i en linje nederst. Talernotatene har typetolkningene og sammenligningen med `nb_totals`.
+- **Funn:** Keynote viser ikke diagrammene som pptxgenjs bygger inn. De blir blanke ved eksport, og det gjaldt også decket fra før i dag (5e86371). Validatoren går gjennom, så de vises trolig i PowerPoint, men det er ikke sjekket her. Lysbildene med innebygde diagrammer er 10, 11, 13, 14, 17, 19, 20 og 21 i `mons_master.pptx`.
+- **Neste:** Hvis Lars presenterer fra Keynote, bør disse diagrammene tegnes som PNG, slik som på lysbilde 7.

@@ -412,3 +412,40 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# Seks verbtyper: snittprofil og andel av Sett A per type (rapport_verbtyper.md §3, bøker 1950–2020)
+VERB_TYPES = [
+    ("1A", "inf > pres > pret", 26.9, (61.6, 25.3, 13.1), "vurdere, forstå, bidra"),
+    ("2A", "pret > inf > pres", 20.2, (29.9, 15.5, 54.6), "overta, forsøke, vedta"),
+    ("3A", "pres > inf > pret", 12.2, (28.8, 54.7, 16.5), "bety, innebære, fungere"),
+    ("1B", "inf > pret > pres", 27.1, (55.4, 16.5, 28.1), "ta, undersøke, studere"),
+    ("2B", "pret > pres > inf", 7.4, (14.9, 25.3, 59.8), "forsvinne, smile, ankomme"),
+    ("3B", "pres > pret > inf", 6.2, (14.7, 59.0, 26.3), "trenge, bestå, foreligge"),
+]
+
+
+def fig_verb_types() -> Path:
+    """2 × 3 små stolpediagram: kolonne = formen på topp, rad = A/B; stolpene er snittprofilen inf/pres/pret."""
+    fig, axes = plt.subplots(2, 3, figsize=(12.2, 5.0), sharey=True)
+    cols = [FORM_COLOR["inf"], FORM_COLOR["pres"], FORM_COLOR["pret"]]
+    for ax, (tid, rank, share, prof, ex) in zip(axes.flat, VERB_TYPES):
+        bars = ax.bar(["inf", "pres", "pret"], prof, color=cols, width=0.62)
+        for b, v in zip(bars, prof):
+            ax.text(b.get_x() + b.get_width() / 2, v + 1.5, f"{v:.0f} %", ha="center", va="bottom", fontsize=11, color=INK)
+        ax.set_ylim(0, 78)
+        ax.set_yticks([])
+        for sp in ("left", "right", "top"):
+            ax.spines[sp].set_visible(False)
+        ax.spines["bottom"].set_color(GRID)
+        ax.tick_params(axis="x", length=0, labelsize=12, colors=MUTED)
+        ax.text(0.0, 1.08, tid, transform=ax.transAxes, fontsize=15, fontweight="bold", color=INK, va="bottom")
+        ax.text(0.13, 1.08, rank, transform=ax.transAxes, fontsize=13, color=MUTED, va="bottom")
+        ax.text(1.0, 1.08, f"{share:.1f} % av verbene".replace(".", ","), transform=ax.transAxes, fontsize=13,
+                fontweight="bold", color=INK, ha="right", va="bottom")
+        ax.set_xlabel(ex, fontsize=11.5, style="italic", color=MUTED, labelpad=6)
+    fig.subplots_adjust(hspace=0.75, wspace=0.18, top=0.9, bottom=0.12, left=0.01, right=0.99)
+    out = OUT_DIR / "verbtyper_seks.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
