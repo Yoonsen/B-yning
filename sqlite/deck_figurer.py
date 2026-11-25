@@ -113,7 +113,7 @@ def render(cid: str):
     w, h = spec["size"]
     fig, ax = plt.subplots(figsize=(w, h))
     (_lines if spec.get("kind") == "line" else _bars)(ax, spec)
-    ax.set_title(spec["title"], fontsize=12.5, color=INK, loc="left", pad=10, wrap=True)
+    # Ingen tittel i figuren (lysbildet har overskrift); tittelen brukes som alt-tekst i decket
     legend = len(spec["series"]) > 1
     if legend:
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12 if spec.get("kind") != "line" and spec["dir"] == "col" else -0.08),

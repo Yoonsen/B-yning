@@ -1862,3 +1862,8 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Tallene er kopiert uendret fra addChart-kallene, og kildene står fortsatt i talernotatene.
 - **Sjekk:** Validatoren går gjennom, og alle de åtte lysbildene vises med diagram ved eksport fra Keynote.
 - **Merk:** Tallene ligger nå i `deck_figurer.py`, ikke i JS-filene. Den som endrer et tall, må kjøre `python3 -m sqlite.deck_figurer` og bygge decket på nytt. Diagrammene kan ikke lenger redigeres i PowerPoint. `build_tillegg.js` (arbeidsdecket) har fortsatt innebygde diagrammer.
+
+## 2026-11-25 (del 80) — Diagrambildene uten egen tittel
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** `sqlite/deck_figurer.py` tegner ikke lenger tittel inne i figurene, fordi lysbildet har sin egen overskrift. Den gamle tittelen står fortsatt i alt-teksten i decket og i `CHARTS`. Figurene og begge deckene er bygd på nytt og sjekket i Keynote.
+- **Åpent:** På lysbilde 11 skilte titlene de to diagrammene fra hverandre (verb til venstre, substantiv til høyre, og N). Uten titlene vises det bare med farge.
