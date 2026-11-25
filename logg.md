@@ -1871,3 +1871,23 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ## 2026-11-25 (del 81) — Lysbilde 11: korte etiketter «Verb» og «Substantiv»
 **Agent:** Claude (Opus 5.5)
 - **Gjort:** De to diagrammene har fått en kort etikett øverst til høyre i samme farge som stolpene (`tag` i `CHARTS`, `sqlite/deck_figurer.py`). Begge deckene er bygd på nytt og sjekket i Keynote. Det åpne punktet fra del 80 er løst.
+
+## 2026-11-25 (del 82) — Norsk ordvev: semantisk klasse og bøyningsprofil for substantiv
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Ny modul `sqlite/ordvev.py` leser Norsk ordvev (bokmål v1.1.2, `norsk_ordvev_nob_1.1.2/dat/*.tab`). Det er en wordnet oversatt fra DanNet med 306 000 synset, hvorav ca. 250 000 er navngitte enheter. Fellesnavnene er 181 000 substantiv, 4 800 verb og 3 100 adjektiv.
+  - Hver betydning har en ontologisk type fra EuroWordNet. Modulen grovklassifiserer typene: substans (inkl. væske), kroppsdel, person, dyr, plante, sted/bygning, tid, egenskap, hendelse, gjenstand og abstrakt.
+  - Modulen kobler klassene til bokprofilene for Sett A (`resultater/substantivtyper.tsv`, N = 5 799).
+  - Den skriver `resultater/ordvev_klasser.tsv` (streng: alle betydninger i samme klasse) og `ordvev_klasser_flertall.tsv` (klassen med flest betydninger).
+- **Funn (flertallsvariant, gjennomsnittlig andel i %, ent ub / ent be / fl ub / fl be):**
+  - kroppsdel (N = 38): 25 / 40 / 14 / 21. Bestemt form dominerer, og fl be er mye høyere enn ellers (*leppene*, *munnvikene*).
+  - sted/bygning (358): 38 / 37 / 17 / 8. Ent be er nesten like vanlig som ent ub (*kysten*, *gården*, *fjorden*).
+  - tid (159): 53 / 35 / 8 / 4.
+  - egenskap (184): 70 / 15 / 13 / 2. Ubestemt entall dominerer, som ventet for abstrakte massetermer.
+  - substans (102): 64 / 15 / 17 / 4. Høyest ent ub blant de konkrete. Flertall finnes bare i typebetydningen (*råvarer*, *fettsyrer*).
+  - person / dyr: ca. 32 % flertall, mot 18 % for hendelser.
+  - Dekning: 74 % av Sett A finnes i Ordvev.
+- **Forbehold:**
+  - Sett A er substantiv med entydige paradigmer, så de hyppigste ordene (*hånd*, *øye*, *by*, *mann*) mangler. Ordvev har dem, men de trenger dekomponerte profiler.
+  - Typene er arvet fra DanNet og grove. Gjennomsnittene er ikke vektet.
+- **Lisens:** Rådataene har DanNet 1.0-lisensen (fri bruk med opphavsmerknad), se `LICENCE_dannet.txt`. Mappen (321 MB) er lagt i `.gitignore` og ikke committet.
+- **Neste:** Kjøre klassene på de dekomponerte profilene (`dekomponering_obt_profiler.tsv`) for å få med de hyppige ordene. Bruke Ordvev-sansene som prior i dekomponeringen (f.eks. tellbarhet for *fiske*). Eventuelt ett lysbilde om at profilen følger semantikken.
