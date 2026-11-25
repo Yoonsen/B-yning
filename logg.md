@@ -1935,3 +1935,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Location (39): 54 % pret på topp, men gruppen er støyete (*beskrive*, *plassere*).
   - UnboundedEvent og Cause: pres på topp 21–24 %, mot 12 % for BoundedEvent.
   - Tendensen er aspektuell (tilstand → presens, avgrenset hendelse → preteritum), men N er lite. Ikke på lysbilde ennå.
+
+## 2026-11-25 (del 85) — Verbfunnet fra Ordvev i talernotatene til lysbilde 7
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Talernotatene til «Seks verbtyper» (lysbilde 7 i `mons_master.pptx`) har fått en linje om det semantiske mønsteret fra del 84. Tilstandsverb står i presens, mentale verb i infinitiv, og avgrensede hendelser oftere i preteritum. Linjen tar med forbeholdet om lite N og støyete typer. Decket er bygd på nytt, og validatoren går gjennom.
