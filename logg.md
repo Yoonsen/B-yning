@@ -1780,3 +1780,17 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Kjør `status` på nytt hvis flere dokumenter tagges, f.eks. med `--prøv-feilede`.
+
+## 2026-11-25 (del 71) — Paradigmegrafen: ordboka mot bruken (lysbilde 4)
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Lysbildet med «fisker»-grafen (`tekst/deck/build_master.js` og `build_deck.js`, lysbilde 4) viser nå tallene både per lemma i ordboka og vektet etter frekvens i NB. Talernotatene forklarer tallene. Begge deckene er bygd på nytt.
+- **Hva tallene betyr:** En *gruppe* (komponent) er lemmaer som henger sammen gjennom kjeder av delte ordformer (substantiv, verb og adjektiv i `lemma_former`). 151 648 lemmaer fordeler seg slik etter gruppestørrelse:
+  - 1 lemma (isolert): 87,4 %
+  - 2 lemmaer: 6,4 %
+  - 3 lemmaer: 2,3 %
+  - 4 lemmaer: 1,2 % (452 grupper, f.eks. *fisker*)
+  - flere enn 4: 2,7 % (den største gruppen har 54 lemmaer)
+  - Gruppene på høyst fire lemmaer utgjør til sammen 97,3 %.
+- **Frekvensvektet:** Hvert lemma vektes med summen av NB-frekvensen (`nb_totals`) til formene sine. Da er 29 % isolert og 62 % i grupper på høyst fire lemmaer. Blant de 1 000 hyppigste lemmaene er bare 24 % isolert. 3,3 % av ordformene er flertydige mellom lemmaer, men disse formene står for 29 % av forekomstene.
+- **Poeng:** Grafen er glissen, og derfor finnes det nesten alltid entydige ankre i nærheten. Det gjør dekomponeringen mulig. Samtidig er flertydigheten vanlig i bruk, og det gjør dekomponeringen nødvendig.
+- **Neste:** Ingen oppfølging nødvendig.
