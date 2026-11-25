@@ -1838,3 +1838,9 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Agent:** Claude (Opus 5.5)
 - **Gjort:** I `fig_paradigm_graph` (`sqlite/figurer.py`) er den røde teksten «ingen entydige former» i boksen for *fiske* (subst.) byttet ut med en nøytral strek. Figurteksten er skrevet om til «former bare dette lemmaet har (ankre)». `paradigmegraf_fisker.png` og begge deckene er bygd på nytt.
 - **Bakgrunn:** Alle fire lemmaene har flertydige former, så den røde teksten kunne leses som om bare *fiske* var flertydig. Det figuren skal vise, er hvilke ankre hvert lemma har: former som bare det lemmaet har.
+
+## 2026-11-25 (del 77) — Lysbilde 4: kildenote, de to kolonnene som ytterpunkter
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Lysbilde 4 har fått en kort note under hovedbudskapet. Den sier at venstre kolonne teller lemmaer i Ordbanken (typer), og at høyre kolonne er Ordbanken snittet mot de 500 000 hyppigste formene i NB (`nb_totals`), vektet etter forekomster av overflateformene. De to kolonnene er ytterpunkter. Begge deckene er bygd på nytt.
+- **Forbehold (står i talernotatene):** Høyre kolonne er grov. Frekvensen til en form går til alle substantiv, verb og adjektiv som har den. «når» (81 mill., mest subjunksjon) og «nå» (92 mill., mest adverb) teller dermed fullt for verbet *å nå*, og delte former telles hos hvert lemma. Tallet «3,3 % av formene gir 29 % av forekomstene» er mer robust.
+- **Mulig senere:** Ta alle ordklasser med i grafen, eller fordele frekvensen etter OBT. Lars valgte å la tallene stå med noten.
