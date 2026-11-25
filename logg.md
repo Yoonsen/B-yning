@@ -1821,3 +1821,8 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Uten imperativ er det bare litt færre koblinger (6 665 komponenter). Den store komponenten faller ikke fra hverandre (50 lemmaer), men blir lengre (diameter 9). Imperativene fungerer altså mest som snarveier.
 - **Merk:** Den vanlige `python3` (Homebrew 3.14) mangler matplotlib. Figuren ble laget i et eget venv i scratchpad-mappen.
 - **Neste:** Vurdere å vekte kantene etter bruk, slik at sjeldne ordbokshomografer gir lange kanter. Se hvilke formtyper (imperativ, partisipp, s-passiv) som oftest er «broer» i de store komponentene.
+
+## 2026-11-25 (del 74) — Nytt lysbilde 5: avstander i paradigmegrafen
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Lagt inn et nytt lysbilde 5 rett etter «fisker»-lysbildet i `build_master.js` og `build_deck.js`. Det heter «Avstand i grafen: de fleste er naboer, men kjedene kan bli lange», bruker figuren `paradigme_avstand.png` og har talernotater med tallene og eksempelstien liten → lede. Resten av lysbildene er flyttet ett nummer ned. Begge deckene er bygd på nytt og sjekket visuelt.
+- **Neste:** Etikettene overlapper i de tetteste klyngene (leie/lei og lette/leite). Det kan pyntes hvis figuren skal leses på avstand.
