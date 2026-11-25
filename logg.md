@@ -1891,3 +1891,30 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Typene er arvet fra DanNet og grove. Gjennomsnittene er ikke vektet.
 - **Lisens:** Rådataene har DanNet 1.0-lisensen (fri bruk med opphavsmerknad), se `LICENCE_dannet.txt`. Mappen (321 MB) er lagt i `.gitignore` og ikke committet.
 - **Neste:** Kjøre klassene på de dekomponerte profilene (`dekomponering_obt_profiler.tsv`) for å få med de hyppige ordene. Bruke Ordvev-sansene som prior i dekomponeringen (f.eks. tellbarhet for *fiske*). Eventuelt ett lysbilde om at profilen følger semantikken.
+
+## 2026-11-25 (del 83) — Ordvev-klassene på OBT-profiler (med de hyppige ordene)
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** `sqlite/ordvev.py --obt` lager substantivprofiler direkte fra det OBT-taggede bokkorpuset (`korpus/obt_frekvenser.db`, 8,8 mill. tokens, `type_kobling` → `lemma_id`/`boy_nummer` 1–4). Kravet er minst 50 forekomster. Bokstavnavn (a, r, s …) er utelatt.
+  - Taggeren har skilt homografene, så hyppige ord med flertydige former kommer med: *hånd*, *øye*, *by*, *mann*, *år* (ent ub og fl ub er også skilt).
+  - Resultatet er 3 531 substantiv, og 90 % av dem finnes i Ordvev. Skrives til `resultater/ordvev_klasser_obt.tsv`.
+  - Den dekomponerte fila `dekomponering_obt_profiler.tsv` har bare 5 substantiv og er ikke brukt.
+  - Ny klassifisering `første`: klassen til første betydning i Ordvev, som er hovedbetydningen arvet fra DanNet. Med den blir *hånd*, *øye* og *hode* kroppsdel. `streng` og `flertall` finnes fortsatt.
+- **Funn (uvektet snitt per lemma, %, ent ub / ent be / fl ub / fl be; første betydning):**
+  - kroppsdel (69): 29 / 40 / 14 / 18
+  - sted/bygning (280): 40 / 43 / 11 / 6
+  - egenskap (179): 63 / 19 / 15 / 4
+  - hendelse (678): 61 / 22 / 14 / 4
+  - tid (116): 63 / 24 / 11 / 2
+  - substans (101): 57 / 25 / 13 / 5
+  - person (493): 46 / 24 / 19 / 11
+  - gjenstand (640): 45 / 28 / 19 / 7
+- **Robust:** Mønsteret holder i alle tre klassifiseringene (streng, flertall, første) og i begge datasettene (Sett A i bokkorpuset og OBT).
+  - Kroppsdeler har mest bestemt form og høyest fl be.
+  - Steder har ent be på nivå med ent ub.
+  - Egenskaper, hendelser og tid har mest ent ub.
+  - Personer har mest flertall (ca. 30 %).
+  - Dyr og planter varierer med variant og vekting, fordi N er lite.
+- **Feilkilder i klassifiseringen:**
+  - Med første betydning blir *land*, *by* og *hus* «person», fordi gruppebetydningen «hele byen» står først. *vann* blir sted (innsjø), og *liv* blir kroppsdel.
+  - Med flertall blir *fot* «gjenstand», og *hånd* og *øye* blir uavgjort.
+  - Typene er altså støyete for polyseme ord. Et bedre neste steg er å velge klasse ut fra hypernymkjeden (`hyponymOf`) eller manuelt for de 200 hyppigste.
