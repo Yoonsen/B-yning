@@ -1853,3 +1853,12 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Den gamle liggende søylen er borte. Budskapet om at infinitiv står på 2. plass står i en linje nederst. Talernotatene har typetolkningene og sammenligningen med `nb_totals`.
 - **Funn:** Keynote viser ikke diagrammene som pptxgenjs bygger inn. De blir blanke ved eksport, og det gjaldt også decket fra før i dag (5e86371). Validatoren går gjennom, så de vises trolig i PowerPoint, men det er ikke sjekket her. Lysbildene med innebygde diagrammer er 10, 11, 13, 14, 17, 19, 20 og 21 i `mons_master.pptx`.
 - **Neste:** Hvis Lars presenterer fra Keynote, bør disse diagrammene tegnes som PNG, slik som på lysbilde 7.
+
+## 2026-11-25 (del 79) — Alle diagrammene i decket er nå bilder (Keynote)
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Ny modul `sqlite/deck_figurer.py` tegner de ni diagrammene som før var innebygde pptxgenjs-diagrammer, med matplotlib og samme farger. Den skriver `tekst/figurer/deck_*.png`. Hver figur har nøyaktig samme størrelse som feltet sitt på lysbildet.
+  - Gjelder `mons_master.pptx` lysbilde 10, 11 (to diagrammer), 13, 14, 17, 19, 20 og 21.
+  - I `build_master.js` og `build_deck.js` er `addChart` byttet ut med `addImage` på samme x og y, med alt-tekst.
+  - Tallene er kopiert uendret fra addChart-kallene, og kildene står fortsatt i talernotatene.
+- **Sjekk:** Validatoren går gjennom, og alle de åtte lysbildene vises med diagram ved eksport fra Keynote.
+- **Merk:** Tallene ligger nå i `deck_figurer.py`, ikke i JS-filene. Den som endrer et tall, må kjøre `python3 -m sqlite.deck_figurer` og bygge decket på nytt. Diagrammene kan ikke lenger redigeres i PowerPoint. `build_tillegg.js` (arbeidsdecket) har fortsatt innebygde diagrammer.
