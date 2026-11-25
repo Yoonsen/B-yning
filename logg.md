@@ -1804,3 +1804,20 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - større grupper på 5–54 lemmaer: 2,7 % / 37,8 %
 - **De større gruppene:** Det finnes 591 av dem. Den største har 54 lemmaer (liten, lite, små, leie, li, lede, litt, lett, minst, mindre …), deretter kommer ro/røre/rose/ros/rør (26) og rekke/rake/reke (25).
 - **Neste:** De store gruppene kan være verdt et eget blikk. Mange av koblingene går trolig via sjeldne ordbokshomografer og imperativer (se `exclude_imperative` i `paradigm_graph.py`).
+
+## 2026-11-25 (del 73) — Avstander i paradigmegrafen: `sqlite/paradigme_avstand.py`
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Ny modul `sqlite/paradigme_avstand.py` som bruker grafen fra `paradigm_graph.py`. Nodene er lemmaer, og kantene er antall delte ordformer (n).
+  - Avstand måles på to måter: i hopp (BFS) og vektet, der hver kant har lengden 1/n, slik at paradigmer som deler mange former, ligger nær hverandre.
+  - Modulen har egen BFS, Dijkstra og spring-layout, så den trenger ingen nye avhengigheter.
+  - CLI: `python3 -m sqlite.paradigme_avstand liten lede` viser korteste vei og hvilke former hvert steg går via.
+  - Skriver `resultater/paradigme_avstand.tsv` (én rad per komponent) og `tekst/figurer/paradigme_avstand.png`.
+- **Funn:**
+  - Det er 7 041 komponenter med mer enn ett lemma, og 27 390 par i samme komponent.
+  - Fordeling av avstand i hopp: 1 hopp 59 %, 2 hopp 24 %, 3 hopp 10 %, 4 hopp 5 %, 5 eller flere 2,6 %. Lengste avstand er 8 hopp.
+  - Diameter per komponent: 1 for 5 563 komponenter, 2 for 1 167, og 3 eller mer for 311.
+  - Største komponent (54 lemmaer) har diameter 6 og snitt 3,2 hopp. Eksempel: *liten* → *lite* (v, via «lite») → *lei* (a, via «leit») → *li* (v, via «lei») → *lede* (v, via «led»), 4 hopp.
+  - Største diameter (8) finnes i *vake/vaken/veik*-komponenten.
+  - Uten imperativ er det bare litt færre koblinger (6 665 komponenter). Den store komponenten faller ikke fra hverandre (50 lemmaer), men blir lengre (diameter 9). Imperativene fungerer altså mest som snarveier.
+- **Merk:** Den vanlige `python3` (Homebrew 3.14) mangler matplotlib. Figuren ble laget i et eget venv i scratchpad-mappen.
+- **Neste:** Vurdere å vekte kantene etter bruk, slik at sjeldne ordbokshomografer gir lange kanter. Se hvilke formtyper (imperativ, partisipp, s-passiv) som oftest er «broer» i de store komponentene.
