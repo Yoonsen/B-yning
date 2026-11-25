@@ -299,6 +299,24 @@ stat(s, "91 %", "av substantivene med ent be på topp har ent ub på 2. plass (f
 stat(s, "53 %", "har samme form på topp i alle 71 år (1950–2020)", 9.8, 4.4, 2.9, C.accent2);
 s.addNotes("Fra rapport_substantivtyper.md (python3 -m sqlite.substantivtyper). Gullstandard: alle fire former entydige i Ordbanken, internt distinkte, ≥ 100 000 treff, alle former belagt i bokkorpuset. Unntak fra «tall først»: fl ub på topp har ent ub på 2. plass i 71,5 % (en person / tre personer). Full rangering av alle fire former er stabil i 71 av 71 år for 7,9 % (343 lemmaer), median 78,9 % av årene.");
 
+// 8b Semantisk klasse (Norsk ordvev) × profil, OBT-taggede bøker (logg.md del 82–84)
+s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Substantiv" });
+s.addText("Profilen følger betydningen", { placeholder: "title" });
+s.addImage({ path: FIG("deck_semantiske_klasser.png"), x: MX, y: 1.45, w: 7.6, h: 4.9, altText: "Diagram: Gjennomsnittlig andel ent ub, ent be, fl ub og fl be per semantisk klasse fra Norsk ordvev, 3 531 substantiv i det OBT-taggede bokkorpuset" });
+const semRows = [
+  ["Kroppsdeler", "mest bestemt form: hånden, øynene, leppene"],
+  ["Steder", "ent be like vanlig som ent ub: byen, kysten, rommet"],
+  ["Personer", "mest flertall: barn, venner, kvinner"],
+  ["Egenskaper, tid, hendelser", "ubestemt entall: kvalitet, kveld, utvikling"],
+];
+semRows.forEach(([h, t], i) => {
+  const y = 1.6 + i * 1.0;
+  s.addText(h, { x: 8.6, y, w: 4.1, h: 0.4, fontSize: 16, bold: true, color: C.text1, margin: 0, isTextBox: true });
+  s.addText(t, { x: 8.6, y: y + 0.38, w: 4.1, h: 0.55, fontSize: 14, italic: true, color: C.text2, margin: 0, valign: "top", isTextBox: true });
+});
+body(s, [{ text: "Klassene kommer fra ordboka (Norsk ordvev), profilene fra korpuset. De er målt hver for seg.", options: { color: C.text1 } }], 8.6, 5.65, 4.1, 0.8, 14);
+s.addNotes("Norsk ordvev (bokmål 1.1.2, oversatt fra DanNet; DanNet 1.0-lisens). Hvert lemma får den grove klassen til første betydning (hovedbetydningen), fra EuroWordNet-typene. Profiler: det OBT-taggede bokkorpuset (8,8 mill. tokens), der taggeren har skilt homografene, minst 50 forekomster, 3 531 substantiv, 90 % finnes i Ordvev. Tallene er uvektet snitt per lemma (%). Mønsteret er det samme med andre klassifiseringer (alle betydninger i samme klasse / flest betydninger) og i Sett A fra n-grammene. Feilkilder: med første betydning havner land, by og hus under person (gruppebetydningen står først), og vann under sted. Frukt og grønnsaker (19 i Sett A): nesten ingen bestemt form (9 % ent be), enten masse i entall (spinat, mais, agurk) eller tellbare i flertall (poteter, druer, tomater). Kode: python3 -m sqlite.ordvev --obt, figur: python3 -m sqlite.deck_figurer.");
+
 // 9 Enkeltbøker
 pres.addSection({ title: "Enkeltbøker" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Enkeltbøker" });

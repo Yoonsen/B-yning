@@ -128,6 +128,51 @@ def render(cid: str):
     return out
 
 
+# Semantiske klasser (Norsk ordvev) × profil i det OBT-taggede bokkorpuset (logg.md del 82–84).
+# Entall i blågrønt, flertall i rust; ubestemt mørk, bestemt lys.
+SEM_CLASSES = ["kroppsdel", "sted/bygning", "gjenstand", "person", "substans", "hendelse", "tid", "egenskap"]
+SEM_CELLS = [("ent ub", "#4F7C7A"), ("ent be", "#A9C4C1"), ("fl ub", "#B5482F"), ("fl be", "#E3AE9E")]
+
+
+def render_semantic(size=(7.6, 4.9)):
+    import csv
+    from collections import defaultdict
+
+    from sqlite.figurer import ROOT
+
+    groups = defaultdict(list)
+    with (ROOT / "resultater" / "ordvev_klasser_obt.tsv").open(encoding="utf-8") as f:
+        for r in csv.DictReader(f, delimiter="\t"):
+            groups[r["klasse"]].append([float(r[k]) for k in ("ent_ub", "ent_be", "fl_ub", "fl_be")])
+    data = {c: np.mean(groups[c], axis=0) * 100 for c in SEM_CLASSES}
+    order = sorted(SEM_CLASSES, key=lambda c: -(data[c][1] + data[c][3]))  # mest bestemt øverst
+    fig, ax = plt.subplots(figsize=size)
+    y = np.arange(len(order))
+    left = np.zeros(len(order))
+    for j, (name, color) in enumerate(SEM_CELLS):
+        vals = np.array([data[c][j] for c in order])
+        ax.barh(y, vals, left=left, height=0.72, color=color, edgecolor="white", linewidth=1.5, label=name)
+        for yi, (l, v) in enumerate(zip(left, vals)):
+            if v >= 7:
+                ax.text(l + v / 2, yi, f"{v:.0f}", ha="center", va="center", fontsize=11,
+                        color="white" if j in (0, 2) else INK)
+        left += vals
+    ax.set_yticks(y, [f"{c}  ({len(groups[c])})" for c in order], fontsize=12)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 100)
+    ax.set_xticks([])
+    for sp in ("top", "right", "bottom", "left"):
+        ax.spines[sp].set_visible(False)
+    ax.tick_params(axis="y", length=0, colors=INK)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.45, 1.0), ncol=4, frameon=False, fontsize=11, handlelength=1.2)
+    fig.tight_layout()
+    out = OUT_DIR / "deck_semantiske_klasser.png"
+    fig.savefig(out, dpi=200, bbox_inches=None)
+    plt.close(fig)
+    return out, {c: (len(groups[c]), data[c].round(1).tolist()) for c in order}
+
+
 if __name__ == "__main__":
     for cid in CHARTS:
         print(render(cid))
+    print(render_semantic())

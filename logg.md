@@ -1918,3 +1918,20 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Med første betydning blir *land*, *by* og *hus* «person», fordi gruppebetydningen «hele byen» står først. *vann* blir sted (innsjø), og *liv* blir kroppsdel.
   - Med flertall blir *fot* «gjenstand», og *hånd* og *øye* blir uavgjort.
   - Typene er altså støyete for polyseme ord. Et bedre neste steg er å velge klasse ut fra hypernymkjeden (`hyponymOf`) eller manuelt for de 200 hyppigste.
+
+## 2026-11-25 (del 84) — Lysbilde «Profilen følger betydningen», frukt/grønt og verbtyper mot Ordvev
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Nytt lysbilde 11 i `mons_master.pptx` (8b i `build_master.js`, seksjonen Substantiv).
+  - Stablet liggende stolpediagram, `render_semantic()` i `sqlite/deck_figurer.py`, `tekst/figurer/deck_semantiske_klasser.png`. Det viser ent ub / ent be / fl ub / fl be per Ordvev-klasse, sortert etter andel bestemt form, med OBT-profiler og første betydning.
+  - Til høyre står fire korte tolkninger. Kilder og feilkilder står i talernotatene.
+  - Bare masterdecket er oppdatert, slik toppen av `build_master.js` sier. Validatoren går gjennom, og lysbildet er sjekket i Keynote.
+- **Frukt og grønnsaker:** Ordene ble funnet via hypernymkjeden i Ordvev (`hyponymOf`) til *frukt*, *grønnsak* og *bær*. Sett A har 19: 50 / 9 / 33 / 7.
+  - Nesten ingen bestemt form.
+  - Enten masse i entall (*spinat*, *mais*, *agurk*, *paprika*) eller tellbare i flertall (*poteter*, *druer*, *tomater*, *rosiner*).
+  - OBT har bare 7 med ≥ 50 forekomster.
+- **Verb mot de seks typene:** 372 av de 580 verbene i `resultater/verbtyper.tsv` finnes i Ordvev. Trekkene i første betydning gir svake signaler. Grunnlinjen er 29 % pret på topp og 17 % pres på topp.
+  - Static (N = 8: *bety*, *bestå*, *representere*, *eksistere*): 88 % pres på topp.
+  - Mental (55): 69 % inf på topp (*vurdere*, *analysere*).
+  - Location (39): 54 % pret på topp, men gruppen er støyete (*beskrive*, *plassere*).
+  - UnboundedEvent og Cause: pres på topp 21–24 %, mot 12 % for BoundedEvent.
+  - Tendensen er aspektuell (tilstand → presens, avgrenset hendelse → preteritum), men N er lite. Ikke på lysbilde ennå.
