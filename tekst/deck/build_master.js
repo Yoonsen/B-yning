@@ -227,6 +227,13 @@ s.addImage({ path: FIG("paradigmegraf_fisker.png"), x: MX, y: 1.35, w: 6.66, h: 
 }
 s.addNotes("Figuren lages av python3 -m sqlite.figurer fra paradigmegrafen (sqlite/paradigm_graph.py). Fire lemmaer deler «fisker». I boksene står de entydige formene (ankrene): fisker har tre, fisk har bare fisken, verbet fiske bare s-passiv fiskes (partisippformene er utelatt), og substantivet et fiske har ingen. Det er derfor et fiske ikke kan anslås. Slike firergrupper er sjeldne: 452 komponenter, 1,2 % av lemmaene. Av 151 648 lemmaer står 87,4 % alene, 9,9 % ligger i små grupper på 2–4 lemmaer som henger sammen via delte former (452 firergrupper, som fisker), og 2,7 % i 591 større grupper (den største har 54 lemmaer: liten, lite, små, lett, litt, mindre, minst, lede, leie …). Kolonnene summerer til 100. Høyre kolonne vekter hvert lemma med NB-frekvensen (nb_totals) til formene sine: 29 / 33 / 38 %. 3,3 % av ordformene er flertydige mellom lemmaer, men de står for 29 % av forekomstene (logg.md del 71–72). Poenget: glissen graf gjør dekomponeringen mulig, hyppig flertydighet gjør den nødvendig.");
 
+// 4b Avstander i paradigmegrafen
+s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
+s.addText("Avstand i grafen: de fleste er naboer, men kjedene kan bli lange", { placeholder: "title" });
+s.addImage({ path: FIG("paradigme_avstand.png"), x: (W - 11.4) / 2, y: 1.3, w: 11.4, h: 11.4 * 1210 / 2611,
+  altText: "Venstre: den største komponenten i paradigmegrafen, 54 lemmaer rundt liten, lite, lei, li og lede, farget etter antall hopp fra liten. Høyre: fordelingen av hopp mellom alle par i samme komponent: 59 prosent er naboer, 24 prosent to hopp, 10 prosent tre hopp." });
+s.addNotes("Figuren lages av python3 -m sqlite.paradigme_avstand (logg.md del 73). Noder er lemmaer, og en kant betyr at to lemmaer deler ordformer; bredden er antall delte former. Avstand = antall hopp på korteste vei. Av 27 390 par i samme komponent er 59 % naboer, 24 % to hopp og 10 % tre hopp; lengste avstand i hele grafen er 8 hopp. Eksempel fra den største komponenten: liten → lite (verb, via «lite») → lei (adj., via «leit») → li (verb, via «lei») → lede (verb, via «led»), fire hopp mellom ord uten noe med hverandre å gjøre. Uten imperativ faller ikke komponenten fra hverandre, men den blir lengre (diameter 9 i stedet for 6): imperativene er snarveier, ikke lim. For dekomponeringen betyr det at hvert regnestykke er lokalt: vi trenger nabolaget, ikke hele kjeden.");
+
 // 5 Gullstandard
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
 s.addText("Gullstandard: verb uten konkurrenter", { placeholder: "title" });
