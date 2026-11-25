@@ -296,9 +296,8 @@ def fig_paradigm_graph(start_lemma_id: int = FISKER_LEMMA_ID) -> Path:
         if anchors:
             ax.text(x, y - 0.2, ", ".join(core), ha="center", va="center", fontsize=11, color=main, zorder=5)
         else:
-            ax.text(x, y - 0.2, "ingen entydige former", ha="center", va="center", fontsize=10.5, style="italic",
-                    color="#B5482F", zorder=5)
-    fig.text(0.5, 0.02, "I boksene: entydige former (ankre). På linjene: delte former; tykkelse = antall.",
+            ax.text(x, y - 0.2, "–", ha="center", va="center", fontsize=11, color=sub, zorder=5)
+    fig.text(0.5, 0.02, "I boksene: former bare dette lemmaet har (ankre). På linjene: delte former; tykkelse = antall.",
              ha="center", fontsize=10.5, color=MUTED)
     out = OUT_DIR / "paradigmegraf_fisker.png"
     fig.savefig(out)
