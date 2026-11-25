@@ -263,8 +263,7 @@ s.addNotes("Alle åtte er Sett A-verb (rapport_verbtyper.md §4). De er utvalgte
 pres.addSection({ title: "Substantiv" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Substantiv" });
 s.addText("Substantiv velger tall før bestemthet", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [{ name: "Andel", labels: ["ent ub", "ent be", "fl ub", "fl be"], values: [67.1, 16.5, 14.5, 1.9] }],
-  chartOpts({ x: MX, y: 1.5, w: 5.4, h: 4.6, chartColors: [HEX.accent2], showLegend: false, showTitle: true, title: "Formen på 1. plass, Sett A (N = 5 799)", valAxisMaxVal: 80, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_subst_topp.png"), x: MX, y: 1.5, w: 5.4, h: 4.6, altText: "Diagram: Formen på 1. plass, Sett A (N = 5 799)" });
 const ntypes = [
   ["ent ub", "tid, utvikling, kvalitet, kirke"],
   ["ent be", "regjeringen, sommeren, hodet, senga"],
@@ -284,10 +283,8 @@ s.addNotes("Fra rapport_substantivtyper.md (python3 -m sqlite.substantivtyper). 
 pres.addSection({ title: "Enkeltbøker" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Enkeltbøker" });
 s.addText("Én bok bruker sjelden hele paradigmet", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [{ name: "Verb", labels: ["Global #1", "Global #2", "Global #3"], values: [57.2, 26.1, 16.7] }],
-  chartOpts({ x: MX, y: 1.5, w: 5.6, h: 4.2, chartColors: [HEX.accent1], showLegend: false, showTitle: true, title: "Verb: bøker med bare én form (N = 1 145)", valAxisMaxVal: 70, valAxisHidden: true, valGridLine: { style: "none" } }));
-s.addChart(pres.charts.BAR, [{ name: "Substantiv", labels: ["Global #1", "Global #2", "Global #3", "Global #4"], values: [56.0, 32.5, 9.7, 1.8] }],
-  chartOpts({ x: 6.9, y: 1.5, w: 5.8, h: 4.2, chartColors: [HEX.accent2], showLegend: false, showTitle: true, title: "Substantiv: bøker med bare én form (N = 813)", valAxisMaxVal: 70, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_bok_verb.png"), x: MX, y: 1.5, w: 5.6, h: 4.2, altText: "Diagram: Verb: bøker med bare én form (N = 1 145)" });
+s.addImage({ path: FIG("deck_bok_subst.png"), x: 6.9, y: 1.5, w: 5.8, h: 4.2, altText: "Diagram: Substantiv: bøker med bare én form (N = 813)" });
 body(s, [{ text: "Med 3–5 forekomster av et verb i en bok har bare 14 % alle tre formene. Formen som blir med, følger den globale profilen.", options: { color: C.text1 } }], MX, 5.9, W - 2 * MX, 0.8, 16);
 s.addNotes("400 bøker 1980–2020 (200 skjønn, 200 fag), 20 verb og 12 substantiv. Fra sqlite/book_dispersion.py og logg.md del 11. Sjangereffekten (spise: inf>pret>pres i skjønn, inf>pres>pret i fag) kan bli et eget lysbilde.");
 
@@ -296,10 +293,7 @@ pres.addSection({ title: "Dekomponering" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("«dør» er mest et substantiv", { placeholder: "title" });
 status(s, "UTKAST");
-s.addChart(pres.charts.BAR, [
-  { name: "Råtall", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [15.1, 20.6, 64.3] },
-  { name: "Etter dekomponering", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [17.4, 8.7, 74.0] },
-], chartOpts({ x: MX, y: 1.5, w: 7.2, h: 4.6, barGrouping: "clustered", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Profilen til verbet dø, bokkorpuset 1950–2020", valAxisMaxVal: 85, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_dor_profil.png"), x: MX, y: 1.5, w: 7.2, h: 4.6, altText: "Diagram: Profilen til verbet dø, bokkorpuset 1950–2020" });
 stat(s, "64 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene (±10–15 pp)", 8.3, 1.5, 4.4);
 body(s, [{ text: "dø flytter fra type 2B (pret > pres > inf) til 2A (pret > inf > pres).", options: { bold: true, color: C.text1 } }], 8.3, 3.6, 4.4, 1.0, 16);
 missing(s, "«døde» er også adjektivet død: 28 % i et tagget korpus. dø er 2A så lenge adjektivet er under 77 % av «døde».", 8.3, 4.8, 4.4, 1.3);
@@ -327,10 +321,7 @@ s.addNotes("Brukstilfellet: en bruker ser paradigmet i en ordbok og vil se kurve
 // 12 Validering
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Hvor godt treffer metoden?", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [
-  { name: "Faste regler (i dag)", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [13.3, 14.6, 14.4, 16.8] },
-  { name: "Log-regresjon", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [11.0, 11.5, 10.5, 10.1] },
-], chartOpts({ x: MX, y: 1.5, w: 7.4, h: 4.7, barDir: "bar", barGrouping: "clustered", catAxisOrientation: "maxMin", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Median feil i substantivandel (prosentpoeng), 3 000 kunstige homografer per type", valAxisMaxVal: 20, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_validering.png"), x: MX, y: 1.5, w: 7.4, h: 4.7, altText: "Diagram: Median feil i substantivandel (prosentpoeng), 3 000 kunstige homografer per type" });
 stat(s, "78–80 %", "av de kunstige homografene får riktig leksem i flertall (log-regresjon; faste regler 66–76 %)", 8.4, 1.5, 4.3);
 stat(s, "× 1,6–2", "typisk avvik når én form anslås fra resten av paradigmet (log-regresjon)", 8.4, 3.55, 4.3, C.accent2);
 body(s, [{ text: "Retning: ja. Presise andeler: ±10–15 pp.", options: { bold: true, color: C.text1 } }], 8.4, 5.55, 4.3, 0.7, 16);

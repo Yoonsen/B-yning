@@ -283,8 +283,7 @@ s.addNotes("Alle åtte er Sett A-verb (rapport_verbtyper.md §4). De er utvalgte
 pres.addSection({ title: "Substantiv" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Substantiv" });
 s.addText("Substantiv velger tall før bestemthet", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [{ name: "Andel", labels: ["ent ub", "ent be", "fl ub", "fl be"], values: [67.1, 16.5, 14.5, 1.9] }],
-  chartOpts({ x: MX, y: 1.5, w: 5.4, h: 4.6, chartColors: [HEX.accent2], showLegend: false, showTitle: true, title: "Formen på 1. plass, Sett A (N = 5 799)", valAxisMaxVal: 80, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_subst_topp.png"), x: MX, y: 1.5, w: 5.4, h: 4.6, altText: "Diagram: Formen på 1. plass, Sett A (N = 5 799)" });
 const ntypes = [
   ["ent ub", "tid, utvikling, kvalitet, kirke"],
   ["ent be", "regjeringen, sommeren, hodet, senga"],
@@ -304,10 +303,8 @@ s.addNotes("Fra rapport_substantivtyper.md (python3 -m sqlite.substantivtyper). 
 pres.addSection({ title: "Enkeltbøker" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Enkeltbøker" });
 s.addText("Én bok bruker sjelden hele paradigmet", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [{ name: "Verb", labels: ["Global #1", "Global #2", "Global #3"], values: [57.2, 26.1, 16.7] }],
-  chartOpts({ x: MX, y: 1.5, w: 5.6, h: 4.2, chartColors: [HEX.accent1], showLegend: false, showTitle: true, title: "Verb: bøker med bare én form (N = 1 145)", valAxisMaxVal: 70, valAxisHidden: true, valGridLine: { style: "none" } }));
-s.addChart(pres.charts.BAR, [{ name: "Substantiv", labels: ["Global #1", "Global #2", "Global #3", "Global #4"], values: [56.0, 32.5, 9.7, 1.8] }],
-  chartOpts({ x: 6.9, y: 1.5, w: 5.8, h: 4.2, chartColors: [HEX.accent2], showLegend: false, showTitle: true, title: "Substantiv: bøker med bare én form (N = 813)", valAxisMaxVal: 70, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_bok_verb.png"), x: MX, y: 1.5, w: 5.6, h: 4.2, altText: "Diagram: Verb: bøker med bare én form (N = 1 145)" });
+s.addImage({ path: FIG("deck_bok_subst.png"), x: 6.9, y: 1.5, w: 5.8, h: 4.2, altText: "Diagram: Substantiv: bøker med bare én form (N = 813)" });
 body(s, [{ text: "Med 3–5 forekomster av et verb i en bok har bare 14 % alle tre formene. Formen som blir med, følger den globale profilen.", options: { color: C.text1 } }], MX, 5.9, W - 2 * MX, 0.8, 16);
 s.addNotes("400 bøker 1980–2020 (200 skjønn, 200 fag), 20 verb og 12 substantiv. Fra sqlite/book_dispersion.py og logg.md del 11. Sjangereffekten (spise: inf>pret>pres i skjønn, inf>pres>pret i fag) kan bli et eget lysbilde.");
 
@@ -333,10 +330,7 @@ s.addNotes("Fra build_tillegg.js (lysbilde 2). rapport_dekomponering_tid.md §2�
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("«dør» er mest et substantiv", { placeholder: "title" });
 status(s, "UTKAST");
-s.addChart(pres.charts.BAR, [
-  { name: "Råtall", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [15.1, 20.6, 64.3] },
-  { name: "Etter dekomponering", labels: ["inf: dø", "pres: dør", "pret: døde"], values: [17.4, 8.7, 74.0] },
-], chartOpts({ x: MX, y: 1.5, w: 7.2, h: 4.6, barGrouping: "clustered", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Profilen til verbet dø, bokkorpuset 1950–2020", valAxisMaxVal: 85, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_dor_profil.png"), x: MX, y: 1.5, w: 7.2, h: 4.6, altText: "Diagram: Profilen til verbet dø, bokkorpuset 1950–2020" });
 stat(s, "64 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene (±10–15 pp)", 8.3, 1.5, 4.4);
 body(s, [{ text: "dø flytter fra type 2B (pret > pres > inf) til 2A (pret > inf > pres).", options: { bold: true, color: C.text1 } }], 8.3, 3.6, 4.4, 1.0, 16);
 note(s, "Tagget korpus (OBT) og bigrammer gir «dør» om lag 50/50 (OBT 50 % substantiv, bigram 49 %). Paradigmeanslaget på 64 % er trolig for høyt. Tittel og tall må avklares.", 8.3, 4.65, 4.4, 1.6);
@@ -345,11 +339,7 @@ s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5, regnet om 2026-11-20 med
 // 10c døde (fra build_tillegg.js lysbilde 3)
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("«døde»: adjektivet er 28 %, og dø er fortsatt 2A", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [
-  { name: "inf", labels: ["Uten korreksjon", "28 % adjektiv (OBT)", "46 % adjektiv (høyeste overslag)"], values: [17.4, 21.9, 26.3] },
-  { name: "pres", labels: ["Uten korreksjon", "28 % adjektiv (OBT)", "46 % adjektiv (høyeste overslag)"], values: [8.7, 10.9, 13.1] },
-  { name: "pret", labels: ["Uten korreksjon", "28 % adjektiv (OBT)", "46 % adjektiv (høyeste overslag)"], values: [74.0, 67.2, 60.5] },
-], chartOpts({ x: MX, y: 1.45, w: 7.6, h: 4.9, barDir: "col", barGrouping: "clustered", chartColors: [FORM.inf, FORM.pres, FORM.pret], showLegend: true, legendPos: "b", showTitle: true, title: "Profilen til dø i bokkorpuset (%)", valAxisMaxVal: 90, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_dode_profil.png"), x: MX, y: 1.45, w: 7.6, h: 4.9, altText: "Diagram: Profilen til dø i bokkorpuset (%)" });
 stat(s, "28 %", "av «døde» er adjektivet død i det taggede korpuset (29 % med alle fem lag)", 8.6, 1.5, 4.1);
 stat(s, "< 77 %", "så lenge adjektivet er under dette, står pret > inf > pres (2A)", 8.6, 3.75, 4.1, C.accent2);
 s.addNotes("Fra build_tillegg.js (lysbilde 3). rapport_verbtyper.md §7.2 punkt 5; rapport_dekomponering_obt.md §9 og §11. Paradigmeankrene alene kan ikke bestemme adjektivandelen (dødd, dødt og dødene er atypisk sjeldne; sum anslag / obs. 0,05). Adjektivankre (sqlite/adjektiv_gold.py) ga dekomponereren 71/29 i OBT-korpuset mot fasit 72/28 (lag 1). Med alle fem lag: OBT 71/29, dekomponereren 65/33.");
@@ -384,10 +374,7 @@ s.addNotes("Fra build_tillegg.js (lysbilde 5). sqlite/bigram_kontekst.py; rappor
 // 11c Bigramvalidering (fra build_tillegg.js lysbilde 6)
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Bigrammer treffer best: 5 pp median", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [
-  { name: "Median", labels: ["Paradigme", "Bigram", "Kombinert"], values: [9.7, 5.0, 5.4] },
-  { name: "80-persentil", labels: ["Paradigme", "Bigram", "Kombinert"], values: [37.4, 14.5, 15.4] },
-], chartOpts({ x: MX, y: 1.45, w: 7.4, h: 4.8, barDir: "col", barGrouping: "clustered", chartColors: [HEX.accent1, "C9CCD3"], showLegend: true, legendPos: "b", showTitle: true, title: "Avvik i verbandel fra OBT, 150 substantiv/verb-homografer (pp)", valAxisHidden: true, valGridLine: { style: "none" }, valAxisMaxVal: 45, dataLabelFormatCode: "0.0" }));
+s.addImage({ path: FIG("deck_bigram_validering.png"), x: MX, y: 1.45, w: 7.4, h: 4.8, altText: "Diagram: Avvik i verbandel fra OBT, 150 substantiv/verb-homografer (pp)" });
 stat(s, "95 %", "riktig flertallsleksem med bigrammer (paradigme 79 %)", 8.5, 1.5, 4.2);
 body(s, bullets(["Kombinasjonen hjelper ikke når usikkerheten er kalibrert", "Anbefaling: bigram der verbet har kontekster, ellers paradigme", "«dør» 51 % verb (OBT 52), «tro» 54 % (OBT 68)"]), 8.5, 3.6, 4.2, 2.6, 15);
 s.addNotes("Fra build_tillegg.js (lysbilde 6). python3 -m sqlite.kombinert; resultater/kombinert_validering.tsv; rapport_dekomponering_tid.md §8. Med de opprinnelige usikkerhetene lå fasiten innenfor 80 %-intervallet bare for 42–46 % av formene; faktor 2,3 (paradigme) og 4,3 (bigram) trengs, tilpasset på de samme formene. Fasiten er fra et annet korpus. OBT-tallene her er fra lag 1; kombinert validering er ikke kjørt på nytt med alle lag.");
@@ -404,10 +391,7 @@ s.addNotes("Brukstilfellet: en bruker ser paradigmet i en ordbok og vil se kurve
 // 12 Validering
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Hvor godt treffer metoden?", { placeholder: "title" });
-s.addChart(pres.charts.BAR, [
-  { name: "Faste regler (i dag)", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [13.3, 14.6, 14.4, 16.8] },
-  { name: "Log-regresjon", labels: ["fl ub + pres (fisker)", "ent be + pret (landet)", "ent ub + inf (fiske)", "ent ub + pres (dør)"], values: [11.0, 11.5, 10.5, 10.1] },
-], chartOpts({ x: MX, y: 1.5, w: 7.4, h: 4.7, barDir: "bar", barGrouping: "clustered", catAxisOrientation: "maxMin", chartColors: ["C9CCD3", HEX.accent1], showLegend: true, legendPos: "b", showTitle: true, title: "Median feil i substantivandel (prosentpoeng), 3 000 kunstige homografer per type", valAxisMaxVal: 20, valAxisHidden: true, valGridLine: { style: "none" } }));
+s.addImage({ path: FIG("deck_validering.png"), x: MX, y: 1.5, w: 7.4, h: 4.7, altText: "Diagram: Median feil i substantivandel (prosentpoeng), 3 000 kunstige homografer per type" });
 stat(s, "78–80 %", "av de kunstige homografene får riktig leksem i flertall (log-regresjon; faste regler 66–76 %)", 8.4, 1.5, 4.3);
 stat(s, "× 1,6–2", "typisk avvik når én form anslås fra resten av paradigmet (log-regresjon)", 8.4, 3.55, 4.3, C.accent2);
 body(s, [{ text: "Retning: ja. Presise andeler: ±10–15 pp.", options: { bold: true, color: C.text1 } }], 8.4, 5.55, 4.3, 0.7, 16);
@@ -417,8 +401,7 @@ s.addNotes("python3 -m sqlite.valider_dekomponering. Gullstandarden (2 772 subst
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("44 mill. ord tagget: samme treff, samme svakhet", { placeholder: "title" });
 status(s, "UTKAST");
-s.addChart(pres.charts.BAR, [{ name: "Median avvik", labels: ["Alle kandidater modellert", "… og godt grunnlag", "Alle innholdsord", "Minst én kandidat umodellert"], values: [10.4, 9.6, 16.5, 50.0] }],
-  chartOpts({ x: MX, y: 1.45, w: 7.4, h: 4.8, barDir: "bar", catAxisOrientation: "maxMin", chartColors: [HEX.accent2, HEX.accent2, HEX.accent2, HEX.accent1], showLegend: false, showTitle: true, title: "Median avvik fra OBT, paradigmemetoden (pp), 4 170 flertydige former", valAxisHidden: true, valGridLine: { style: "none" }, valAxisMaxVal: 60, dataLabelFormatCode: "0.0" }));
+s.addImage({ path: FIG("deck_obt_avvik.png"), x: MX, y: 1.45, w: 7.4, h: 4.8, altText: "Diagram: Median avvik fra OBT, paradigmemetoden (pp), 4 170 flertydige former" });
 stat(s, "75 %", "riktig leksem får størst andel, både med 8 og 44 mill. ord (samme 1 722 former, 13 pp median)", 8.5, 1.5, 4.2);
 body(s, bullets(["Fem ganger så mye data endrer ikke treffsikkerheten", "Største feilkilde: kandidater uten modell (adjektiv, «i går»): 888 former, 50 pp", "Enkeltord kan likevel flytte seg mye (kroner, fisker)"]), 8.5, 3.75, 4.2, 2.6, 15);
 s.addNotes("Ny 2026-11-23. rapport_dekomponering_obt.md §11; python -m sqlite.valider_dekomponering_obt --db <alle lag> --ut resultater/alle_lag. Korpus: OBT-tagget, 1 076 dokumenter, 43,7 mill. tokens, 3 teksttyper × 8 tiår 1950–2026 (logg del 46 og 64). Søylene: logreg-varianten; «godt grunnlag» = sum anslag / observert ≥ 0,5; «umodellert» = minst 5 % av forekomstene på et leksem dekomponereren gir 0 %. 75 % og 13 pp: de 1 722 innholdsordformene som finnes i både lag 1 og alle lag, kjørt med samme kode (lag 1: 13,7 pp / 74 %; alle lag: 13,1 pp / 75 %). Paradigmemetoden, ikke bigrammene.");
@@ -428,17 +411,7 @@ s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Endringer som tåler valg av fordeling", { placeholder: "title" });
 status(s, "UTKAST");
 const DEC = ["1950", "1960", "1970", "1980", "1990", "2000", "2010", "2020"];
-s.addChart(pres.charts.LINE, [
-  { name: "krone: ubestemt flertall", labels: DEC, values: [81, 82, 85, 88, 89, 89, 90, 89] },
-  { name: "dør: bestemt entall", labels: DEC, values: [71, 69, 68, 65, 68, 72, 76, 75] },
-  { name: "gå: preteritum", labels: DEC, values: [41, 38, 34, 33, 33, 34, 38, 39] },
-  { name: "sette: preteritum", labels: DEC, values: [32, 24, 20, 16, 22, 19, 29, 34] },
-], {
-  ...chartText, x: MX, y: 1.45, w: 7.6, h: 4.9,
-  chartColors: [HEX.accent2, HEX.accent1, FORM.pres, FORM.pret], lineSize: 2.5, lineDataSymbol: "circle", lineDataSymbolSize: 6,
-  showLegend: true, legendPos: "b", showTitle: true, title: "Andel av lemmaets kjerneformer per tiår, bøker (%), OBT-fordeling per tiår",
-  valAxisMinVal: 0, valAxisMaxVal: 100, valAxisLabelFormatCode: "0\"%\"", valGridLine: { color: HEX.lt2, size: 1 }, catGridLine: { style: "none" },
-});
+s.addImage({ path: FIG("deck_stabilitet_obt.png"), x: MX, y: 1.45, w: 7.6, h: 4.9, altText: "Diagram: Andel av lemmaets kjerneformer per tiår, bøker (%), OBT-fordeling per tiår" });
 body(s, bullets([
   "Samme kurver med OBT per tiår, fast OBT-andel, dekomponereren og rå formtall",
   "Lag 1 alene (6–10 bøker per tiår) var for lite: andelen sette av «satt» hoppet 19–43 %. Med 32–47 bøker: 29–38 %",
