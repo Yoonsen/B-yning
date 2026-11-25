@@ -1807,3 +1807,28 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 
 **Neste steg**
 - Marie leser `rapport_stabilitet_obt.md` før hun avgjør om den skal endres.
+
+---
+
+## 2026-11-25 (del 72) — Lysbilde 5 i master-decket: Sett B og substantivsettet
+
+**Dato/agent:** 2026-11-25, Claude (Opus 5.5) sammen med Marie
+
+**Hva ble gjort**
+- På grenen `presentasjon-master`, etter ønske fra Marie: Sett B skal ha en egen boks, og substantivsettet (Sett A, N = 5 799, brukt på lysbilde 9) skal innføres før det brukes.
+- `tekst/deck/build_master.js`, lysbilde 5:
+  - ny tittel: «Gullstandard: former uten konkurrenter» (før «verb uten konkurrenter»);
+  - verbraden: 606 → 580 (Sett A, fylt) → 533, og Sett B (10 kjerneverb) i en egen boks med farget kant;
+  - ny rad for substantiv: 6 007 → 5 799 (Sett A, fylt i fargen fra lysbilde 9), med Sett A rett under verbenes Sett A;
+  - kravene som gjelder for begge, står i én tekst ved siden av substantivradene;
+  - talenotatet viser til `rapport_verbtyper.md` §2 og `rapport_substantivtyper.md` §2 og lister Sett B-verbene.
+- `tekst/mons_master.pptx` er bygd på nytt; `validate.py` er bestått, og lysbilde 5 er kontrollert som bilde.
+- `tekst/deck/HANDOVER_master.md`: lysbildekartet er oppdatert.
+
+**Funn**
+- Sett A er definert ulikt i de to rapportene: for verb før kravet om belegg i korpuset (580), for substantiv etter (5 799). Det står i talenotatet.
+- PowerPoint bryter linja ved «~» også med hardt mellomrom, så eksemplene i Sett B-boksen står på egen linje.
+- Visuell kontroll: når pptx-en åpnes fra OneDrive-mappen mens PowerPoint har en eldre utgave åpen, kan filen få former fra flere bygginger (fire Sett B-bokser på lysbildet). Filen er bygd på nytt og sjekket (én boks). Eksporter fra en kopi utenfor OneDrive.
+
+**Neste steg**
+- Ingen.

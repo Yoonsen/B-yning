@@ -41,7 +41,7 @@ Skrevet 2026-11-23. Se også `logg.md` del 68.*
 | 2 | Hvert leksem har sin favorittform | deck 2 | – |
 | 3 | To datakilder, koblet på ordform | deck 3 | – |
 | 4 | Én form, flere leksemer | deck 4 | – |
-| 5 | Gullstandard: verb uten konkurrenter | deck 5 | – |
+| 5 | Gullstandard: former uten konkurrenter | deck 5 | Sett B i egen boks; ny rad for substantiv (6 007 → 5 799 Sett A), logg del 72 |
 | 6 | Seks verbtyper, ikke tre | deck 6 | – |
 | 7 | Hvert verb er et punkt i trekanten | deck 6b | – |
 | 8 | Rangeringen står stille i 70 år | deck 7 | – |

@@ -217,20 +217,36 @@ s.addNotes("Figuren lages av python3 -m sqlite.figurer fra paradigmegrafen (sqli
 
 // 5 Gullstandard
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
-s.addText("Gullstandard: verb uten konkurrenter", { placeholder: "title" });
-const funnel = [["606", "verb der inf, pres og pret ikke deler form med noe annet lemma"], ["580", "også perf-part entydig (Sett A)"], ["533", "alle fire former belagt i korpuset"]];
-funnel.forEach(([n, t], i) => {
-  const x = MX + i * 4.1;
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.7, w: 3.8, h: 2.6, rectRadius: 0.15, fill: { color: i === 1 ? C.accent1 : C.background2 }, line: { color: i === 1 ? C.accent1 : C.background2 }, objectName: `trinn ${n}` });
-  s.addText(n, { x: x + 0.3, y: 1.9, w: 3.2, h: 1.0, fontSize: 54, bold: true, fontFace: THEME.headFontFace, color: i === 1 ? C.background1 : C.text1, margin: 0, isTextBox: true });
-  s.addText(t, { x: x + 0.3, y: 3.0, w: 3.2, h: 1.1, fontSize: 15, color: i === 1 ? C.background1 : C.text2, margin: 0, valign: "top", isTextBox: true });
-});
+s.addText("Gullstandard: former uten konkurrenter", { placeholder: "title" });
+// Fire kolonner; Sett A for verb og substantiv står i samme kolonne.
+const GW = 2.86, GG = 0.2, GH = 1.95;
+const gx = (i) => MX + i * (GW + GG);
+// kind: "plain" = trinn, "fill" = Sett A (fylt), "outline" = Sett B (kant)
+function goldBox(n, t, col, y, kind, accent) {
+  const filled = kind === "fill";
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: gx(col), y, w: GW, h: GH, rectRadius: 0.15,
+    fill: { color: filled ? accent : kind === "outline" ? C.background1 : C.background2 },
+    line: { color: kind === "plain" ? C.background2 : accent, width: kind === "outline" ? 2 : 1 },
+    objectName: `trinn ${n}`,
+  });
+  s.addText(n, { x: gx(col) + 0.25, y: y + 0.15, w: GW - 0.5, h: 0.8, fontSize: 44, bold: true, fontFace: THEME.headFontFace, color: filled ? C.background1 : C.text1, margin: 0, valign: "bottom", isTextBox: true });
+  s.addText(t, { x: gx(col) + 0.25, y: y + 1.0, w: GW - 0.5, h: GH - 1.1, fontSize: 14, color: filled ? C.background1 : C.text2, margin: 0, valign: "top", isTextBox: true });
+}
+const rowLabel = (t, y) => s.addText(t, { x: MX, y, w: 4, h: 0.32, fontSize: 16, bold: true, color: C.text1, margin: 0, isTextBox: true });
+rowLabel("Verb", 1.3);
+goldBox("606", "verb der inf, pres og pret ikke deler form med noe annet lemma", 0, 1.65, "plain", C.accent1);
+goldBox("580", "også perf-part entydig: Sett A", 1, 1.65, "fill", C.accent1);
+goldBox("533", "alle fire former belagt i korpuset", 2, 1.65, "plain", C.accent1);
+goldBox("10", "Sett B: kjerneverb med én kjent kollisjon, flagget\ngå ~ i går, ha ~ ha!", 3, 1.65, "outline", C.accent1);
+rowLabel("Substantiv", 3.85);
+goldBox("6 007", "substantiv der ingen av de fire formene deler form med noe annet lemma", 0, 4.2, "plain", C.accent2);
+goldBox("5 799", "alle fire former belagt i korpuset: Sett A", 1, 4.2, "fill", C.accent2);
 body(s, [
-  { text: "Sett B: ", options: { bold: true, color: C.text1 } },
-  { text: "høyfrekvente kjerneverb med én kjent kollisjon (gå/går ~ i går, ha ~ ha!), tatt med og flagget.", options: { breakLine: true } },
-  { text: "Krav: inf + pres + pret ≥ 100 000 treff; ingen form står i to kategorier (pret ≠ perf-part).", options: {} },
-], MX, 4.7, W - 2 * MX, 1.0, 16);
-s.addNotes("Gjenskapes med python3 -m sqlite.verbtyper (resultater/verbtyper.tsv). 100 000-grensen gjelder inf + pres + pret i nb_totals. «Internt distinkt» betyr at ingen form står i to av de fire kategoriene.");
+  { text: "Krav for begge: ", options: { bold: true, color: C.text1 } },
+  { text: "≥ 100 000 treff i kjerneformene, og ingen form står i to kategorier (pret ≠ perf-part, hus ≠ hus).", options: {} },
+], gx(2), 4.55, 2 * GW + GG, 1.3, 16);
+s.addNotes("Verb: python3 -m sqlite.verbtyper (resultater/verbtyper.tsv); rapport_verbtyper.md §2. 100 000-grensen gjelder inf + pres + pret i nb_totals. Sett B er de 10 kjerneverbene i rapportens §4-tabell: gjøre, lese, spise, kjøpe, si, komme, gå, ha, vite, ligge. Substantiv: python3 -m sqlite.substantivtyper; rapport_substantivtyper.md §2. 6 007 = alle fire kjerneformer entydige i Ordbanken, internt distinkte og ≥ 100 000 treff (steg 1–5); 5 799 = alle fire belagt i bokkorpuset 1950–2020 (steg 6). «Internt distinkt» betyr at ingen form står i to av kategoriene. Merk: for verb er Sett A 580 (før kravet om belegg), for substantiv 5 799 (etter), slik rapportene definerer dem.");
 
 // 6 Seks verbtyper
 pres.addSection({ title: "Verb" });
