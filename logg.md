@@ -1794,3 +1794,13 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - **Frekvensvektet:** Hvert lemma vektes med summen av NB-frekvensen (`nb_totals`) til formene sine. Da er 29 % isolert og 62 % i grupper på høyst fire lemmaer. Blant de 1 000 hyppigste lemmaene er bare 24 % isolert. 3,3 % av ordformene er flertydige mellom lemmaer, men disse formene står for 29 % av forekomstene.
 - **Poeng:** Grafen er glissen, og derfor finnes det nesten alltid entydige ankre i nærheten. Det gjør dekomponeringen mulig. Samtidig er flertydigheten vanlig i bruk, og det gjør dekomponeringen nødvendig.
 - **Neste:** Ingen oppfølging nødvendig.
+
+## 2026-11-25 (del 72) — Lysbilde 4: tre rader som summerer til 100
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Det kumulative tallet 97,3 % var vanskelig å forklare, så det er tatt ut av lysbildet. Lysbildet viser nå tre klasser som summerer til 100 %, per lemma i ordboka og vektet etter frekvens i NB (`build_master.js` og `build_deck.js`). Begge deckene er bygd på nytt og sjekket visuelt.
+- **Tallene (ordboka / NB):**
+  - står alene: 87,4 % / 29,4 %
+  - små grupper på 2–4 lemmaer: 9,9 % / 32,8 %
+  - større grupper på 5–54 lemmaer: 2,7 % / 37,8 %
+- **De større gruppene:** Det finnes 591 av dem. Den største har 54 lemmaer (liten, lite, små, leie, li, lede, litt, lett, minst, mindre …), deretter kommer ro/røre/rose/ros/rør (26) og rekke/rake/reke (25).
+- **Neste:** De store gruppene kan være verdt et eget blikk. Mange av koblingene går trolig via sjeldne ordbokshomografer og imperativer (se `exclude_imperative` i `paradigm_graph.py`).
