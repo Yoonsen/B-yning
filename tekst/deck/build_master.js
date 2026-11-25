@@ -211,9 +211,20 @@ pres.addSection({ title: "Metode" });
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
 s.addText("Én form, flere leksemer", { placeholder: "title" });
 s.addImage({ path: FIG("paradigmegraf_fisker.png"), x: MX, y: 1.35, w: 6.66, h: 5.3, altText: "Paradigmegrafen rundt fisker: substantivene fisker, fisk og fiske og verbet fiske deler ordformer; substantivet fiske har ingen entydige former" });
-stat(s, "87,4 %", "av lemmaene i Ordbanken deler ingen form med andre lemmaer", 8.6, 1.6, 4.1);
-stat(s, "97,3 %", "ligger i grupper på høyst fire lemmaer som deler former", 8.6, 4.0, 4.1, C.accent2);
-s.addNotes("Figuren lages av python3 -m sqlite.figurer fra paradigmegrafen (sqlite/paradigm_graph.py). Fire lemmaer deler «fisker». I boksene står de entydige formene (ankrene): fisker har tre, fisk har bare fisken, verbet fiske bare s-passiv fiskes (partisippformene er utelatt), og substantivet et fiske har ingen. Det er derfor et fiske ikke kan anslås. Slike firergrupper er sjeldne: 452 komponenter, 1,2 % av lemmaene. 87,4 % av 151 648 lemmaer deler ingen form; 97,3 % ligger i komponenter på høyst fire lemmaer (rapport_verbtyper.md §7.3).");
+// Ordboka mot bruken: andel lemmaer talt én gang hver, og vektet etter frekvens i NB (nb_totals)
+{
+  const x0 = 8.6, cw = 2.05;
+  [["I ordboka", 0], ["I bruk (NB)", 1]].forEach(([h, i]) =>
+    s.addText(h, { x: x0 + i * cw, y: 1.45, w: cw, h: 0.4, fontSize: 14, bold: true, color: C.text1, margin: 0, isTextBox: true }));
+  [[["87,4 %", "29 %"], "deler ingen form med andre lemmaer", 1.85],
+   [["97,3 %", "62 %"], "hører til en gruppe på høyst fire lemmaer som henger sammen via delte former, som fisker", 3.45]].forEach(([vals, label, y]) => {
+    vals.forEach((v, i) => s.addText(v, { x: x0 + i * cw, y, w: cw, h: 0.85, fontSize: 40, bold: true, fontFace: THEME.headFontFace,
+      color: i === 0 ? C.accent1 : C.accent2, margin: 0, valign: "bottom", isTextBox: true, objectName: `stat ${v}` }));
+    s.addText(label, { x: x0, y: y + 0.9, w: 2 * cw, h: 0.65, fontSize: 14, color: C.text2, margin: 0, valign: "top", isTextBox: true });
+  });
+  body(s, [{ text: "Ordboka er glissen, bruken er ikke: de hyppige ordene er de flertydige.", options: { bold: true, color: C.text1 } }], x0, 5.4, 2 * cw, 0.9, 16);
+}
+s.addNotes("Figuren lages av python3 -m sqlite.figurer fra paradigmegrafen (sqlite/paradigm_graph.py). Fire lemmaer deler «fisker». I boksene står de entydige formene (ankrene): fisker har tre, fisk har bare fisken, verbet fiske bare s-passiv fiskes (partisippformene er utelatt), og substantivet et fiske har ingen. Det er derfor et fiske ikke kan anslås. Slike firergrupper er sjeldne: 452 komponenter, 1,2 % av lemmaene. 87,4 % av 151 648 lemmaer deler ingen form; 97,3 % ligger i komponenter på høyst fire lemmaer (rapport_verbtyper.md §7.3). Høyre kolonne vekter hvert lemma med summen av NB-frekvensen (nb_totals) til formene sine: da er bare 29 % isolert og 62 % i grupper på høyst fire. Blant de 1 000 hyppigste lemmaene er 24 % isolert. 3,3 % av ordformene er flertydige mellom lemmaer, men de står for 29 % av forekomstene (substantiv, verb, adjektiv; logg.md del 71). Poenget: glissen graf gjør dekomponeringen mulig, hyppig flertydighet gjør den nødvendig.");
 
 // 5 Gullstandard
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Metode" });
