@@ -1833,3 +1833,8 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - Homografer nummereres som i en ordbok med `lemma_labels()`: adjektiv, så substantiv, så verb, deretter etter lemma_id. Eksempel: leie¹–³ er substantiv og leie⁴–⁵ verb.
   - Layouten har mer luft (større k og flere iterasjoner), og et nytt steg til slutt skyver noder som ligger for nær hverandre, fra hverandre. Etikettene overlapper ikke lenger.
   - Nøkkelen til numrene står i talernotatene til lysbilde 5. Begge deckene er bygd på nytt.
+
+## 2026-11-25 (del 76) — Fisker-figuren: «ingen entydige former» er fjernet
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** I `fig_paradigm_graph` (`sqlite/figurer.py`) er den røde teksten «ingen entydige former» i boksen for *fiske* (subst.) byttet ut med en nøytral strek. Figurteksten er skrevet om til «former bare dette lemmaet har (ankre)». `paradigmegraf_fisker.png` og begge deckene er bygd på nytt.
+- **Bakgrunn:** Alle fire lemmaene har flertydige former, så den røde teksten kunne leses som om bare *fiske* var flertydig. Det figuren skal vise, er hvilke ankre hvert lemma har: former som bare det lemmaet har.
