@@ -1826,3 +1826,10 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 **Agent:** Claude (Opus 5.5)
 - **Gjort:** Lagt inn et nytt lysbilde 5 rett etter «fisker»-lysbildet i `build_master.js` og `build_deck.js`. Det heter «Avstand i grafen: de fleste er naboer, men kjedene kan bli lange», bruker figuren `paradigme_avstand.png` og har talernotater med tallene og eksempelstien liten → lede. Resten av lysbildene er flyttet ett nummer ned. Begge deckene er bygd på nytt og sjekket visuelt.
 - **Neste:** Etikettene overlapper i de tetteste klyngene (leie/lei og lette/leite). Det kan pyntes hvis figuren skal leses på avstand.
+
+## 2026-11-25 (del 75) — Avstandsfiguren: bare lemmaet, homografer nummerert
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Nodene i `paradigme_avstand.png` har nå bare grunnformen som etikett, uten ordklasse.
+  - Homografer nummereres som i en ordbok med `lemma_labels()`: adjektiv, så substantiv, så verb, deretter etter lemma_id. Eksempel: leie¹–³ er substantiv og leie⁴–⁵ verb.
+  - Layouten har mer luft (større k og flere iterasjoner), og et nytt steg til slutt skyver noder som ligger for nær hverandre, fra hverandre. Etikettene overlapper ikke lenger.
+  - Nøkkelen til numrene står i talernotatene til lysbilde 5. Begge deckene er bygd på nytt.

@@ -157,12 +157,28 @@ def write_tsv(graph: dict, st: dict) -> None:
             f.write(f"{i}\t{c['size']}\t{c['diameter']}\t{c['mean_hops']:.3f}\t{c['w_diameter']:.3f}\t{names}\n")
 
 
-def _spring_layout(nodes: list[int], edges: list[tuple[int, int, int]], seed: int = 7, iters: int = 600) -> dict:
+SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+def lemma_labels(graph: dict, lids: list[int]) -> dict[int, str]:
+    """Bare grunnformen; homografe lemmaer nummereres som i en ordbok (leie¹, leie², …), ordnet etter ordklasse og lemma_id."""
+    by_gf: dict[str, list[int]] = {}
+    for l in lids:
+        by_gf.setdefault(label(graph, l).split(" (")[0], []).append(l)
+    out = {}
+    for gf, ls in by_gf.items():
+        ls = sorted(ls, key=lambda l: (label(graph, l).split(" (")[1], l))
+        for i, l in enumerate(ls, 1):
+            out[l] = gf if len(ls) == 1 else gf + str(i).translate(SUP)
+    return out
+
+
+def _spring_layout(nodes: list[int], edges: list[tuple[int, int, int]], seed: int = 7, iters: int = 1500) -> dict:
     """Enkel Fruchterman–Reingold i numpy (unngår ny avhengighet)."""
     rng = np.random.default_rng(seed)
     idx = {n: i for i, n in enumerate(nodes)}
     pos = rng.uniform(-1, 1, (len(nodes), 2))
-    k = 1.0 / np.sqrt(len(nodes))
+    k = 2.2 / np.sqrt(len(nodes))  # større k = mer luft mellom nodene
     E = np.array([(idx[u], idx[v]) for u, v, _ in edges])
     t = 0.2
     for _ in range(iters):
@@ -176,7 +192,17 @@ def _spring_layout(nodes: list[int], edges: list[tuple[int, int, int]], seed: in
         np.add.at(disp, E[:, 1], f)
         ln = np.linalg.norm(disp, axis=1)[:, None] + 1e-9
         pos += disp / ln * np.minimum(ln, t)
-        t *= 0.992
+        t *= 0.997
+    # Kollisjoner: tette homografklynger (leie¹–⁵) trekkes sammen av mange kanter; skyv dem fra hverandre
+    span = pos.max(axis=0) - pos.min(axis=0)
+    dmin = 0.075 * float(span.max())
+    for _ in range(400):
+        d = pos[:, None, :] - pos[None, :, :]
+        dist = np.linalg.norm(d * np.array([1.0, 1.6]), axis=2) + np.eye(len(nodes)) * 1e9  # etiketter er brede, ikke høye
+        over = np.clip(dmin - dist, 0, None)
+        if over.max() < 1e-4:
+            break
+        pos += 0.5 * (d / (dist[..., None]) * over[..., None]).sum(axis=1)
     return {n: pos[idx[n]] for n in nodes}
 
 
@@ -203,6 +229,7 @@ def figure(graph: dict, st: dict, center: str = "liten") -> Path:
         path.append(cur)
     on_path = set(zip(path, path[1:])) | set(zip(path[1:], path))
 
+    names = lemma_labels(graph, comp)
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(13.5, 6.4), gridspec_kw={"width_ratios": [1.9, 1]})
     cmap = plt.get_cmap("viridis_r")
     maxh = max(hops[l] for l in comp)
@@ -214,9 +241,7 @@ def figure(graph: dict, st: dict, center: str = "liten") -> Path:
     for l in comp:
         x, y = pos[l]
         a1.scatter([x], [y], s=150, color=cmap(hops[l] / maxh), edgecolor="white", lw=1.5, zorder=3)
-        name = label(graph, l)
-        g, p = name.split(" (")
-        a1.text(x, y + 0.045, f"{g} ({p[:-1][0]})", fontsize=8.5, ha="center", va="bottom", color=INK,
+        a1.text(x, y + 0.045, names[l], fontsize=9.5, ha="center", va="bottom", color=INK,
                 fontweight="bold" if l in (src, far) else "normal", zorder=4)
     a1.set_title(f"Største komponent: {len(comp)} lemmaer, farget etter hopp fra «{center}»",
                  fontsize=13, loc="left", color=INK)
@@ -238,7 +263,7 @@ def figure(graph: dict, st: dict, center: str = "liten") -> Path:
     a2.yaxis.grid(True, color=GRID, lw=0.8)
     a2.set_axisbelow(True)
     a2.set_ylim(0, 100)
-    fig.text(0.01, 0.01, "Noder: lemmaer (s = substantiv, v = verb, a = adjektiv). Kanter: delte ordformer, bredde = antall. "
+    fig.text(0.01, 0.01, "Noder: lemmaer; homografer nummerert (leie¹, leie², …). Kanter: delte ordformer, bredde = antall. "
              f"Mørk sti: korteste vei fra {center} til {label(graph, far).split(' (')[0]} ({hops[far]} hopp).",
              fontsize=9.5, color=MUTED)
     out = OUT_DIR / "paradigme_avstand.png"
