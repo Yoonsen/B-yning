@@ -174,14 +174,15 @@ def render_semantic(size=(7.6, 4.9)):
 
 # «lærer» mellom to paradigmer (logg.md del 86). Tall fra
 # decomposer.estimate_wordform_shares("lærer", corpus="book") med OBT-fordeling av delte ankre,
-# bokkorpuset 1950–2020; taggeren er obt_typer i korpus/obt_frekvenser.db (verb 311 / subst 297).
+# bokkorpuset 1950–2020; taggeren er obt_typer i korpus/obt_frekvenser.db (lære verb 311, lærer subst 253
+# inkl. «Lærer», lære subst 44 av 608).
 LAERER = {
     "anchors": [  # (kandidat, farge, [(ankerform, forekomster)], anslag x̂)
         ("å lære (verb)", ACC1, [("lærte", 392_030), ("lært", 608_873)], 252_717),
         ("en lærer (subst.)", ACC2, [("læreren", 501_966), ("lærere", 706_402), ("lærerne", 393_113)], 229_908),
         ("lære (subst., «doktrine»)", LIGHT, [("lærene", 15_418)], 51_496),
     ],
-    "tagger": [51.2, 48.8, 0.0],
+    "tagger": [51.2, 41.6, 7.2],
 }
 
 

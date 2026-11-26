@@ -1966,3 +1966,24 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - bigramvalideringen («dør» 51 % verb);
   - 12b «dør og tro over tid»;
   - lysbilde 7 nevner *dø* som 2A.
+
+## 2026-11-26 (del 87) — *dø* ryddet ut av decket; «lærer» også på bigram- og tidslysbildet
+**Agent:** Claude (Opus 5.5)
+- **Gjort (`build_master.js`, `mons_master.pptx`, nå 23 lysbilder):**
+  - Lysbildet om «døde» (10c) er fjernet.
+  - Bigramvalideringen (lysbilde 17): «dør» 51 % er byttet med «lærer» 66 % verb (OBT 51).
+  - Tidslysbildet (lysbilde 18) heter nå «Fra ordboka til kurven: lærer og tro». Figuren er `lærer_tro_metoder.png`.
+    - `fig_methods_over_time(forms)` i `sqlite/figurer.py` tar nå formene som argument. Verbandelen fra paradigmet regnes mot alle substantivkandidater.
+    - `EXAMPLES["lærer"]` er lagt til i `sqlite/bigram_kontekst.py`.
+  - Stabilitetslysbildet og oppsummeringen nevner ikke lenger «døde».
+  - Talernotatene til valideringen bruker «lærer».
+  - Lysbilde 14: Taggeren skiller *lærer* fra *lære* «doktrine». Søylen er rettet fra 51/49 til 51/42/7 (verb 311, lærer 253 inkl. «Lærer», lære 44 av 608). Paradigmet gir 47/43/10, så treffet er enda bedre enn vist før.
+  - Validatoren går gjennom, og lysbilde 14 og 18 er sjekket i Keynote.
+- **Funn: syntagmet kan lure.**
+  - Bigramanslaget for «lærer» stiger fra ca. 45 % verb i 1950 til 78 % i 2020, mot 51 % i OBT.
+  - Årsak: konteksten *som* er 45 % av treffene på presenskontekstene (76 628 av 170 300 i 2000–20). *som lærer* er oftest nominalt («jobbet som lærer»).
+  - Paradigmet holder seg på 41–63 %, nær OBT. Dette står nå på lysbildet som poeng for rammen paradigme/syntagme.
+  - Merk at `kombinert_validering.tsv` har `obt_verb` = 0,57 for lærer, fordi nevneren der er verb + lærer subst uten *lære* «doktrine». Decket bruker 51 % (alle substantiv).
+- **Igjen:**
+  - *dør* «door» står fortsatt i stabilitetsfiguren (substantivet, bestemt entall). Det er ikke *dø*.
+  - `deck_dode_profil` og `deck_dor_profil` ligger fortsatt i `CHARTS`, men brukes ikke.

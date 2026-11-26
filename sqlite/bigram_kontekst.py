@@ -175,6 +175,7 @@ def decompose_residual(form: str, cells: list[tuple[str, str, tuple[str, int]]],
 EXAMPLES = {
     "tro": [("en tro (subst)", "tro", ("subst", 1)), ("å tro (verb)", "tro", ("verb", 1))],
     "dør": [("en dør (subst)", "dør", ("subst", 1)), ("å dø (verb, pres)", "dø", ("verb", 2))],
+    "lærer": [("en lærer (subst)", "lærer", ("subst", 1)), ("å lære (verb, pres)", "lære", ("verb", 2))],
 }
 
 

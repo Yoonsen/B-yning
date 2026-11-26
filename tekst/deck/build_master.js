@@ -326,7 +326,7 @@ s.addImage({ path: FIG("deck_bok_subst.png"), x: 6.9, y: 1.5, w: 5.8, h: 4.2, al
 body(s, [{ text: "Med 3–5 forekomster av et verb i en bok har bare 14 % alle tre formene. Formen som blir med, følger den globale profilen.", options: { color: C.text1 } }], MX, 5.9, W - 2 * MX, 0.8, 16);
 s.addNotes("400 bøker 1980–2020 (200 skjønn, 200 fag), 20 verb og 12 substantiv. Fra sqlite/book_dispersion.py og logg.md del 11. Sjangereffekten (spise: inf>pret>pres i skjønn, inf>pres>pret i fag) kan bli et eget lysbilde.");
 
-// 10 dø / dør
+// 10 Dekomponering
 pres.addSection({ title: "Dekomponering" });
 
 // 10a Formelen (fra build_tillegg.js lysbilde 2)
@@ -364,15 +364,7 @@ body(s, [
   { text: "taggeren og bigrammer (å lære, en lærer) ser på hver forekomst.", options: {} },
 ], 7.6, 1.45, 5.1, 1.3, 15);
 s.addImage({ path: FIG("deck_laerer.png"), x: MX, y: 2.95, w: 12.1, h: 3.7, altText: "Diagram: Ankrene til å lære og en lærer i bokkorpuset, ganget med typisk forhold, gir anslaget 47 % verb, 43 % substantiv og 10 % lære (doktrine); taggeren gir 51 % verb og 49 % substantiv" });
-s.addNotes("Tagging på paradigmenivå: ordet «paradigme» er selv synkretisk her (bøyningsparadigme og det paradigmatiske hos Jakobson). Paradigmet henter ankre fra resten av bøyningen og trenger mange forekomster; syntagmet (taggeren, bigrammer) avgjør hver forekomst ut fra konteksten. Tall: decomposer.estimate_wordform_shares(\"lærer\", corpus=\"book\") med OBT-fordeling av delte ankre, bokkorpuset 1950–2020. Verbet: log-regresjon fra pret + perf-part (lærte 392 030, lært 608 873), lært på 579 entydige verb. Substantivet: log-regresjon fra ent be + fl ub + fl be (læreren, lærere, lærerne; 5 799 entydige substantiv). lære (doktrine): reserveregel 3,34 × fl be. ρ i figuren er anslaget delt på summen av ankrene. Anslag 47 / 43 / 10 %; taggeren (OBT, 8,8 mill. tokens) 51 / 49 % (verb 311 / subst 297 forekomster). Forbehold: summen av anslagene er bare 0,47 × observert «lærer», så andelene er normerte; nivået stemmer dårligere enn fordelingen. Andre gode eksempler: leser (paradigme 85 % verb, OBT 84 %), sykler (49 % subst., OBT 58 %). Det gamle eksemplet «dør» (paradigme 64 % subst., OBT 50 %) er tatt ut.");
-
-// 10c døde (fra build_tillegg.js lysbilde 3)
-s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
-s.addText("«døde»: adjektivet er 28 %, og dø er fortsatt 2A", { placeholder: "title" });
-s.addImage({ path: FIG("deck_dode_profil.png"), x: MX, y: 1.45, w: 7.6, h: 4.9, altText: "Diagram: Profilen til dø i bokkorpuset (%)" });
-stat(s, "28 %", "av «døde» er adjektivet død i det taggede korpuset (29 % med alle fem lag)", 8.6, 1.5, 4.1);
-stat(s, "< 77 %", "så lenge adjektivet er under dette, står pret > inf > pres (2A)", 8.6, 3.75, 4.1, C.accent2);
-s.addNotes("Fra build_tillegg.js (lysbilde 3). rapport_verbtyper.md §7.2 punkt 5; rapport_dekomponering_obt.md §9 og §11. Paradigmeankrene alene kan ikke bestemme adjektivandelen (dødd, dødt og dødene er atypisk sjeldne; sum anslag / obs. 0,05). Adjektivankre (sqlite/adjektiv_gold.py) ga dekomponereren 71/29 i OBT-korpuset mot fasit 72/28 (lag 1). Med alle fem lag: OBT 71/29, dekomponereren 65/33.");
+s.addNotes("Tagging på paradigmenivå: ordet «paradigme» er selv synkretisk her (bøyningsparadigme og det paradigmatiske hos Jakobson). Paradigmet henter ankre fra resten av bøyningen og trenger mange forekomster; syntagmet (taggeren, bigrammer) avgjør hver forekomst ut fra konteksten. Tall: decomposer.estimate_wordform_shares(\"lærer\", corpus=\"book\") med OBT-fordeling av delte ankre, bokkorpuset 1950–2020. Verbet: log-regresjon fra pret + perf-part (lærte 392 030, lært 608 873), lært på 579 entydige verb. Substantivet: log-regresjon fra ent be + fl ub + fl be (læreren, lærere, lærerne; 5 799 entydige substantiv). lære (doktrine): reserveregel 3,34 × fl be. ρ i figuren er anslaget delt på summen av ankrene. Anslag 47 / 43 / 10 %; taggeren (OBT, 8,8 mill. tokens) 51 / 42 / 7 % (lære verb 311, lærer subst 253, lære subst 44 av 608 forekomster). Forbehold: summen av anslagene er bare 0,47 × observert «lærer», så andelene er normerte; nivået stemmer dårligere enn fordelingen. Andre gode eksempler: leser (paradigme 85 % verb, OBT 84 %), sykler (49 % subst., OBT 58 %). Det gamle eksemplet «dør» (paradigme 64 % subst., OBT 50 %) er tatt ut.");
 
 // 11 fisker over tid
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
@@ -406,17 +398,17 @@ s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
 s.addText("Bigrammer treffer best: 5 pp median", { placeholder: "title" });
 s.addImage({ path: FIG("deck_bigram_validering.png"), x: MX, y: 1.45, w: 7.4, h: 4.8, altText: "Diagram: Avvik i verbandel fra OBT, 150 substantiv/verb-homografer (pp)" });
 stat(s, "95 %", "riktig flertallsleksem med bigrammer (paradigme 79 %)", 8.5, 1.5, 4.2);
-body(s, bullets(["Kombinasjonen hjelper ikke når usikkerheten er kalibrert", "Anbefaling: bigram der verbet har kontekster, ellers paradigme", "«dør» 51 % verb (OBT 52), «tro» 54 % (OBT 68)"]), 8.5, 3.6, 4.2, 2.6, 15);
+body(s, bullets(["Kombinasjonen hjelper ikke når usikkerheten er kalibrert", "Anbefaling: bigram der verbet har kontekster, ellers paradigme", "«lærer» 66 % verb (OBT 51), «tro» 54 % (OBT 68)"]), 8.5, 3.6, 4.2, 2.6, 15);
 s.addNotes("Fra build_tillegg.js (lysbilde 6). python3 -m sqlite.kombinert; resultater/kombinert_validering.tsv; rapport_dekomponering_tid.md §8. Med de opprinnelige usikkerhetene lå fasiten innenfor 80 %-intervallet bare for 42–46 % av formene; faktor 2,3 (paradigme) og 4,3 (bigram) trengs, tilpasset på de samme formene. Fasiten er fra et annet korpus. OBT-tallene her er fra lag 1; kombinert validering er ikke kjørt på nytt med alle lag.");
 
-// 12b dør/tro over tid: brukstilfellet (ordbok → kurve for leksemet)
+// 12b lærer/tro over tid: brukstilfellet (ordbok → kurve for leksemet); før «dør» (logg.md del 87)
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
-s.addText("Fra ordboka til kurven: «dør» og «tro»", { placeholder: "title" });
+s.addText("Fra ordboka til kurven: «lærer» og «tro»", { placeholder: "title" });
 status(s, "UTKAST");
-s.addImage({ path: FIG("dor_tro_metoder.png"), x: MX, y: 1.3, w: 11.4, h: 4.71, altText: "Verbandelen av ordformene dør og tro per år 1950–2020, anslått med bigrammer og med paradigmet, sammenlignet med det taggede korpuset" });
-body(s, [{ text: "Bigrammer (å/kan/vil … tro, jeg/han/som/det … dør) treffer verbandelen best: median avvik 5 pp mot tagget korpus. ", options: { bold: true, color: C.text1 } },
-         { text: "«tro» blir mer verb over tid; «dør» er stabil.", options: {} }], MX, 6.15, 12.1, 0.7, 15);
-s.addNotes("Brukstilfellet: en bruker ser paradigmet i en ordbok og vil se kurven for ordet, ikke for overflateformen. Figur: python3 -m sqlite.figurer (dor_tro_metoder.png). Metode (rapport_dekomponering_tid.md §7–8): kontekstraten r = andelen av en infinitiv som står etter å/kan/vil/skal/må (56 %), og av en presensform etter jeg/han/hun/vi/de/som/det/den (24 %), lært på 120 entydige verb. Verbet = bigramtall / r; resten er substantivet. Substantivkonteksten (en/ei/et/min …) er for ustabil (0–32 % mellom ord) til å brukes som rate. Validert på 150 substantiv/verb-homografer mot OBT: median avvik 5,0 pp, riktig flertallsleksem 95 %; paradigmeanslaget 9,7 pp og 79 %. Usikkerhet: ±15 pp generelt, ±29 pp for jevnt fordelte former (båndet). «dør»: 51 % verb (OBT 52 %). «tro»: 54 % verb (OBT 68 % av substantiv + verb); verbet øker fra ca. 40–50 % til ca. 60 % 1950–2020, med begge metodene. Stiplet linje: paradigmeanslaget (for «tro» med OBT-fordelte ankre).");
+s.addImage({ path: FIG("lærer_tro_metoder.png"), x: MX, y: 1.3, w: 11.4, h: 4.71, altText: "Verbandelen av ordformene lærer og tro per år 1950–2020, anslått med bigrammer og med paradigmet, sammenlignet med det taggede korpuset" });
+body(s, [{ text: "«tro»: bigram og paradigme følger hverandre. ", options: { bold: true, color: C.text1 } },
+         { text: "«lærer»: syntagmet lurer. «som lærer» er 45 % av kontekstene og betyr oftest «i rollen som lærer»; paradigmet holder seg nær det taggede korpuset.", options: {} }], MX, 6.1, 12.1, 0.8, 15);
+s.addNotes("Brukstilfellet: en bruker ser paradigmet i en ordbok og vil se kurven for ordet, ikke for overflateformen. Figur: python3 -c \"from sqlite.figurer import fig_methods_over_time; fig_methods_over_time()\" (lærer_tro_metoder.png). Bigram: verbet = antall etter kontekstordene / kontekstraten (rapport_dekomponering_tid.md §7–8), resten er substantiv. Paradigme: tidsserie.decompose_over_time, verbet mot alle substantivkandidater (for lærer også lære «doktrine»). Prikket linje: verbandel i det taggede korpuset (lærer 311 av 608, tro 60 av 88). Presenskontekstene er jeg/han/hun/vi/de/som/det/den; «som lærer» har 10 428 av 24 546 treff 1950–69 og 76 628 av 170 300 i 2000–20, og de fleste er nominale (jobbet som lærer). Bigrammet når derfor 78 % verb i 2020 mot 51 % i OBT. Det gamle eksemplet var «dør» (bigram 51 %, OBT 52 %), tatt ut 2026-11-26.");
 
 // 12 Validering
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
@@ -425,7 +417,7 @@ s.addImage({ path: FIG("deck_validering.png"), x: MX, y: 1.5, w: 7.4, h: 4.7, al
 stat(s, "78–80 %", "av de kunstige homografene får riktig leksem i flertall (log-regresjon; faste regler 66–76 %)", 8.4, 1.5, 4.3);
 stat(s, "× 1,6–2", "typisk avvik når én form anslås fra resten av paradigmet (log-regresjon)", 8.4, 3.55, 4.3, C.accent2);
 body(s, [{ text: "Retning: ja. Presise andeler: ±10–15 pp.", options: { bold: true, color: C.text1 } }], 8.4, 5.55, 4.3, 0.7, 16);
-s.addNotes("python3 -m sqlite.valider_dekomponering. Gullstandarden (2 772 substantiv og 533 verb med alle kategorier i nb_totals) har kjent fasit. Test 1: én kategori holdes ute og anslås fra de andre; typisk avvik ×1,55–2,0 med log-regresjon, ×1,7–2,7 med de faste reglene i decomposer.py. Test 2: en substantivform og en verbform slås sammen til en kunstig homograf; 90-persentilen for feilen er fortsatt ca. 30 pp. De faste reglene er skjeve (for ent ub + pres undervurderer de substantivandelen med 13 pp i median). Dekomponereren bruker derfor nå log-regresjon lært i samme korpus; for «dør» i bøker gir det 64 % substantiv, mot 71 % før. Det enkelte ordet kan altså avvike fra den typiske skjevheten. Log-regresjonen er lært med 5-delt kryssvalidering.");
+s.addNotes("python3 -m sqlite.valider_dekomponering. Gullstandarden (2 772 substantiv og 533 verb med alle kategorier i nb_totals) har kjent fasit. Test 1: én kategori holdes ute og anslås fra de andre; typisk avvik ×1,55–2,0 med log-regresjon, ×1,7–2,7 med de faste reglene i decomposer.py. Test 2: en substantivform og en verbform slås sammen til en kunstig homograf; 90-persentilen for feilen er fortsatt ca. 30 pp. De faste reglene er skjeve (for ent ub + pres undervurderer de substantivandelen med 13 pp i median). Dekomponereren bruker derfor nå log-regresjon lært i samme korpus; for «lærer» i bøker gir det 47 % verb, 43 % substantivet lærer og 10 % lære «doktrine» (OBT 51 / 42 / 7). Det enkelte ordet kan altså avvike fra den typiske skjevheten. Log-regresjonen er lært med 5-delt kryssvalidering.");
 
 // 12c Decomposer mot hele det taggede korpuset (ny 2026-11-23)
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
@@ -445,7 +437,7 @@ s.addImage({ path: FIG("deck_stabilitet_obt.png"), x: MX, y: 1.45, w: 7.6, h: 4.
 body(s, bullets([
   "Samme kurver med OBT per tiår, fast OBT-andel, dekomponereren og rå formtall",
   "Lag 1 alene (6–10 bøker per tiår) var for lite: andelen sette av «satt» hoppet 19–43 %. Med 32–47 bøker: 29–38 %",
-  "Én bok kan fortsatt styre et tiår: en slektsbok står for 57 % av «døde» på 2000-tallet",
+  "Én bok kan fortsatt styre et tiår, f.eks. en slektsbok på 2000-tallet",
 ]), 8.6, 1.6, 4.1, 4.7, 15);
 s.addNotes("Ny 2026-11-23. rapport_stabilitet_obt.md §4; python -m sqlite.stabilitet_obt --db <alle lag> --ut resultater/alle_lag. N-gram for bøker (bokmål) 1950–2020; flertydige former (satt, dør, kroner, går …) fordelt med OBT-andelen fra bøkene i samme tiår (skjønn- og faglitteratur i det taggede korpuset). «2020» er bare året 2020 i n-gram. Andelene er av lemmaets kjernekategorier (subst: 4; verb: inf, pres, pret, perf-part, imp). Usikkerhet med boka som enhet (bootstrap) er ikke regnet ut. Kurvene for gå og sette kan henge sammen med andelen fortellende tekst i preteritum.");
 
@@ -470,7 +462,7 @@ s.addText("Bøyningsprofiler er leksikalske — og stabile", { placeholder: "tit
 [
   ["Hvert leksem har sin favorittform", "Alle seks rekkefølger av inf / pres / pret finnes blant 580 verb. Substantiv skiller seg først på tall, så på bestemthet."],
   ["Profilene står stille i 70 år", "Samme form på topp i alle 71 år for 46 % av verbene og 53 % av substantivene (bokkorpuset 1950–2020)."],
-  ["Profilene kan brukes baklengs", "Flertydige former fordeles på leksemer uten tagget korpus: riktig hovedleksem i 3–4 av 5 tilfeller med paradigmet, 95 % med bigrammer. dø er type 2A også når adjektivet i «døde» trekkes fra."],
+  ["Profilene kan brukes baklengs", "Flertydige former fordeles på leksemer uten tagget korpus: riktig hovedleksem i 3–4 av 5 tilfeller med paradigmet, 95 % med bigrammer."],
   ["Andelene er usikre", "±10–15 pp. Metoden trenger entydige former i paradigmet og svikter når de mangler (et fiske), når konkurrenten ikke modelleres (adjektiv, «i går») eller når sjeldne ordbokshomografer får for stor vekt."],
 ].forEach(([head, text], i) => {
   const x = MX + (i % 2) * 6.2, y = 1.55 + Math.floor(i / 2) * 2.7, w = 5.9, h = 2.45;
@@ -479,7 +471,7 @@ s.addText("Bøyningsprofiler er leksikalske — og stabile", { placeholder: "tit
   s.addText(head, { x: x + 1.1, y: y + 0.28, w: w - 1.35, h: 0.65, fontSize: 21, bold: true, color: C.text1, valign: "middle", margin: 0, isTextBox: true });
   s.addText(text, { x: x + 1.1, y: y + 1.0, w: w - 1.35, h: h - 1.2, fontSize: 15, color: C.text2, valign: "top", margin: 0, isTextBox: true });
 });
-s.addNotes("1: lysbilde 6–8 (rapport_verbtyper.md §3, rapport_substantivtyper.md §3). 2: lysbilde 8 og rapportenes §4; 46 % = 260 av 569 Sett A-verb belagt alle 71 år, 53 % = 2 314 av 4 355 substantiv. 3 (oppdatert 2026-11-23): paradigmet 75 % riktig hovedleksem i hele det taggede korpuset (rapport_dekomponering_obt.md §11), bigrammer 95 % (rapport_dekomponering_tid.md §8). Tidligere tekst: ca. 80 % riktig hovedleksem både med kunstige homografer (rapport_dekomponering_validering.md) og for former der alle kandidatene er modellert i det OBT-taggede korpuset (rapport_dekomponering_obt.md §9). 4: et fiske har ingen entydige former (lysbilde 4); for døde er ankrene atypisk sjeldne; sjeldne adjektiv som grunn og bein får for mye. Hovedpoeng: profilene er en egenskap ved leksemet, og nettopp derfor kan de brukes til å fordele rå n-gram.");
+s.addNotes("1: lysbilde 6–8 (rapport_verbtyper.md §3, rapport_substantivtyper.md §3). 2: lysbilde 8 og rapportenes §4; 46 % = 260 av 569 Sett A-verb belagt alle 71 år, 53 % = 2 314 av 4 355 substantiv. 3 (oppdatert 2026-11-23): paradigmet 75 % riktig hovedleksem i hele det taggede korpuset (rapport_dekomponering_obt.md §11), bigrammer 95 % (rapport_dekomponering_tid.md §8). Tidligere tekst: ca. 80 % riktig hovedleksem både med kunstige homografer (rapport_dekomponering_validering.md) og for former der alle kandidatene er modellert i det OBT-taggede korpuset (rapport_dekomponering_obt.md §9). 4: et fiske har ingen entydige former (lysbilde 4); sjeldne adjektiv som grunn og bein får for mye. Hovedpoeng: profilene er en egenskap ved leksemet, og nettopp derfor kan de brukes til å fordele rå n-gram.");
 
 (async () => {
   await pres.writeFile({ fileName: OUT });
