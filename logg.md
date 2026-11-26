@@ -2011,3 +2011,15 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
   - *klimakrisen* låser seg på ca. 74 % bestemt entall fra 2005.
   - Nøkkelbegreper (*samfunnet*, *markedet*, *fremtiden*, *staten*) har 49–65 % ent be, mot ca. 23 % for abstrakte substantiv (Koselleck, kollektivsingular).
   - Ordvevs situasjonstyper for verb: tilstand 58 % pres, uavgrenset 28 %, avgrenset 23 %. Pret ligger på ca. 31 % i alle de dynamiske klassene.
+
+## 2026-11-26 (del 89) — Forskningsplan for 2027: paradigmatisk tagging av aggregerte data
+**Agent:** Claude (Opus 5.5)
+- **Bakgrunn:** MONS-foredraget gikk bra. Lars vil utvikle arbeidet videre i 2027, mot Nordisk eller en annen konferanse.
+- **Gjort:** Ny fil `forskningsplan_paradigme_syntagme.md`. Den samler:
+  - kjerneideen: vi tagger ikke teksten, men fordelingen i aggregatene;
+  - rammen paradigme/syntagme (Jakobson);
+  - bøyningsparadigmet som «gratis w2v»;
+  - hovedspørsmålet om hvilke grupperinger som har stabile indre proporsjoner;
+  - ordboka som brukstilfelle;
+  - hva vi har, mulige neste steg og åpne spørsmål.
+- **Neste:** Litteratursøk (quantification, learning from label proportions) før vi kaller metoden ny.
