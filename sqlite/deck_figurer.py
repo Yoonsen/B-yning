@@ -128,6 +128,124 @@ def render(cid: str):
     return out
 
 
+# Semantiske klasser (Norsk ordvev) × profil i det OBT-taggede bokkorpuset (logg.md del 82–84).
+# Entall i blågrønt, flertall i rust; ubestemt mørk, bestemt lys.
+SEM_CLASSES = ["kroppsdel", "sted/bygning", "gjenstand", "person", "substans", "hendelse", "tid", "egenskap"]
+SEM_CELLS = [("ent ub", "#4F7C7A"), ("ent be", "#A9C4C1"), ("fl ub", "#B5482F"), ("fl be", "#E3AE9E")]
+
+
+def render_semantic(size=(7.6, 4.9)):
+    import csv
+    from collections import defaultdict
+
+    from sqlite.figurer import ROOT
+
+    groups = defaultdict(list)
+    with (ROOT / "resultater" / "ordvev_klasser_obt.tsv").open(encoding="utf-8") as f:
+        for r in csv.DictReader(f, delimiter="\t"):
+            groups[r["klasse"]].append([float(r[k]) for k in ("ent_ub", "ent_be", "fl_ub", "fl_be")])
+    data = {c: np.mean(groups[c], axis=0) * 100 for c in SEM_CLASSES}
+    order = sorted(SEM_CLASSES, key=lambda c: -(data[c][1] + data[c][3]))  # mest bestemt øverst
+    fig, ax = plt.subplots(figsize=size)
+    y = np.arange(len(order))
+    left = np.zeros(len(order))
+    for j, (name, color) in enumerate(SEM_CELLS):
+        vals = np.array([data[c][j] for c in order])
+        ax.barh(y, vals, left=left, height=0.72, color=color, edgecolor="white", linewidth=1.5, label=name)
+        for yi, (l, v) in enumerate(zip(left, vals)):
+            if v >= 7:
+                ax.text(l + v / 2, yi, f"{v:.0f}", ha="center", va="center", fontsize=11,
+                        color="white" if j in (0, 2) else INK)
+        left += vals
+    ax.set_yticks(y, [f"{c}  ({len(groups[c])})" for c in order], fontsize=12)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 100)
+    ax.set_xticks([])
+    for sp in ("top", "right", "bottom", "left"):
+        ax.spines[sp].set_visible(False)
+    ax.tick_params(axis="y", length=0, colors=INK)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.45, 1.0), ncol=4, frameon=False, fontsize=11, handlelength=1.2)
+    fig.tight_layout()
+    out = OUT_DIR / "deck_semantiske_klasser.png"
+    fig.savefig(out, dpi=200, bbox_inches=None)
+    plt.close(fig)
+    return out, {c: (len(groups[c]), data[c].round(1).tolist()) for c in order}
+
+
+# «lærer» mellom to paradigmer (logg.md del 86). Tall fra
+# decomposer.estimate_wordform_shares("lærer", corpus="book") med OBT-fordeling av delte ankre,
+# bokkorpuset 1950–2020; taggeren er obt_typer i korpus/obt_frekvenser.db (lære verb 311, lærer subst 253
+# inkl. «Lærer», lære subst 44 av 608).
+LAERER = {
+    "anchors": [  # (kandidat, farge, [(ankerform, forekomster)], anslag x̂)
+        ("å lære (verb)", ACC1, [("lærte", 392_030), ("lært", 608_873)], 252_717),
+        ("en lærer (subst.)", ACC2, [("læreren", 501_966), ("lærere", 706_402), ("lærerne", 393_113)], 229_908),
+        ("lære (subst., «doktrine»)", LIGHT, [("lærene", 15_418)], 51_496),
+    ],
+    "tagger": [51.2, 41.6, 7.2],
+}
+
+
+def render_laerer(size=(12.1, 3.7)):
+    import matplotlib.gridspec as gs
+
+    fig = plt.figure(figsize=size)
+    g = gs.GridSpec(1, 2, width_ratios=[1.25, 1], wspace=0.35)
+    # 1) Ankrene: summen av de entydige formene i hvert paradigme
+    ax = fig.add_subplot(g[0])
+    cands = LAERER["anchors"]
+    for i, (name, color, forms, x_hat) in enumerate(cands):
+        left = 0
+        for j, (f, n) in enumerate(forms):
+            v = n / 1e6
+            ax.barh(i, v, left=left, height=0.62, color=color, alpha=1 - 0.28 * j, edgecolor="white", linewidth=2)
+            if v > 0.25:
+                ax.text(left + v / 2, i, f, ha="center", va="center", fontsize=11, style="italic",
+                        color="white" if color != LIGHT else INK)
+            left += v
+        rho = x_hat / (left * 1e6)
+        ax.text(left + 0.04, i, f"{left:.2f}".replace(".", ",") + f" mill.  × ρ {rho:.2f}".replace("0.", "0,").replace("3.", "3,")
+                + f"  = {round(x_hat, -3) / 1e3:.0f} 000", va="center", fontsize=11, color=INK)
+    ax.set_yticks(range(len(cands)), [c[0] for c in cands], fontsize=12)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 2.75)
+    ax.set_xticks([])
+    ax.tick_params(axis="y", length=0, colors=INK)
+    for sp in ("top", "right", "bottom", "left"):
+        ax.spines[sp].set_visible(False)
+    ax.set_title("1  Ankrene i hvert paradigme (bøker, forekomster) × typisk forhold ρ", loc="left", fontsize=13, color=INK, pad=10)
+    # 2) Anslaget: x̂ = ρ · R, normert til andeler, mot taggeren
+    ax2 = fig.add_subplot(g[1])
+    est = np.array([c[3] for c in cands], float)
+    rows = [("Paradigmet", 100 * est / est.sum()), ("Taggeren (OBT)", np.array(LAERER["tagger"]))]
+    for i, (lab, vals) in enumerate(rows):
+        left = 0
+        for (name, color, _, _), v in zip(cands, vals):
+            if v <= 0:
+                continue
+            ax2.barh(i, v, left=left, height=0.55, color=color, edgecolor="white", linewidth=2)
+            if v >= 12:
+                ax2.text(left + v / 2, i, f"{v:.0f} %", ha="center", va="center", fontsize=12,
+                         color="white" if color != LIGHT else INK, fontweight="bold")
+            left += v
+    ax2.set_yticks([0, 1], [r[0] for r in rows], fontsize=12)
+    ax2.invert_yaxis()
+    ax2.set_xlim(0, 100)
+    ax2.set_ylim(1.6, -0.6)
+    ax2.set_xticks([])
+    ax2.tick_params(axis="y", length=0, colors=INK)
+    for sp in ("top", "right", "bottom", "left"):
+        ax2.spines[sp].set_visible(False)
+    ax2.set_title("2  Anslaget for «lærer»", loc="left", fontsize=13, color=INK, pad=10)
+    fig.subplots_adjust(left=0.17, right=0.98, top=0.86, bottom=0.06)
+    out = OUT_DIR / "deck_laerer.png"
+    fig.savefig(out, dpi=200, bbox_inches=None)
+    plt.close(fig)
+    return out
+
+
 if __name__ == "__main__":
+    print(render_laerer())
     for cid in CHARTS:
         print(render(cid))
+    print(render_semantic())

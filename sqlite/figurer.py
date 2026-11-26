@@ -351,17 +351,19 @@ def fig_time_decomposition(forms: tuple[str, ...] = ("dør", "tro")) -> Path:
     return out
 
 
-def fig_methods_over_time() -> Path:
-    """Verbandel per år for «dør» og «tro»: bigrammer (heltrukket, bånd = empirisk 80 %-avvik) og paradigmet (stiplet)."""
+def fig_methods_over_time(forms: tuple[str, str] = ("lærer", "tro")) -> Path:
+    """Verbandel per år for to former: bigrammer (heltrukket, bånd = empirisk 80 %-avvik) og paradigmet (stiplet).
+    Standard er «lærer» og «tro» (logg.md del 87; tidligere «dør»)."""
     from sqlite.bigram_kontekst import EXAMPLES, cue_rates, decompose_residual
     from sqlite.kombinert import BIGRAM_ERR_PP
     from sqlite.tidsserie import decompose_over_time
 
     rates = cue_rates()
-    obt = {"dør": 0.52, "tro": 0.60 / 0.88}  # OBT-verbandel av substantiv + verb (tro: 60 av 88)
-    verb_of = {"dør": "dø", "tro": "tro"}
+    # OBT-verbandel av substantiv + verb (tro: 60 av 88; lærer: 311 av 608, korpus/obt_frekvenser.db)
+    obt = {"dør": 0.52, "tro": 0.60 / 0.88, "lærer": 311 / 608}
+    verb_of = {"dør": "dø", "tro": "tro", "lærer": "lære"}
     fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.6), sharey=True)
-    for ax, form in zip(axes, ("dør", "tro")):
+    for ax, form in zip(axes, forms):
         b = decompose_residual(form, EXAMPLES[form], rates)
         par = decompose_over_time(form)
         yrs = np.array(b["years"])
@@ -370,8 +372,10 @@ def fig_methods_over_time() -> Path:
         ax.fill_between(yrs, np.clip(vb - half, 0, 100), np.clip(vb + half, 0, 100), color=FORM_COLOR["inf"], alpha=0.12, lw=0)
         ax.plot(yrs, vb, color=FORM_COLOR["inf"], lw=2.4)
         idx = {(c["grunnform"], c["pos"]): i for i, c in enumerate(par["candidates"])}
-        iv, i_n = idx[(verb_of[form], "verb")], idx[(form, "subst")]
-        vp = 100 * par["share"][iv] / (par["share"][iv] + par["share"][i_n])
+        iv = idx[(verb_of[form], "verb")]
+        # verb mot alle substantivkandidater (lærer: også lære «doktrine»); andre ordklasser utelatt
+        vs = [i for i, c in enumerate(par["candidates"]) if c["pos"] in ("verb", "subst")]
+        vp = 100 * par["share"][iv] / par["share"][vs].sum(axis=0)
         ax.plot(yrs, vp, color=MUTED, lw=1.6, ls="--")
         ax.hlines(100 * obt[form], yrs[0], yrs[-1], color=INK, lw=0.8, ls=":")
         ax.text(yrs[-1] + 1.5, vb[-1], "bigram", color=FORM_COLOR["inf"], fontsize=12, fontweight="bold", va="center")
@@ -386,9 +390,9 @@ def fig_methods_over_time() -> Path:
         ax.yaxis.grid(True, color=GRID, lw=0.8)
         ax.set_axisbelow(True)
     axes[0].set_ylabel("verbandel av formen (%)")
-    fig.text(0.01, -0.02, "Bigram: verbet anslått fra «å/kan/vil … tro» og «jeg/han/som/det … dør», resten er substantiv. "
+    fig.text(0.01, -0.02, "Bigram: verbet anslått fra «å/kan/vil … tro» og «jeg/han/som/det … lærer», resten er substantiv. "
              "Bånd: ±29 pp, typisk avvik mot OBT for jevnt fordelte former. 5-årig glidende snitt.", fontsize=10, color=MUTED)
-    out = OUT_DIR / "dor_tro_metoder.png"
+    out = OUT_DIR / ("dor_tro_metoder.png" if forms[0] == "dør" else f"{forms[0]}_{forms[1]}_metoder.png")
     fig.savefig(out)
     plt.close(fig)
     return out

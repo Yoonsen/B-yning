@@ -1871,3 +1871,119 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ## 2026-11-25 (del 81) — Lysbilde 11: korte etiketter «Verb» og «Substantiv»
 **Agent:** Claude (Opus 5.5)
 - **Gjort:** De to diagrammene har fått en kort etikett øverst til høyre i samme farge som stolpene (`tag` i `CHARTS`, `sqlite/deck_figurer.py`). Begge deckene er bygd på nytt og sjekket i Keynote. Det åpne punktet fra del 80 er løst.
+
+## 2026-11-25 (del 82) — Norsk ordvev: semantisk klasse og bøyningsprofil for substantiv
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Ny modul `sqlite/ordvev.py` leser Norsk ordvev (bokmål v1.1.2, `norsk_ordvev_nob_1.1.2/dat/*.tab`). Det er en wordnet oversatt fra DanNet med 306 000 synset, hvorav ca. 250 000 er navngitte enheter. Fellesnavnene er 181 000 substantiv, 4 800 verb og 3 100 adjektiv.
+  - Hver betydning har en ontologisk type fra EuroWordNet. Modulen grovklassifiserer typene: substans (inkl. væske), kroppsdel, person, dyr, plante, sted/bygning, tid, egenskap, hendelse, gjenstand og abstrakt.
+  - Modulen kobler klassene til bokprofilene for Sett A (`resultater/substantivtyper.tsv`, N = 5 799).
+  - Den skriver `resultater/ordvev_klasser.tsv` (streng: alle betydninger i samme klasse) og `ordvev_klasser_flertall.tsv` (klassen med flest betydninger).
+- **Funn (flertallsvariant, gjennomsnittlig andel i %, ent ub / ent be / fl ub / fl be):**
+  - kroppsdel (N = 38): 25 / 40 / 14 / 21. Bestemt form dominerer, og fl be er mye høyere enn ellers (*leppene*, *munnvikene*).
+  - sted/bygning (358): 38 / 37 / 17 / 8. Ent be er nesten like vanlig som ent ub (*kysten*, *gården*, *fjorden*).
+  - tid (159): 53 / 35 / 8 / 4.
+  - egenskap (184): 70 / 15 / 13 / 2. Ubestemt entall dominerer, som ventet for abstrakte massetermer.
+  - substans (102): 64 / 15 / 17 / 4. Høyest ent ub blant de konkrete. Flertall finnes bare i typebetydningen (*råvarer*, *fettsyrer*).
+  - person / dyr: ca. 32 % flertall, mot 18 % for hendelser.
+  - Dekning: 74 % av Sett A finnes i Ordvev.
+- **Forbehold:**
+  - Sett A er substantiv med entydige paradigmer, så de hyppigste ordene (*hånd*, *øye*, *by*, *mann*) mangler. Ordvev har dem, men de trenger dekomponerte profiler.
+  - Typene er arvet fra DanNet og grove. Gjennomsnittene er ikke vektet.
+- **Lisens:** Rådataene har DanNet 1.0-lisensen (fri bruk med opphavsmerknad), se `LICENCE_dannet.txt`. Mappen (321 MB) er lagt i `.gitignore` og ikke committet.
+- **Neste:** Kjøre klassene på de dekomponerte profilene (`dekomponering_obt_profiler.tsv`) for å få med de hyppige ordene. Bruke Ordvev-sansene som prior i dekomponeringen (f.eks. tellbarhet for *fiske*). Eventuelt ett lysbilde om at profilen følger semantikken.
+
+## 2026-11-25 (del 83) — Ordvev-klassene på OBT-profiler (med de hyppige ordene)
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** `sqlite/ordvev.py --obt` lager substantivprofiler direkte fra det OBT-taggede bokkorpuset (`korpus/obt_frekvenser.db`, 8,8 mill. tokens, `type_kobling` → `lemma_id`/`boy_nummer` 1–4). Kravet er minst 50 forekomster. Bokstavnavn (a, r, s …) er utelatt.
+  - Taggeren har skilt homografene, så hyppige ord med flertydige former kommer med: *hånd*, *øye*, *by*, *mann*, *år* (ent ub og fl ub er også skilt).
+  - Resultatet er 3 531 substantiv, og 90 % av dem finnes i Ordvev. Skrives til `resultater/ordvev_klasser_obt.tsv`.
+  - Den dekomponerte fila `dekomponering_obt_profiler.tsv` har bare 5 substantiv og er ikke brukt.
+  - Ny klassifisering `første`: klassen til første betydning i Ordvev, som er hovedbetydningen arvet fra DanNet. Med den blir *hånd*, *øye* og *hode* kroppsdel. `streng` og `flertall` finnes fortsatt.
+- **Funn (uvektet snitt per lemma, %, ent ub / ent be / fl ub / fl be; første betydning):**
+  - kroppsdel (69): 29 / 40 / 14 / 18
+  - sted/bygning (280): 40 / 43 / 11 / 6
+  - egenskap (179): 63 / 19 / 15 / 4
+  - hendelse (678): 61 / 22 / 14 / 4
+  - tid (116): 63 / 24 / 11 / 2
+  - substans (101): 57 / 25 / 13 / 5
+  - person (493): 46 / 24 / 19 / 11
+  - gjenstand (640): 45 / 28 / 19 / 7
+- **Robust:** Mønsteret holder i alle tre klassifiseringene (streng, flertall, første) og i begge datasettene (Sett A i bokkorpuset og OBT).
+  - Kroppsdeler har mest bestemt form og høyest fl be.
+  - Steder har ent be på nivå med ent ub.
+  - Egenskaper, hendelser og tid har mest ent ub.
+  - Personer har mest flertall (ca. 30 %).
+  - Dyr og planter varierer med variant og vekting, fordi N er lite.
+- **Feilkilder i klassifiseringen:**
+  - Med første betydning blir *land*, *by* og *hus* «person», fordi gruppebetydningen «hele byen» står først. *vann* blir sted (innsjø), og *liv* blir kroppsdel.
+  - Med flertall blir *fot* «gjenstand», og *hånd* og *øye* blir uavgjort.
+  - Typene er altså støyete for polyseme ord. Et bedre neste steg er å velge klasse ut fra hypernymkjeden (`hyponymOf`) eller manuelt for de 200 hyppigste.
+
+## 2026-11-25 (del 84) — Lysbilde «Profilen følger betydningen», frukt/grønt og verbtyper mot Ordvev
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Nytt lysbilde 11 i `mons_master.pptx` (8b i `build_master.js`, seksjonen Substantiv).
+  - Stablet liggende stolpediagram, `render_semantic()` i `sqlite/deck_figurer.py`, `tekst/figurer/deck_semantiske_klasser.png`. Det viser ent ub / ent be / fl ub / fl be per Ordvev-klasse, sortert etter andel bestemt form, med OBT-profiler og første betydning.
+  - Til høyre står fire korte tolkninger. Kilder og feilkilder står i talernotatene.
+  - Bare masterdecket er oppdatert, slik toppen av `build_master.js` sier. Validatoren går gjennom, og lysbildet er sjekket i Keynote.
+- **Frukt og grønnsaker:** Ordene ble funnet via hypernymkjeden i Ordvev (`hyponymOf`) til *frukt*, *grønnsak* og *bær*. Sett A har 19: 50 / 9 / 33 / 7.
+  - Nesten ingen bestemt form.
+  - Enten masse i entall (*spinat*, *mais*, *agurk*, *paprika*) eller tellbare i flertall (*poteter*, *druer*, *tomater*, *rosiner*).
+  - OBT har bare 7 med ≥ 50 forekomster.
+- **Verb mot de seks typene:** 372 av de 580 verbene i `resultater/verbtyper.tsv` finnes i Ordvev. Trekkene i første betydning gir svake signaler. Grunnlinjen er 29 % pret på topp og 17 % pres på topp.
+  - Static (N = 8: *bety*, *bestå*, *representere*, *eksistere*): 88 % pres på topp.
+  - Mental (55): 69 % inf på topp (*vurdere*, *analysere*).
+  - Location (39): 54 % pret på topp, men gruppen er støyete (*beskrive*, *plassere*).
+  - UnboundedEvent og Cause: pres på topp 21–24 %, mot 12 % for BoundedEvent.
+  - Tendensen er aspektuell (tilstand → presens, avgrenset hendelse → preteritum), men N er lite. Ikke på lysbilde ennå.
+
+## 2026-11-25 (del 85) — Verbfunnet fra Ordvev i talernotatene til lysbilde 7
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Talernotatene til «Seks verbtyper» (lysbilde 7 i `mons_master.pptx`) har fått en linje om det semantiske mønsteret fra del 84. Tilstandsverb står i presens, mentale verb i infinitiv, og avgrensede hendelser oftere i preteritum. Linjen tar med forbeholdet om lite N og støyete typer. Decket er bygd på nytt, og validatoren går gjennom.
+
+## 2026-11-26 (del 86) — «lærer» erstatter «dør»: tagging på paradigmenivå
+**Agent:** Claude (Opus 5.5)
+- **Bakgrunn (Lars):** Fortellingen skal rammes inn som paradigme mot syntagme.
+  - Paradigmet henter ankre fra resten av bøyningen og krever mye data.
+  - Taggeren og bigrammene (*vil fiske*, *å fiske*) bor i syntagmet og avgjør hver forekomst.
+  - Ordet «paradigme» er selv synkretisk her (bøyning og Jakobson).
+  - *dø* byttes ut fordi en av MONS-grunnleggerne nettopp døde.
+- **Valg av eksempel:** Kandidatene ble sammenlignet med paradigmeanslag (bok) og OBT. Lagt i vektor: paradigme verb/subst mot OBT verb/subst.
+  - *lærer*: 47 / 43 (+ 10 *lære* «doktrine») mot 51 / 49. Valgt.
+  - *leser*: 85 / 15 mot 84 / 16
+  - *løper*: 90 / 10 mot 95 / 5
+  - *sykler*: 51 / 49 mot 42 / 58
+  - *forsker*: 18 / 82 mot 45 / 55 (dårlig)
+- **Gjort:**
+  - Lysbilde 14 (10b i `build_master.js`) heter nå «lærer rives mellom to paradigmer». Det viser:
+    - brikker med ankrene til *å lære* (lærte, lært) og *en lærer* (læreren, lærere, lærerne);
+    - to linjer om paradigme og syntagme;
+    - figuren `render_laerer()` i `sqlite/deck_figurer.py`, som skriver `tekst/figurer/deck_laerer.png`: (1) ankrene som stablet sum × ρ = anslag, (2) normert anslag mot taggeren.
+  - Formellysbildet viser nå *læreren, lærere* i stedet for *døren, dører*.
+  - Validatoren går gjennom, og lysbildet er sjekket i Keynote.
+- **Forbehold (står i talernotatene):** Summen av anslagene er bare 0,47 × observert «lærer». Fordelingen stemmer altså bedre enn nivået.
+- **Åpent:** *dø*, *dør* og *døde* finnes fortsatt på andre lysbilder:
+  - 10c «døde» (adjektivandel);
+  - bigramvalideringen («dør» 51 % verb);
+  - 12b «dør og tro over tid»;
+  - lysbilde 7 nevner *dø* som 2A.
+
+## 2026-11-26 (del 87) — *dø* ryddet ut av decket; «lærer» også på bigram- og tidslysbildet
+**Agent:** Claude (Opus 5.5)
+- **Gjort (`build_master.js`, `mons_master.pptx`, nå 23 lysbilder):**
+  - Lysbildet om «døde» (10c) er fjernet.
+  - Bigramvalideringen (lysbilde 17): «dør» 51 % er byttet med «lærer» 66 % verb (OBT 51).
+  - Tidslysbildet (lysbilde 18) heter nå «Fra ordboka til kurven: lærer og tro». Figuren er `lærer_tro_metoder.png`.
+    - `fig_methods_over_time(forms)` i `sqlite/figurer.py` tar nå formene som argument. Verbandelen fra paradigmet regnes mot alle substantivkandidater.
+    - `EXAMPLES["lærer"]` er lagt til i `sqlite/bigram_kontekst.py`.
+  - Stabilitetslysbildet og oppsummeringen nevner ikke lenger «døde».
+  - Talernotatene til valideringen bruker «lærer».
+  - Lysbilde 14: Taggeren skiller *lærer* fra *lære* «doktrine». Søylen er rettet fra 51/49 til 51/42/7 (verb 311, lærer 253 inkl. «Lærer», lære 44 av 608). Paradigmet gir 47/43/10, så treffet er enda bedre enn vist før.
+  - Validatoren går gjennom, og lysbilde 14 og 18 er sjekket i Keynote.
+- **Funn: syntagmet kan lure.**
+  - Bigramanslaget for «lærer» stiger fra ca. 45 % verb i 1950 til 78 % i 2020, mot 51 % i OBT.
+  - Årsak: konteksten *som* er 45 % av treffene på presenskontekstene (76 628 av 170 300 i 2000–20). *som lærer* er oftest nominalt («jobbet som lærer»).
+  - Paradigmet holder seg på 41–63 %, nær OBT. Dette står nå på lysbildet som poeng for rammen paradigme/syntagme.
+  - Merk at `kombinert_validering.tsv` har `obt_verb` = 0,57 for lærer, fordi nevneren der er verb + lærer subst uten *lære* «doktrine». Decket bruker 51 % (alle substantiv).
+- **Igjen:**
+  - *dør* «door» står fortsatt i stabilitetsfiguren (substantivet, bestemt entall). Det er ikke *dø*.
+  - `deck_dode_profil` og `deck_dor_profil` ligger fortsatt i `CHARTS`, men brukes ikke.

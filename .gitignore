@@ -86,3 +86,6 @@ public/fallback-*.js.map
 *.swp
 *.swo
 *~
+
+# Norsk ordvev (rådata, DanNet-lisens, 321 MB; leses av sqlite/ordvev.py)
+norsk_ordvev_nob_1.1.2/
