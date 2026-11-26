@@ -1987,3 +1987,27 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 - **Igjen:**
   - *dør* «door» står fortsatt i stabilitetsfiguren (substantivet, bestemt entall). Det er ikke *dø*.
   - `deck_dode_profil` og `deck_dor_profil` ligger fortsatt i `CHARTS`, men brukes ikke.
+
+## 2026-11-26 (del 88) — Kroppsord, bestemthet og postnominal possessiv (talernotat til lysbilde 11)
+**Agent:** Claude (Opus 5.5)
+- **Gjort:** Talernotatene til «Profilen følger betydningen» (lysbilde 11) forklarer nå at bestemt form på kroppsord har to kilder:
+  - Underforstått eier (inalienabel possesjon): *han brakk armen*, *vondt i hodet*. Dette er felles skandinavisk og finnes også på fransk og tysk, men ikke på engelsk.
+  - Postnominal possessiv: *armen min*. Bare norsk.
+- **Tall (NB N-gram, bøker, bokmål), andel postnominal av paret:**
+
+  | Par | 1900–19 | 1920–39 | 1940–59 | 1980–99 | 2000–20 |
+  |---|---|---|---|---|---|
+  | min arm / armen min | 7 % | 38 % | 77 % | – | 92 % |
+  | min far / faren min | – | – | – | 24 % | 50 % |
+  | min mor / moren min | – | – | – | 24 % | 55 % |
+
+  - *hånden min* og *hodet mitt* følger arm-mønsteret. Tallene for *hodet mitt* før 1920 er usikre på grunn av stavemåten (*hoved*, *mit*).
+  - *armen min* er den beste kontrollen, fordi stavemåten er lik før og etter reformene.
+- **Lars' tolkning (for foredraget):** Kroppsordene øker i bestemthet, og det kan henge sammen med den postnominale possessiven. Slektsordene følger 60 år senere.
+- **Ikke brukt:**
+  - Unigramkurvene *mor/moren* og *far/faren* blander rettskrivning (*moderen* → *moren*), navnebruk (*Mor*) og verbet *far* (presens av *fare*).
+  - Avis-n-gram var ikke tilgjengelig (NB N-gram avis ga HTTP 500).
+- **Ellers i samtalen (ikke i decket):**
+  - *klimakrisen* låser seg på ca. 74 % bestemt entall fra 2005.
+  - Nøkkelbegreper (*samfunnet*, *markedet*, *fremtiden*, *staten*) har 49–65 % ent be, mot ca. 23 % for abstrakte substantiv (Koselleck, kollektivsingular).
+  - Ordvevs situasjonstyper for verb: tilstand 58 % pres, uavgrenset 28 %, avgrenset 23 %. Pret ligger på ca. 31 % i alle de dynamiske klassene.
