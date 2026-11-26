@@ -1939,3 +1939,30 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ## 2026-11-25 (del 85) — Verbfunnet fra Ordvev i talernotatene til lysbilde 7
 **Agent:** Claude (Opus 5.5)
 - **Gjort:** Talernotatene til «Seks verbtyper» (lysbilde 7 i `mons_master.pptx`) har fått en linje om det semantiske mønsteret fra del 84. Tilstandsverb står i presens, mentale verb i infinitiv, og avgrensede hendelser oftere i preteritum. Linjen tar med forbeholdet om lite N og støyete typer. Decket er bygd på nytt, og validatoren går gjennom.
+
+## 2026-11-26 (del 86) — «lærer» erstatter «dør»: tagging på paradigmenivå
+**Agent:** Claude (Opus 5.5)
+- **Bakgrunn (Lars):** Fortellingen skal rammes inn som paradigme mot syntagme.
+  - Paradigmet henter ankre fra resten av bøyningen og krever mye data.
+  - Taggeren og bigrammene (*vil fiske*, *å fiske*) bor i syntagmet og avgjør hver forekomst.
+  - Ordet «paradigme» er selv synkretisk her (bøyning og Jakobson).
+  - *dø* byttes ut fordi en av MONS-grunnleggerne nettopp døde.
+- **Valg av eksempel:** Kandidatene ble sammenlignet med paradigmeanslag (bok) og OBT. Lagt i vektor: paradigme verb/subst mot OBT verb/subst.
+  - *lærer*: 47 / 43 (+ 10 *lære* «doktrine») mot 51 / 49. Valgt.
+  - *leser*: 85 / 15 mot 84 / 16
+  - *løper*: 90 / 10 mot 95 / 5
+  - *sykler*: 51 / 49 mot 42 / 58
+  - *forsker*: 18 / 82 mot 45 / 55 (dårlig)
+- **Gjort:**
+  - Lysbilde 14 (10b i `build_master.js`) heter nå «lærer rives mellom to paradigmer». Det viser:
+    - brikker med ankrene til *å lære* (lærte, lært) og *en lærer* (læreren, lærere, lærerne);
+    - to linjer om paradigme og syntagme;
+    - figuren `render_laerer()` i `sqlite/deck_figurer.py`, som skriver `tekst/figurer/deck_laerer.png`: (1) ankrene som stablet sum × ρ = anslag, (2) normert anslag mot taggeren.
+  - Formellysbildet viser nå *læreren, lærere* i stedet for *døren, dører*.
+  - Validatoren går gjennom, og lysbildet er sjekket i Keynote.
+- **Forbehold (står i talernotatene):** Summen av anslagene er bare 0,47 × observert «lærer». Fordelingen stemmer altså bedre enn nivået.
+- **Åpent:** *dø*, *dør* og *døde* finnes fortsatt på andre lysbilder:
+  - 10c «døde» (adjektivandel);
+  - bigramvalideringen («dør» 51 % verb);
+  - 12b «dør og tro over tid»;
+  - lysbilde 7 nevner *dø* som 2A.

@@ -336,7 +336,7 @@ chip(s, "f(O) = x₁ + x₂", MX, 1.6, { w: 3.6, h: 0.8, fontSize: 24, italic: f
 chip(s, "xᵢ = ρᵢ · Rᵢ", MX + 4.0, 1.6, { w: 3.0, h: 0.8, fontSize: 24, italic: false, bold: true });
 body(s, bullets([
   "f(O): observert frekvens for den flertydige formen O",
-  "Rᵢ: det vi ser av leksem i ellers. Enten resten av paradigmet (døren, dører …) eller kontekstene (å tro, kan tro …)",
+  "Rᵢ: det vi ser av leksem i ellers. Enten resten av paradigmet (læreren, lærere …) eller kontekstene (å tro, kan tro …)",
   "ρᵢ: typisk forhold mellom formen og Rᵢ, lært på entydige ord",
   "Kalibrering: Σ x̂ᵢ / f(O) nær 1 betyr at modellen stemmer med det observerte",
 ]), MX, 2.8, 7.2, 3.4, 17);
@@ -344,15 +344,27 @@ stat(s, "±15 pp", "typisk usikkerhet for en enkelt form (80 %-intervall); ±29 
 stat(s, "≈ 0", "usikkerheten i endringen over tid: profilfeilen er den samme hvert år", 8.6, 4.0, 4.1, C.accent2);
 s.addNotes("Fra build_tillegg.js (lysbilde 2). rapport_dekomponering_tid.md §2–3. Over tid antas stabil profil: xᵢ(t) = (x̂ᵢ/Rᵢ) · Rᵢ(t). Nivået er usikkert, endringen langt sikrere. Harde grenser (60 %-regelen) ble vurdert, men en celle kan ha opptil 90 % (P99), så usikkerheten er i stedet modellert som spredning i ρ.");
 
-// 10b dø / dør
+// 10b lærer: tagging på paradigmenivå (erstatter «dør», logg.md del 86)
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
-s.addText("«dør» er mest et substantiv", { placeholder: "title" });
-status(s, "UTKAST");
-s.addImage({ path: FIG("deck_dor_profil.png"), x: MX, y: 1.5, w: 7.2, h: 4.6, altText: "Diagram: Profilen til verbet dø, bokkorpuset 1950–2020" });
-stat(s, "64 %", "av «dør» er substantivet en/ei dør, anslått fra døren, døra, dører og dørene (±10–15 pp)", 8.3, 1.5, 4.4);
-body(s, [{ text: "dø flytter fra type 2B (pret > pres > inf) til 2A (pret > inf > pres).", options: { bold: true, color: C.text1 } }], 8.3, 3.6, 4.4, 1.0, 16);
-note(s, "Tagget korpus (OBT) og bigrammer gir «dør» om lag 50/50 (OBT 50 % substantiv, bigram 49 %). Paradigmeanslaget på 64 % er trolig for høyt. Tittel og tall må avklares.", 8.3, 4.65, 4.4, 1.6);
-s.addNotes("Fra rapport_verbtyper.md §7.2 punkt 3–5, regnet om 2026-11-20 med log-regresjon lært i bokkorpuset: estimate_wordform_shares(\"dør\", corpus=\"book\") gir 63,5 % substantiv / 36,5 % verb; summen av de ukappede anslagene er 1,05 × observert. Tidligere tall (faste regler fra nb_totals) var 71 / 29 %. For at pres skulle komme over inf, måtte verbandelen være over 73 %, altså 36 pp feil, mer enn 90-persentilen i valideringen. «døde» er også adjektivet død (rapport §7.2 punkt 5). Dekomponereren har nå adjektivankre, men for «døde» er summen av anslagene bare 0,05 × observert: dødd, dødt og dødene er alle atypisk sjeldne. Adjektivandelen er derfor ikke bestemt; overslagene spenner fra 2 % (alle adjektiv) via 14–35 % (tilstandsadjektiv som syk, blind, gammel) til 46 %. Det gir pret 74–61 / inf 18–26 / pres 9–13 %. 2A holder så lenge adjektivet er under 77 % av «døde». I det OBT-taggede korpuset er 28 % av «døde» adjektivet (rapport_dekomponering_obt.md §9); med 28 % blir profilen pret 67 / inf 22 / pres 11 %. MERK-boksen (2026-11-23): i det OBT-taggede korpuset med alle lag (43,7 mill. tokens) er «dør» 50 % substantiv / 50 % verb (rapport_dekomponering_obt.md §11), og bigrammene gir 51 % verb (rapport_dekomponering_tid.md §8). Begge er langt fra 64 % substantiv. OBT-korpuset er et annet utvalg enn bokkorpuset, men forskjellen er stor.");
+s.addText("«lærer» rives mellom to paradigmer", { placeholder: "title" });
+const CHL = (w) => ({ w: 0.11 * w.length + 0.4, h: 0.48, fontSize: 15 });
+[["å lære", ["lærte", "lært"]], ["en lærer", ["læreren", "lærere", "lærerne"]]].forEach(([lab, anchors], i) => {
+  const y = 1.5 + i * 0.62;
+  s.addText(lab, { x: MX, y, w: 1.1, h: 0.48, fontSize: 15, bold: true, color: C.text1, valign: "middle", margin: 0, isTextBox: true });
+  let cx = MX + 1.15;
+  cx += chip(s, "lærer", cx, y, { ...CHL("lærer"), fill: C.accent1, color: C.background1, bold: true }) + 0.2;
+  s.addText("ankre:", { x: cx, y, w: 0.7, h: 0.48, fontSize: 13, color: C.text2, valign: "middle", margin: 0, isTextBox: true });
+  cx += 0.72;
+  anchors.forEach((a) => { cx += chip(s, a, cx, y, CHL(a)) + 0.1; });
+});
+body(s, [
+  { text: "Paradigmet: ", options: { bold: true, color: C.text1 } },
+  { text: "forankring i de andre formene. Krever mye data.", options: { breakLine: true } },
+  { text: "Syntagmet: ", options: { bold: true, color: C.text1 } },
+  { text: "taggeren og bigrammer (å lære, en lærer) ser på hver forekomst.", options: {} },
+], 7.6, 1.45, 5.1, 1.3, 15);
+s.addImage({ path: FIG("deck_laerer.png"), x: MX, y: 2.95, w: 12.1, h: 3.7, altText: "Diagram: Ankrene til å lære og en lærer i bokkorpuset, ganget med typisk forhold, gir anslaget 47 % verb, 43 % substantiv og 10 % lære (doktrine); taggeren gir 51 % verb og 49 % substantiv" });
+s.addNotes("Tagging på paradigmenivå: ordet «paradigme» er selv synkretisk her (bøyningsparadigme og det paradigmatiske hos Jakobson). Paradigmet henter ankre fra resten av bøyningen og trenger mange forekomster; syntagmet (taggeren, bigrammer) avgjør hver forekomst ut fra konteksten. Tall: decomposer.estimate_wordform_shares(\"lærer\", corpus=\"book\") med OBT-fordeling av delte ankre, bokkorpuset 1950–2020. Verbet: log-regresjon fra pret + perf-part (lærte 392 030, lært 608 873), lært på 579 entydige verb. Substantivet: log-regresjon fra ent be + fl ub + fl be (læreren, lærere, lærerne; 5 799 entydige substantiv). lære (doktrine): reserveregel 3,34 × fl be. ρ i figuren er anslaget delt på summen av ankrene. Anslag 47 / 43 / 10 %; taggeren (OBT, 8,8 mill. tokens) 51 / 49 % (verb 311 / subst 297 forekomster). Forbehold: summen av anslagene er bare 0,47 × observert «lærer», så andelene er normerte; nivået stemmer dårligere enn fordelingen. Andre gode eksempler: leser (paradigme 85 % verb, OBT 84 %), sykler (49 % subst., OBT 58 %). Det gamle eksemplet «dør» (paradigme 64 % subst., OBT 50 %) er tatt ut.");
 
 // 10c døde (fra build_tillegg.js lysbilde 3)
 s = pres.addSlide({ masterName: "INNHOLD", sectionTitle: "Dekomponering" });
