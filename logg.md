@@ -1991,7 +1991,7 @@ Denne loggen oppdateres av alle AI-agenter (og mennesker ved behov) etter hver a
 ## 2026-11-26 (del 88) — Kroppsord, bestemthet og postnominal possessiv (talernotat til lysbilde 11)
 **Agent:** Claude (Opus 5.5)
 - **Gjort:** Talernotatene til «Profilen følger betydningen» (lysbilde 11) forklarer nå at bestemt form på kroppsord har to kilder:
-  - Underforstått eier (inalienabel possesjon): *han brakk armen*, *vondt i hodet*. Dette er felles skandinavisk og finnes også på fransk og tysk, men ikke på engelsk.
+  - Kroppsordet som anafor: i *Ola brakk armen* og *vondt i hodet* viser den bestemte formen tilbake til eieren. Dette er felles skandinavisk og finnes også på fransk og tysk, men ikke på engelsk. (Rettet etter Lars: det er *armen* som er anaforisk.)
   - Postnominal possessiv: *armen min*. Bare norsk.
 - **Tall (NB N-gram, bøker, bokmål), andel postnominal av paret:**
 
